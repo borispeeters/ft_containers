@@ -1,0 +1,31 @@
+Iterator types:
+
+INPUT	<---	FORWARD		<---	BIDIRECTIONAL	<---	RANDOM ACCESS
+OUTPUT
+
+deque: random access
+list: bidirectional
+map: bidirectional
+multimap: bidirectional
+queue: no iterator
+set: bidirectional
+multiset: bidirectional
+stack: no iterator
+vector: random access
+
+Container types:
+
+SEQUENCE CONTAINERS:
+- deque
+- list
+- vector
+
+CONTAINER ADAPTORS:
+- queue
+- stack
+
+ASSOCIATIVE CONTAINERS:
+- map
+- set
+- multimap
+- multiset

@@ -1,0 +1,26 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/bpeeters/Projects/ft_containers/list.hpp
+
+/Users/bpeeters/Projects/ft_containers/main.cpp
+iostream
+-
+vector
+-
+list.hpp
+/Users/bpeeters/Projects/ft_containers/list.hpp
+vector.hpp
+/Users/bpeeters/Projects/ft_containers/vector.hpp
+
+/Users/bpeeters/Projects/ft_containers/vector.hpp
+limits
+-
+memory
+-
+
