@@ -295,7 +295,7 @@ private:
 };
 
 template <class T, class Alloc>
-void swap(vector<T,Alloc>& x, vector<T,Alloc>& y);
+void swap(vector<T,Alloc>& x, vector<T,Alloc>& y) {	x.swap(y); }
 
 }; //end of namespace ft
 
