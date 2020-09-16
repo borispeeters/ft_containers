@@ -5,22 +5,27 @@
 
 int main ()
 {
-	ft::vector<int>	vec;
-	vec.push_back(1);
-	vec.push_back(2);
-	vec.push_back(3);
-	vec.push_back(4);
-	vec.push_back(5);
+	ft::vector<int>	x(4, 42);
+	ft::vector<int>	y(3, 108);
 
+	x.swap(y);
 
-	ft::vector<int>::iterator it = vec.begin();
-	it += 3;
-	vec.insert(it, 3, 42);
+	std::cout << "x containts:";
 
-	for (int value : vec)
-		std::cout << value << std::endl;
+	for (int value : x)
+		std::cout << ' ' << value;
 
-	std::cout << "size: " << vec.size() << std::endl;
+	std::cout << std::endl;
+
+	std::cout << "y contains:";
+
+	for (int value : y)
+		std::cout << ' ' << value;
+
+	std::cout << std::endl;
+
+	std::cout << "X - size: " << x.size() << ", capacity: " << x.capacity() << std::endl;
+	std::cout << "Y - size: " << y.size() << ", capacity: " << y.capacity() << std::endl;
 
 
 	return 0;

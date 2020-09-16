@@ -87,14 +87,29 @@ public:
 	    	this->get_allocator().construct(this->m_data + i, val);
     }
 	// 3. range constructor
-//	template <class InputIterator>
-//	vector(InputIterator first, InputIterator last, allocator_type const & alloc = allocator_type()) {}
+	template <class InputIterator>
+	vector(InputIterator first, InputIterator last, allocator_type const & alloc = allocator_type()):
+		m_data(0),
+		m_size(last - first),
+		m_capacity(last - first)
+	{
+		this->m_data = this->get_allocator().allocate(this->capacity());
+		for (size_type i = 0; i < this->size(); ++i)
+		{
+			this->get_allocator().construct(this->m_data + i, *first);
+			++first;
+		}
+	}
 	// 4. copy constructor
 	vector(vector const & vec):
-	    m_data(vec.m_data),
+	    m_data(0),
 	    m_size(vec.size()),
 	    m_capacity(vec.capacity())
-	{}
+	{
+		this->m_data = this->get_allocator().allocate(this->capacity());
+		for (size_type i = 0; i < this->size(); ++i)
+			this->get_allocator().construct(this->m_data + i, vec.at(i));
+	}
     // destructor
     ~vector()
     {
@@ -107,9 +122,11 @@ public:
 	{
 		if (&vec != this)
         {
-		    this->m_data = vec.m_data;
+			this->clear();
 		    this->m_size = vec.size();
 		    this->m_capacity = vec.capacity();
+		    for (size_type i = 0; i < this->size(); ++i)
+		    	this->get_allocator().construct(this->m_data + i, vec.at(i));
         }
 		return *this;
 	}
@@ -202,7 +219,7 @@ public:
 		this->get_allocator().construct(position, val);
 		return position;
 	}
-//	// 2. fill
+	// 2. fill
 	void        insert(iterator position, size_type n, value_type const & val)
 	{
 		this->m_size += n;
@@ -210,20 +227,44 @@ public:
 			this->realloc(this->capacity() * 2);
 
 		iterator it;
-		for (it = this->end(); it != position + n; --it)
+		for (it = position + n; it != this->end(); ++it)
 		{
-			std::cout << "*(it - 1): " << *(it - 1) << std::endl;
-			*it = *(it - 1);
+			this->get_allocator().construct(it, *(it - n));
+		    this->get_allocator().destroy(it - n);
 		}
 		for (it = position; it != position + n; ++it)
 			this->get_allocator().construct(it, val);
 	}
-//	// 3. range
+	// 3. range
 //	template <class InputIterator>
 //	void        insert(iterator position, InputIterator first, InputIterator last);
-//	iterator    erase(iterator position);
-//	iterator    erase(iterator first, iterator last);
-//	void        swap(vector & vec);
+	iterator    erase(iterator position)
+	{
+		this->get_allocator().destroy(position);
+		for (iterator it = position; it + 1 != this->end(); ++it)
+		{
+			this->get_allocator().construct(it, *(it + 1));
+			this->get_allocator().destroy(it + 1);
+		}
+		--this->m_size;
+    }
+	iterator    erase(iterator first, iterator last)
+	{
+		for (iterator it = first; it != last; ++it)
+			this->get_allocator().destroy(it);
+		for (iterator it = first; it + (last - first) != this->end(); ++it)
+		{
+			this->get_allocator().construct(it, *(it + (last - first)));
+			this->get_allocator().destroy(it + (last - first));
+		}
+		this->m_size -= last - first;
+	}
+	void        swap(vector & vec)
+	{
+		vector	tmp(vec);
+		vec = *this;
+		*this = tmp;
+	}
 	void        clear()
 	{
 		for (size_type i = 0; i < this->size(); ++i)
