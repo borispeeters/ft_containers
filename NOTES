@@ -5,13 +5,15 @@ OUTPUT
 
 deque: random access
 list: bidirectional
+vector: random access
+
+queue: no iterator
+stack: no iterator
+
 map: bidirectional
 multimap: bidirectional
-queue: no iterator
 set: bidirectional
 multiset: bidirectional
-stack: no iterator
-vector: random access
 
 Container types:
 

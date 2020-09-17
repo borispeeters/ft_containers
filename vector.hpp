@@ -55,19 +55,19 @@ template <class T, class Alloc = std::allocator<T> >
 class vector
 {
 public:
-	typedef	T											value_type;
-	typedef	Alloc										allocator_type;
-	typedef	typename allocator_type::reference			reference;
-	typedef	typename allocator_type::const_reference	const_reference;
-	typedef	typename allocator_type::pointer			pointer;
-	typedef	typename allocator_type::const_pointer		const_pointer;
-//	typedef vectorIterator<vector<T> >					iterator;
-	typedef pointer										iterator;
-  	typedef const_pointer 								const_iterator;
-    typedef std::reverse_iterator<iterator>             reverse_iterator;
-    typedef std::reverse_iterator<const_iterator>		const_reverse_iterator;
-    typedef typename allocator_type::difference_type	difference_type;
-	typedef	typename allocator_type::size_type			size_type;
+	typedef	T															value_type;
+	typedef	Alloc														allocator_type;
+	typedef	typename allocator_type::reference							reference;
+	typedef	typename allocator_type::const_reference					const_reference;
+	typedef	typename allocator_type::pointer							pointer;
+	typedef	typename allocator_type::const_pointer						const_pointer;
+//	typedef vectorIterator<vector<T> >									iterator;
+	typedef pointer														iterator;
+  	typedef const_pointer												const_iterator;
+    typedef std::reverse_iterator<iterator>								reverse_iterator;
+    typedef std::reverse_iterator<const_iterator>						const_reverse_iterator;
+    typedef typename std::iterator_traits<iterator>::difference_type	difference_type;
+	typedef	typename allocator_type::size_type							size_type;
 
 	// 1. default constructor
 	explicit vector(allocator_type const & alloc = allocator_type()):
@@ -90,8 +90,8 @@ public:
 	template <class InputIterator>
 	vector(InputIterator first, InputIterator last, allocator_type const & alloc = allocator_type()):
 		m_data(0),
-		m_size(last - first),
-		m_capacity(last - first)
+		m_size(std::distance(first, last)),
+		m_capacity(std::distance(first, last))
 	{
 		this->m_data = this->get_allocator().allocate(this->capacity());
 		for (size_type i = 0; i < this->size(); ++i)
@@ -252,12 +252,12 @@ public:
 	{
 		for (iterator it = first; it != last; ++it)
 			this->get_allocator().destroy(it);
-		for (iterator it = first; it + (last - first) != this->end(); ++it)
+		for (iterator it = first; it + std::distance(first, last) != this->end(); ++it)
 		{
-			this->get_allocator().construct(it, *(it + (last - first)));
-			this->get_allocator().destroy(it + (last - first));
+			this->get_allocator().construct(it, *(it + std::distance(first, last)));
+			this->get_allocator().destroy(it + std::distance(first, last));
 		}
-		this->m_size -= last - first;
+		this->m_size -= std::distance(first, last);
 	}
 	void        swap(vector & vec)
 	{
