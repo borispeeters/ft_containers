@@ -31,3 +31,17 @@ ASSOCIATIVE CONTAINERS:
 - set
 - multimap
 - multiset
+
+
+Mandatory:
+- list
+- vector
+- map
+- stack
+- queue
+
+Bonus:
+- deque
+- set
+- multiset
+- multimap

@@ -13,12 +13,12 @@ string
 -
 vector
 -
+deque
+-
 vector.hpp
 /Users/bpeeters/Projects/ft_containers/vector.hpp
 
 /Users/bpeeters/Projects/ft_containers/vector.hpp
-iterator
--
 limits
 -
 memory
