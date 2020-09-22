@@ -6,7 +6,15 @@
 
 #IncludeRegexTransform: 
 
+/Users/bpeeters/Projects/ft_containers/iterator.hpp
+cstddef
+-
+
 /Users/bpeeters/Projects/ft_containers/main.cpp
 iostream
+-
+iterator.hpp
+/Users/bpeeters/Projects/ft_containers/iterator.hpp
+typeinfo
 -
 

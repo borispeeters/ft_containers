@@ -33,21 +33,14 @@
 //}
 
 
+// iterator_traits example
+#include <iostream>     // std::cout
+#include "iterator.hpp"     // ft::iterator_traits
+#include <typeinfo>     // typeid
 
-#include <iostream>
-
-long multiply(long i, long j) {
-	std::cout << "long version" << std::endl;
-	return i * j;
-}
-
-template <class T>
-T multiply(T t1, T t2)
+int main()
 {
-	std::cout << "templated version" << std::endl;
-	return t1 * t2;
-}
-int main(void)
-{
-	std::cout << multiply(4,5) << std::endl;
+	if (typeid(ft::iterator_traits<int *>::iterator_category)==typeid(ft::random_access_iterator_tag))
+		std::cout << "int* is a random-access iterator";
+	return 0;
 }

@@ -5,51 +5,77 @@
 # include <limits>
 # include <memory>
 # include <stdexcept>
+# include "iterator.hpp"
 
 namespace ft
 {
 
-//template <typename vector>
-//class vectorIterator : public std::iterator<std::random_access_iterator_tag, typename vector::value_type, ptrdiff_t, typename vector::pointer, typename vector::reference>
-//{
-//public:
-//    typedef	typename vector::value_type		value_type;
-//    typedef	typename vector::pointer		pointer;
-//    typedef typename vector::reference		reference;
-////    typedef std::random_access_iterator_tag	iterator_category;
-//
-//    vectorIterator(pointer ptr): m_ptr(ptr) {}
-//
-//    vectorIterator& operator++()
-//    {
-//        ++m_ptr;
-//        return *this;
-//    }
-//    vectorIterator  operator++(int)
-//    {
-//        vectorIterator  iterator = *this;
-//        ++(*this);
-//        return iterator;
-//    }
-//    vectorIterator& operator--()
-//    {
-//        --m_ptr;
-//        return *this;
-//    }
-//    vectorIterator  operator--(int)
-//    {
-//    	vectorIterator  iterator = *this;
-//        --(*this);
-//        return iterator;
-//    }
-//    reference	operator[](int index) { return *(m_ptr + index); }
-//    pointer		operator->() { return m_ptr; }
-//    reference	operator*() { return *m_ptr; }
-//    bool		operator==(vectorIterator const & other) const { return m_ptr == other.m_ptr; }
-//    bool 		operator!=(vectorIterator const & other) const { return !(*this == other); }
-//private:
-//    pointer m_ptr;
-//};
+template <typename vector>
+class vectorIterator : public iterator<random_access_iterator_tag, typename vector::value_type>
+{
+public:
+    typedef	typename iterator<random_access_iterator_tag, typename vector::value_type>::value_type			value_type;
+    typedef	typename iterator<random_access_iterator_tag, typename vector::value_type>::pointer				pointer;
+    typedef typename iterator<random_access_iterator_tag, typename vector::value_type>::reference			reference;
+    typedef typename iterator<random_access_iterator_tag, typename vector::value_type>::iterator_category	iterator_category;
+    typedef	typename iterator<random_access_iterator_tag, typename vector::value_type>::difference_type		difference_type;
+
+	vectorIterator(): m_ptr(0) {}
+	vectorIterator(pointer ptr): m_ptr(ptr) {}
+	vectorIterator(vectorIterator const & other): m_ptr(other.m_ptr) {}
+	vectorIterator&	operator=(vectorIterator const & rhs)
+	{
+		if (&rhs != this)
+			this->m_ptr = rhs.m_ptr;
+		return *this;
+	}
+	~vectorIterator() {}
+
+    vectorIterator& operator++()
+    {
+        ++this->m_ptr;
+        return *this;
+    }
+    vectorIterator  operator++(int)
+    {
+        vectorIterator  iterator = *this;
+        ++(*this);
+        return iterator;
+    }
+    vectorIterator& operator--()
+    {
+        --this->m_ptr;
+        return *this;
+    }
+    vectorIterator  operator--(int)
+    {
+    	vectorIterator  iterator = *this;
+        --(*this);
+        return iterator;
+    }
+	vectorIterator&	operator+=(difference_type rhs)
+	{
+		this->m_ptr += rhs.m_ptr;
+		return *this;
+	}
+	vectorIterator&	operator-=(difference_type rhs)
+	{
+		this->m_ptr -= rhs.m_ptr;
+		return *this;
+	}
+    reference	operator[](int index) { return *(this->m_ptr + index); }
+    pointer		operator->() { return this->m_ptr; }
+    reference	operator*() { return *this->m_ptr; }
+    bool		operator==(vectorIterator const & rhs) const { return this->m_ptr == rhs.m_ptr; }
+    bool 		operator!=(vectorIterator const & rhs) const { return !(*this == rhs); }
+    bool 		operator<()
+private:
+    pointer m_ptr;
+};
+
+vectorIterator<typename vectangelior>	operator+(vectorIterator<vector> const & lhs, int rhs) { return vectorIterator(this->m_ptr + value); }
+vectorIterator<typename vector>	operator-(int value) { return vectorIterator(this->m_ptr - value); }
+vectorIterator<typename vector>	operator-(vectorIterator const & rhs) { return vectorIterator(this->m_ptr - rhs.m_ptr); }
 
 template <class T, class Alloc = std::allocator<T> >
 class vector
