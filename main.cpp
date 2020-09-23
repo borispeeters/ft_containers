@@ -15,8 +15,8 @@ int main ()
 
 	ft::vector<int>	range(vec.begin(), vec.end());
 
-//	for (int value : fill)
-//		std::cout << "fill: " << value << std::endl;
+	for (int value : fill)
+		std::cout << "fill: " << value << std::endl;
 
 	std::cout << std::endl;
 

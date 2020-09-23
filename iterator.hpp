@@ -24,8 +24,18 @@ struct iterator_traits
 	typedef typename Iterator::iterator_category	iterator_category;
 };
 
-//template <>
-//struct iterator_traits<vector>;
+template <typename vector>
+class vectorIterator;
+
+template <typename T>
+struct iterator_traits<vectorIterator<T> >
+{
+	typedef typename vectorIterator<T>::value_type			value_type;
+	typedef typename vectorIterator<T>::difference_type		difference_type;
+	typedef typename vectorIterator<T>::pointer				pointer;
+	typedef typename vectorIterator<T>::reference			reference;
+	typedef typename vectorIterator<T>::iterator_category	iterator_category;
+};
 
 template <class T>
 struct iterator_traits<T*>
@@ -116,7 +126,14 @@ typename iterator_traits<Iterator>::difference_type
 	distance(Iterator first, Iterator last,
 		  typename enable_if<is_iterator<typename iterator_traits<Iterator>::iterator_category>::value, Iterator>::type * = 0)
 {
+	typename iterator_traits<Iterator>::difference_type	distance = 0;
 
+	while (first != last)
+	{
+		++first;
+		++distance;
+	}
+	return distance;
 }
 
 };

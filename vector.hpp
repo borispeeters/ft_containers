@@ -107,8 +107,7 @@ public:
 	typedef	typename allocator_type::pointer							pointer;
 	typedef	typename allocator_type::const_pointer						const_pointer;
 	typedef vectorIterator<vector<T> >									iterator;
-//	typedef pointer														iterator;
-	typedef const_pointer												const_iterator;
+	typedef vectorIterator<vector<const T> >							const_iterator;
 	typedef std::reverse_iterator<iterator>								reverse_iterator;
 	typedef std::reverse_iterator<const_iterator>						const_reverse_iterator;
 	typedef typename ft::iterator_traits<iterator>::difference_type		difference_type;
@@ -141,10 +140,10 @@ public:
 	// 3. range constructor
 	template <class Iterator>
 	vector(Iterator first, Iterator last, allocator_type const & alloc = allocator_type(),
-		typename Iterator::iterator_category * = 0):
+		   typename enable_if<is_iterator<typename iterator_traits<Iterator>::iterator_category>::value, Iterator>::type * = 0):
 		m_data(0),
-		m_size(std::distance(first, last)),
-		m_capacity(std::distance(first, last))
+		m_size(ft::distance(first, last)),
+		m_capacity(ft::distance(first, last))
 	{
 		this->m_data = this->get_allocator().allocate(this->capacity());
 		for (size_type i = 0; i < this->size(); ++i)
