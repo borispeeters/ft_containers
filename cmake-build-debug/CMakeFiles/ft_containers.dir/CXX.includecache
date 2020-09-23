@@ -9,12 +9,32 @@
 /Users/bpeeters/Projects/ft_containers/iterator.hpp
 cstddef
 -
+type_traits.hpp
+/Users/bpeeters/Projects/ft_containers/type_traits.hpp
+vector.hpp
+/Users/bpeeters/Projects/ft_containers/vector.hpp
 
 /Users/bpeeters/Projects/ft_containers/main.cpp
 iostream
 -
+vector
+-
+vector.hpp
+/Users/bpeeters/Projects/ft_containers/vector.hpp
+
+/Users/bpeeters/Projects/ft_containers/type_traits.hpp
+
+/Users/bpeeters/Projects/ft_containers/vector.hpp
+limits
+-
+memory
+-
+stdexcept
+-
 iterator.hpp
 /Users/bpeeters/Projects/ft_containers/iterator.hpp
-typeinfo
+type_traits.hpp
+/Users/bpeeters/Projects/ft_containers/type_traits.hpp
+iterator
 -
 

@@ -3,4 +3,6 @@
 
 CMakeFiles/ft_containers.dir/main.cpp.o: ../iterator.hpp
 CMakeFiles/ft_containers.dir/main.cpp.o: ../main.cpp
+CMakeFiles/ft_containers.dir/main.cpp.o: ../type_traits.hpp
+CMakeFiles/ft_containers.dir/main.cpp.o: ../vector.hpp
 

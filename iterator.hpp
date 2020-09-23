@@ -2,6 +2,8 @@
 # define ITERATOR_HPP
 
 # include <cstddef>
+# include "type_traits.hpp"
+# include "vector.hpp"
 
 namespace ft
 {
@@ -12,30 +14,18 @@ struct forward_iterator_tag {};
 struct bidirectional_iterator_tag {};
 struct random_access_iterator_tag {};
 
-template <	class Category,						// iterator::iterator_category
-			class T,							// iterator::value_type
-			class Distance = std::ptrdiff_t,	// iterator::difference_type
-			class Pointer = T*,					// iterator::pointer
-			class Reference = T&				// iterator::reference
-		>
-struct iterator
-{
-	typedef	T			value_type;
-	typedef Distance	difference_type;
-	typedef Pointer		pointer;
-	typedef Reference	reference;
-	typedef	Category	iterator_category;
-};
-
 template <class Iterator>
 struct iterator_traits
 {
-	typedef typename Iterator::difference_type		difference_type;
 	typedef typename Iterator::value_type			value_type;
+	typedef typename Iterator::difference_type		difference_type;
 	typedef typename Iterator::pointer				pointer;
 	typedef typename Iterator::reference			reference;
 	typedef typename Iterator::iterator_category	iterator_category;
 };
+
+//template <>
+//struct iterator_traits<vector>;
 
 template <class T>
 struct iterator_traits<T*>
@@ -58,26 +48,73 @@ struct iterator_traits<const T*>
 };
 
 //template <>
-//class iterator_traits<input_iterator_tag>
+//struct iterator_traits<InputIterator>
 //{
-//	typedef input_iterator_tag::difference_type difference_type;
+//	typedef typename Iterator::difference_type		difference_type;
+//	typedef typename Iterator::value_type			value_type;
+//	typedef typename Iterator::pointer				pointer;
+//	typedef typename Iterator::reference			reference;
+//	typedef typename Iterator::iterator_category	iterator_category;
 //};
+//
+//template <>
+//struct iterator_traits<output_iterator_tag>;
+//
+//template <>
+//struct iterator_traits<forward_iterator_tag>;
+//
+//template <>
+//struct iterator_traits<bidirectional_iterator_tag>;
+//
+//template <>
+//struct iterator_traits<random_access_iterator_tag>;
+
+template <class Iterator>
+class reverse_iterator
+{
+public:
+	typedef Iterator												iterator_type;
+	typedef typename iterator_traits<Iterator>::iterator_category	iterator_category;
+	typedef typename iterator_traits<Iterator>::value_type			value_type;
+	typedef typename iterator_traits<Iterator>::difference_type 	difference_type;
+	typedef typename iterator_traits<Iterator>::pointer				pointer;
+	typedef typename iterator_traits<Iterator>::reference			reference;
+
+private:
+	iterator_type	_base_iterator;
+public:
+	// 1. default constructor
+	reverse_iterator();
+	// 2. initialization constructor
+	explicit reverse_iterator(iterator_type it);
+	// 3. copy / type-cast constructor
+	template <class Iter>
+	reverse_iterator(const reverse_iterator<Iter> & rev_it);
+	iterator_type	base() const { return _base_iterator; }
+};
+
+template <typename T>
+struct is_iterator { static const bool value = false; };
 
 template <>
-class iterator_traits<output_iterator_tag>;
+struct is_iterator<input_iterator_tag> { static const bool	value = true; };
 
 template <>
-class iterator_traits<forward_iterator_tag>;
+struct is_iterator<output_iterator_tag> { static const bool	value = true; };
 
 template <>
-class iterator_traits<bidirectional_iterator_tag>;
+struct is_iterator<forward_iterator_tag> { static const bool	value = true; };
 
 template <>
-class iterator_traits<random_access_iterator_tag>;
+struct is_iterator<bidirectional_iterator_tag> { static const bool	value = true; };
 
-template <class InputIterator>
-typename iterator_traits<InputIterator>::difference_type
-	distance(InputIterator first, InputIterator last)
+template <>
+struct is_iterator<random_access_iterator_tag> { static const bool	value = true; };
+
+template <class Iterator>
+typename iterator_traits<Iterator>::difference_type
+	distance(Iterator first, Iterator last,
+		  typename enable_if<is_iterator<typename iterator_traits<Iterator>::iterator_category>::value, Iterator>::type * = 0)
 {
 
 }
