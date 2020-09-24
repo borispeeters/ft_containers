@@ -13,14 +13,14 @@ namespace ft
 {
 
 template <typename vector>
-class vectorIterator
+class vectorIterator : public ft::iterator<ft::random_access_iterator_tag, typename vector::value_type>
 {
 public:
-	typedef	typename vector::value_type	value_type;
-	typedef	std::ptrdiff_t				difference_type;
-	typedef	value_type*					pointer;
-	typedef value_type&					reference;
-	typedef random_access_iterator_tag	iterator_category;
+	typedef	typename vector::value_type		value_type;
+	typedef	std::ptrdiff_t					difference_type;
+	typedef	value_type*						pointer;
+	typedef value_type&						reference;
+	typedef ft::random_access_iterator_tag	iterator_category;
 
 private:
 	pointer m_ptr;
@@ -106,8 +106,8 @@ public:
 	typedef	typename allocator_type::const_reference					const_reference;
 	typedef	typename allocator_type::pointer							pointer;
 	typedef	typename allocator_type::const_pointer						const_pointer;
-	typedef vectorIterator<vector<T> >									iterator;
-	typedef vectorIterator<vector<const T> >							const_iterator;
+	typedef ft::vectorIterator<vector<T> >								iterator;
+	typedef ft::vectorIterator<vector<const T> >						const_iterator;
 	typedef std::reverse_iterator<iterator>								reverse_iterator;
 	typedef std::reverse_iterator<const_iterator>						const_reverse_iterator;
 	typedef typename ft::iterator_traits<iterator>::difference_type		difference_type;
@@ -140,7 +140,7 @@ public:
 	// 3. range constructor
 	template <class Iterator>
 	vector(Iterator first, Iterator last, allocator_type const & alloc = allocator_type(),
-		   typename enable_if<is_iterator<typename iterator_traits<Iterator>::iterator_category>::value, Iterator>::type * = 0):
+		   typename ft::enable_if<ft::is_iterator<typename Iterator::iterator_category>::value, Iterator>::type * = 0):
 		m_data(0),
 		m_size(ft::distance(first, last)),
 		m_capacity(ft::distance(first, last))
@@ -229,8 +229,9 @@ public:
 	reference		back() { return *(this->m_data + this->size() - 1); }
 	const_reference	back() const { return *(this->m_data + this->size() - 1); }
 	// 1. range assign
-	template <class InputIterator>
-	void        assign(InputIterator first, InputIterator last)
+	template <class Iterator>
+	void	assign(Iterator first, Iterator last,
+			 typename ft::enable_if<ft::is_iterator<typename ft::iterator_traits<Iterator>::iterator_category>::value, Iterator>::type * = 0)
 	{
 		this->clear();
 		while (first != last)
@@ -240,7 +241,7 @@ public:
 		}
 	}
 	// 2. fill assign
-	void        assign(size_type n, value_type const & val)
+	void	assign(size_type n, value_type const & val)
 	{
 		this->clear();
 		while (this->capacity() < n)
@@ -304,12 +305,12 @@ public:
 	{
 		for (iterator it = first; it != last; ++it)
 			this->get_allocator().destroy(it);
-		for (iterator it = first; it + std::distance(first, last) != this->end(); ++it)
+		for (iterator it = first; it + ft::distance(first, last) != this->end(); ++it)
 		{
-			this->get_allocator().construct(it, *(it + std::distance(first, last)));
-			this->get_allocator().destroy(it + std::distance(first, last));
+			this->get_allocator().construct(it, *(it + ft::distance(first, last)));
+			this->get_allocator().destroy(it + ft::distance(first, last));
 		}
-		this->m_size -= std::distance(first, last);
+		this->m_size -= ft::distance(first, last);
 	}
 	void        swap(vector & vec)
 	{

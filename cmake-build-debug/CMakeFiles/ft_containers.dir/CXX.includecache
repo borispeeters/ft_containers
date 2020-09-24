@@ -17,6 +17,10 @@ vector.hpp
 /Users/bpeeters/Projects/ft_containers/main.cpp
 iostream
 -
+list
+-
+string
+-
 vector
 -
 vector.hpp
