@@ -92,19 +92,19 @@ template <typename>
 struct is_iterator { static const bool value = false; };
 
 template <>
-struct is_iterator<std::input_iterator_tag> { static const bool	value = true; };
+struct is_iterator<input_iterator_tag> { static const bool	value = true; };
 
 template <>
-struct is_iterator<std::output_iterator_tag> { static const bool	value = true; };
+struct is_iterator<output_iterator_tag> { static const bool	value = true; };
 
 template <>
-struct is_iterator<std::forward_iterator_tag> { static const bool	value = true; };
+struct is_iterator<forward_iterator_tag> { static const bool	value = true; };
 
 template <>
-struct is_iterator<std::bidirectional_iterator_tag> { static const bool	value = true; };
+struct is_iterator<bidirectional_iterator_tag> { static const bool	value = true; };
 
 template <>
-struct is_iterator<std::random_access_iterator_tag> { static const bool	value = true; };
+struct is_iterator<random_access_iterator_tag> { static const bool	value = true; };
 
 template <class Iterator>
 typename iterator_traits<Iterator>::difference_type
@@ -114,8 +114,7 @@ typename iterator_traits<Iterator>::difference_type
 	if (typeid(typename ft::iterator_traits<Iterator>::iterator_category).name() == typeid(ft::random_access_iterator_tag).name())
 	{
 		std::cout << "random access iterator distance called" << std::endl;
-		return 2;
-//		return static_cast<typename iterator_traits<Iterator>::difference_type>(last - first);
+		return static_cast<typename iterator_traits<Iterator>::difference_type>(last - first);
 	}
 	std::cout << "bidirectional iterator distance called" << std::endl;
 	typename iterator_traits<Iterator>::difference_type	distance = 0;
