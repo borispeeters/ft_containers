@@ -17,16 +17,16 @@ class vectorIterator : public std::iterator<ft::random_access_iterator_tag, type
 {
 public:
 //	typedef typename ft::iterator_traits<vectorIterator<> >::value_type		value_type;
-	typedef typename std::iterator_traits<vectorIterator>::difference_type	difference_type;
-	typedef typename ft::iterator_traits<vectorIterator>::pointer			pointer;
-	typedef typename ft::iterator_traits<vectorIterator>::reference			reference;
-	typedef typename ft::iterator_traits<vectorIterator>::iterator_category	iterator_category;
+//	typedef typename std::iterator_traits<vectorIterator>::difference_type	difference_type;
+//	typedef typename ft::iterator_traits<vectorIterator>::pointer			pointer;
+//	typedef typename ft::iterator_traits<vectorIterator>::reference			reference;
+//	typedef typename ft::iterator_traits<vectorIterator>::iterator_category	iterator_category;
 
-//	typedef	typename vector::value_type		value_type;
-//	typedef	std::ptrdiff_t					difference_type;
-//	typedef	value_type*						pointer;
-//	typedef value_type&						reference;
-//	typedef std::random_access_iterator_tag	iterator_category;
+	typedef	typename vector::value_type		value_type;
+	typedef	std::ptrdiff_t					difference_type;
+	typedef	value_type*						pointer;
+	typedef value_type&						reference;
+	typedef std::random_access_iterator_tag	iterator_category;
 
 private:
 	pointer m_ptr;
