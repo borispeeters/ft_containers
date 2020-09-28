@@ -5,34 +5,16 @@
 
 int main ()
 {
-	ft::vector<int>	vec1(3, 88);
-	ft::vector<int>	vec2(4, 42);
+	std::vector<int>	vec1;
+	for (int i = 1; i <= 6; ++i)
+		vec1.push_back(i);
 
-	std::cout << "before swap" << std::endl;
+	std::vector<int>	vec2;
+	for (int i = 1; i <= 6; ++i)
+		vec2.push_back(i);
 
-	std::cout << "vec1:";
-	for (int value : vec1)
-		std::cout << ' ' << value;
-	std::cout << std::endl;
-
-	std::cout << "vec2:";
-	for (int value : vec2)
-		std::cout << ' ' << value;
-	std::cout << std::endl;
-
-	ft::swap(vec1, vec2);
-
-	std::cout << "after swap" << std::endl;
-
-	std::cout << "vec1:";
-	for (int value : vec1)
-		std::cout << ' ' << value;
-	std::cout << std::endl;
-
-	std::cout << "vec2:";
-	for (int value : vec2)
-		std::cout << ' ' << value;
-	std::cout << std::endl;
+	if (vec1 == vec2)
+		std::cout << "equal" << std::endl;
 
 	return 0;
 }

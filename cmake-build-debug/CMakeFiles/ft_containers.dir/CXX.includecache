@@ -6,6 +6,8 @@
 
 #IncludeRegexTransform: 
 
+/Users/bpeeters/Projects/ft_containers/algorithm.hpp
+
 /Users/bpeeters/Projects/ft_containers/iterator.hpp
 cstddef
 -
@@ -27,12 +29,12 @@ vector.hpp
 /Users/bpeeters/Projects/ft_containers/type_traits.hpp
 
 /Users/bpeeters/Projects/ft_containers/vector.hpp
-limits
--
 memory
 -
 stdexcept
 -
+algorithm.hpp
+/Users/bpeeters/Projects/ft_containers/algorithm.hpp
 iterator.hpp
 /Users/bpeeters/Projects/ft_containers/iterator.hpp
 type_traits.hpp
