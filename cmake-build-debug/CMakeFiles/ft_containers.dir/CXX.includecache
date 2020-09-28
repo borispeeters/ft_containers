@@ -39,6 +39,12 @@ iterator.hpp
 /Users/bpeeters/Projects/ft_containers/iterator.hpp
 type_traits.hpp
 /Users/bpeeters/Projects/ft_containers/type_traits.hpp
-iterator
+vectorIterator.hpp
+/Users/bpeeters/Projects/ft_containers/vectorIterator.hpp
+
+/Users/bpeeters/Projects/ft_containers/vectorIterator.hpp
+cstddef
 -
+iterator.hpp
+/Users/bpeeters/Projects/ft_containers/iterator.hpp
 

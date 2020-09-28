@@ -10,9 +10,9 @@ namespace ft
 
 struct input_iterator_tag {};
 struct output_iterator_tag {};
-struct forward_iterator_tag {};
-struct bidirectional_iterator_tag {};
-struct random_access_iterator_tag {};
+struct forward_iterator_tag : public input_iterator_tag {};
+struct bidirectional_iterator_tag : public forward_iterator_tag {};
+struct random_access_iterator_tag : public bidirectional_iterator_tag {};
 
 template <class Category,
 		class T,
@@ -29,27 +29,54 @@ struct iterator
 	typedef Category	iterator_category;
 };
 
-template <class Iterator>
-struct iterator_traits {};
-
-template <class vector>
-class vectorIterator;
+template <class T>
+struct _has_iterator_typedefs
+{
+private:
+	struct	_two { char _lx; char _lxx; };
+	template <class U>	static _two _test(...);
+	template <class U>	static char _test(typename	ft::_void_t<typename U::iterator_category>::type * = 0,
+											 typename	ft::_void_t<typename U::difference_type>::type * = 0,
+											 typename	ft::_void_t<typename U::value_type>::type * = 0,
+											 typename	ft::_void_t<typename U::reference>::type * = 0,
+											 typename	ft::_void_t<typename U::pointer>::type * = 0
+											 );
+public:
+	static const bool value = sizeof(_test<T>(0,0,0,0,0)) == 1;
+};
 
 template <class T>
-struct iterator_traits<ft::vectorIterator<T> >
+struct _has_iterator_category
 {
-	typedef typename ft::vectorIterator<T>::value_type			value_type;
-	typedef typename ft::vectorIterator<T>::difference_type		difference_type;
-	typedef typename ft::vectorIterator<T>::pointer				pointer;
-	typedef typename ft::vectorIterator<T>::reference			reference;
-	typedef typename ft::vectorIterator<T>::iterator_category	iterator_category;
+private:
+	struct _two { char _lx; char _lxx; };
+	template <class U>	static _two	_test(...);
+	template <class U>	static char	_test(typename U::iterator_category * = 0);
+public:
+	static const bool value = sizeof(_test<T>(0)) == 1;
 };
+
+template <class Iter, bool>
+struct _iterator_traits {};
+
+template <class Iter>
+struct _iterator_traits<Iter, true>
+{
+	typedef	typename Iter::value_type			value_type;
+	typedef	typename Iter::difference_type		difference_type;
+	typedef	typename Iter::pointer				pointer;
+	typedef	typename Iter::reference			reference;
+	typedef	typename Iter::iterator_category	iterator_category;
+};
+
+template <class Iter>
+struct iterator_traits : public _iterator_traits<Iter, _has_iterator_typedefs<Iter>::value> {};
 
 template <class T>
 struct iterator_traits<T*>
 {
-	typedef std::ptrdiff_t					difference_type;
 	typedef T								value_type;
+	typedef std::ptrdiff_t					difference_type;
 	typedef T*								pointer;
 	typedef T&								reference;
 	typedef ft::random_access_iterator_tag	iterator_category;
@@ -58,12 +85,16 @@ struct iterator_traits<T*>
 template <class T>
 struct iterator_traits<const T*>
 {
-	typedef std::ptrdiff_t					difference_type;
 	typedef T								value_type;
+	typedef std::ptrdiff_t					difference_type;
 	typedef const T*						pointer;
 	typedef const T&						reference;
 	typedef ft::random_access_iterator_tag	iterator_category;
 };
+
+
+template <class Iter>
+struct is_iterator : public _has_iterator_category<Iter> {};
 
 template <class Iterator>
 class reverse_iterator
@@ -88,36 +119,14 @@ public:
 	reverse_iterator(const reverse_iterator<Iter> & rev_it);
 	iterator_type	base() const { return _base_iterator; }
 };
-template <typename>
-struct is_iterator { static const bool value = false; };
-
-template <>
-struct is_iterator<input_iterator_tag> { static const bool	value = true; };
-
-template <>
-struct is_iterator<output_iterator_tag> { static const bool	value = true; };
-
-template <>
-struct is_iterator<forward_iterator_tag> { static const bool	value = true; };
-
-template <>
-struct is_iterator<bidirectional_iterator_tag> { static const bool	value = true; };
-
-template <>
-struct is_iterator<random_access_iterator_tag> { static const bool	value = true; };
 
 template <class Iterator>
 typename iterator_traits<Iterator>::difference_type
 	distance(Iterator first, Iterator last,
-		  typename enable_if<is_iterator<typename iterator_traits<Iterator>::iterator_category>::value, Iterator>::type * = 0)
+			 typename ft::_void_t<typename ft::iterator_traits<Iterator>::iterator_category>::type * = 0)
 {
-	if (typeid(typename ft::iterator_traits<Iterator>::iterator_category).name() == typeid(ft::random_access_iterator_tag).name())
-	{
-		std::cout << "random access iterator distance called" << std::endl;
-		return static_cast<typename iterator_traits<Iterator>::difference_type>(last - first);
-	}
-	std::cout << "bidirectional iterator distance called" << std::endl;
 	typename iterator_traits<Iterator>::difference_type	distance = 0;
+
 	while (first != last)
 	{
 		++first;

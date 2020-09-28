@@ -6,101 +6,10 @@
 # include <stdexcept>
 # include "iterator.hpp"
 # include "type_traits.hpp"
-
-# include <iterator>
+# include "vectorIterator.hpp"
 
 namespace ft
 {
-
-template <typename vector>
-class vectorIterator : public std::iterator<ft::random_access_iterator_tag, typename vector::value_type>
-{
-public:
-//	typedef typename ft::iterator_traits<vectorIterator<> >::value_type		value_type;
-//	typedef typename std::iterator_traits<vectorIterator>::difference_type	difference_type;
-//	typedef typename ft::iterator_traits<vectorIterator>::pointer			pointer;
-//	typedef typename ft::iterator_traits<vectorIterator>::reference			reference;
-//	typedef typename ft::iterator_traits<vectorIterator>::iterator_category	iterator_category;
-
-	typedef	typename vector::value_type		value_type;
-	typedef	std::ptrdiff_t					difference_type;
-	typedef	value_type*						pointer;
-	typedef value_type&						reference;
-	typedef std::random_access_iterator_tag	iterator_category;
-
-private:
-	pointer m_ptr;
-
-public:
-	vectorIterator(): m_ptr(0) {}
-	vectorIterator(pointer ptr): m_ptr(ptr) {}
-	vectorIterator(vectorIterator const & other): m_ptr(other.m_ptr) {}
-	vectorIterator&	operator=(vectorIterator const & rhs)
-	{
-		if (&rhs != this)
-			this->m_ptr = rhs.m_ptr;
-		return *this;
-	}
-	~vectorIterator() {}
-
-	vectorIterator& operator++()
-	{
-		++this->m_ptr;
-		return *this;
-	}
-	vectorIterator  operator++(int)
-	{
-		vectorIterator  iterator = *this;
-		++(*this);
-		return iterator;
-	}
-	vectorIterator& operator--()
-	{
-		--this->m_ptr;
-		return *this;
-	}
-	vectorIterator  operator--(int)
-	{
-		vectorIterator  iterator = *this;
-		--(*this);
-		return iterator;
-	}
-	vectorIterator&	operator+=(difference_type rhs)
-	{
-		this->m_ptr += rhs;
-		return *this;
-	}
-	vectorIterator&	operator-=(difference_type rhs)
-	{
-		this->m_ptr -= rhs;
-		return *this;
-	}
-	vectorIterator&	operator+=(vectorIterator const & rhs)
-	{
-		this->m_ptr += rhs.m_ptr;
-		return *this;
-	}
-	vectorIterator&	operator-=(vectorIterator const & rhs)
-	{
-		this->m_ptr -= rhs.m_ptr;
-		return *this;
-	}
-	friend	vectorIterator	operator+(vectorIterator const & lhs, vectorIterator const & rhs) { return vectorIterator(lhs.m_ptr + rhs.m_ptr); }
-	friend	vectorIterator	operator+(vectorIterator const & lhs, difference_type rhs) { return vectorIterator(lhs.m_ptr + rhs); }
-	friend	vectorIterator	operator+(difference_type lhs, vectorIterator const & rhs) { return vectorIterator(lhs + rhs.m_ptr); }
-	friend	vectorIterator	operator-(vectorIterator const & lhs, vectorIterator const & rhs) { return vectorIterator(lhs.m_ptr - rhs.m_ptr); }
-	friend	vectorIterator	operator-(vectorIterator const & lhs, difference_type rhs) { return vectorIterator(lhs.m_ptr - rhs); }
-	friend	vectorIterator	operator-(difference_type lhs, vectorIterator const & rhs) { return vectorIterator(lhs - rhs.m_ptr); }
-	reference	operator[](int index) { return *(this->m_ptr + index); }
-	pointer		operator->() { return this->m_ptr; }
-	reference	operator*() { return *this->m_ptr; }
-	bool		operator==(vectorIterator const & rhs) const { return this->m_ptr == rhs.m_ptr; }
-	bool 		operator!=(vectorIterator const & rhs) const { return !(*this == rhs); }
-	bool 		operator<(vectorIterator const & rhs) { return this->m_ptr < rhs.m_ptr; }
-	bool 		operator>(vectorIterator const & rhs) { return rhs < *this; }
-	bool 		operator<=(vectorIterator const & rhs) { return !(rhs < *this); }
-	bool 		operator>=(vectorIterator const & rhs) { return !(*this < rhs); }
-};
 
 template <class T, class Alloc = std::allocator<T> >
 class vector
@@ -112,8 +21,8 @@ public:
 	typedef	typename allocator_type::const_reference					const_reference;
 	typedef	typename allocator_type::pointer							pointer;
 	typedef	typename allocator_type::const_pointer						const_pointer;
-	typedef ft::vectorIterator<vector<T> >								iterator;
-	typedef ft::vectorIterator<vector<const T> >						const_iterator;
+	typedef ft::vectorIterator<value_type>								iterator;
+	typedef ft::vectorIterator<const value_type>						const_iterator;
 	typedef std::reverse_iterator<iterator>								reverse_iterator;
 	typedef std::reverse_iterator<const_iterator>						const_reverse_iterator;
 	typedef typename ft::iterator_traits<iterator>::difference_type		difference_type;
@@ -146,7 +55,7 @@ public:
 	// 3. range constructor
 	template <class Iterator>
 	vector(Iterator first, Iterator last, allocator_type const & alloc = allocator_type(),
-		   typename ft::enable_if<ft::is_iterator<typename Iterator::iterator_category>::value, Iterator>::type * = 0):
+		   typename ft::_void_t<typename ft::iterator_traits<Iterator>::iterator_category>::type * = 0):
 		m_data(0),
 		m_size(ft::distance(first, last)),
 		m_capacity(ft::distance(first, last))

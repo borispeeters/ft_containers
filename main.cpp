@@ -4,17 +4,26 @@
 #include <vector>
 #include "vector.hpp"
 
+
 int main ()
 {
-	ft::vector<int>	k;
+	int myInts[] = {1,2,3,4,5,6};
 
-	for (int i = 0; i < 6; ++i)
-		k.push_back(i);
+	ft::vector<int>	vc;
+	for (int i = 1; i <= 6; ++i)
+		vc.push_back(i);
 
-	ft::vector<int>	vc(k.begin(), k.end());
+	ft::vector<int>	fill(3, 88);
+	ft::vector<int>	range(myInts, myInts + 5);
 
-	for (int value : vc)
-		std::cout << value << std::endl;
+
+	for (int value : fill)
+		std::cout << "fill: " << value << std::endl;
+
+	std::cout << std::endl;
+
+	for (int value : range)
+		std::cout << "range: " << value << std::endl;
 
 	return 0;
 }
