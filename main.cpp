@@ -1,29 +1,38 @@
+#include <exception>
 #include <iostream>
-#include <list>
-#include <string>
 #include <vector>
 #include "vector.hpp"
 
-
 int main ()
 {
-	int myInts[] = {1,2,3,4,5,6};
+	ft::vector<int>	vec1(3, 88);
+	ft::vector<int>	vec2(4, 42);
 
-	ft::vector<int>	vc;
-	for (int i = 1; i <= 6; ++i)
-		vc.push_back(i);
+	std::cout << "before swap" << std::endl;
 
-	ft::vector<int>	fill(3, 88);
-	ft::vector<int>	range(myInts, myInts + 5);
-
-
-	for (int value : fill)
-		std::cout << "fill: " << value << std::endl;
-
+	std::cout << "vec1:";
+	for (int value : vec1)
+		std::cout << ' ' << value;
 	std::cout << std::endl;
 
-	for (int value : range)
-		std::cout << "range: " << value << std::endl;
+	std::cout << "vec2:";
+	for (int value : vec2)
+		std::cout << ' ' << value;
+	std::cout << std::endl;
+
+	ft::swap(vec1, vec2);
+
+	std::cout << "after swap" << std::endl;
+
+	std::cout << "vec1:";
+	for (int value : vec1)
+		std::cout << ' ' << value;
+	std::cout << std::endl;
+
+	std::cout << "vec2:";
+	for (int value : vec2)
+		std::cout << ' ' << value;
+	std::cout << std::endl;
 
 	return 0;
 }

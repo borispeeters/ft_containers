@@ -15,11 +15,9 @@ vector.hpp
 /Users/bpeeters/Projects/ft_containers/vector.hpp
 
 /Users/bpeeters/Projects/ft_containers/main.cpp
+exception
+-
 iostream
--
-list
--
-string
 -
 vector
 -

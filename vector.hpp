@@ -130,13 +130,13 @@ public:
 	reference		at (size_type n)
 	{
 		if (n < 0 || n >= this->size())
-			throw std::out_of_range("lol");
+			throw std::out_of_range("vector");
 		return *(this->m_data + n);
 	}
 	const_reference	at (size_type n) const
 	{
 		if (n < 0 || n >= this->size())
-			throw std::out_of_range("lol");
+			throw std::out_of_range("vector");
 		return *(this->m_data + n);
 	}
 	reference   	front() { return *(this->m_data); }
@@ -146,7 +146,7 @@ public:
 	// 1. range assign
 	template <class Iterator>
 	void	assign(Iterator first, Iterator last,
-			 typename ft::enable_if<ft::is_iterator<typename ft::iterator_traits<Iterator>::iterator_category>::value, Iterator>::type * = 0)
+				   typename ft::_void_t<typename ft::iterator_traits<Iterator>::iterator_category>::type * = 0)
 	{
 		this->clear();
 		while (first != last)
@@ -204,8 +204,12 @@ public:
 			this->get_allocator().construct(it, val);
 	}
 	// 3. range
-//	template <class InputIterator>
-//	void        insert(iterator position, InputIterator first, InputIterator last);
+	template <class Iterator>
+	void        insert(iterator position, Iterator first, Iterator last,
+					   typename ft::_void_t<typename ft::iterator_traits<Iterator>::iterator_category>::type * = 0)
+	{
+		//WIP
+	}
 	iterator    erase(iterator position)
 	{
 		this->get_allocator().destroy(position);
