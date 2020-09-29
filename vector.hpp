@@ -68,14 +68,14 @@ public:
 		}
 	}
 	// 4. copy constructor
-	vector(vector const & vec):
+	vector(vector const & other):
 		m_data(0),
-		m_size(vec.size()),
-		m_capacity(vec.capacity())
+		m_size(other.size()),
+		m_capacity(other.capacity())
 	{
 		this->m_data = this->get_allocator().allocate(this->capacity());
 		for (size_type i = 0; i < this->size(); ++i)
-			this->get_allocator().construct(this->m_data + i, vec.at(i));
+			this->get_allocator().construct(this->m_data + i, other.at(i));
 	}
 	// destructor
 	~vector()
@@ -85,23 +85,23 @@ public:
 		this->get_allocator().deallocate(this->m_data, this->capacity());
 	}
 	// assignment operator overload
-	vector&	operator=(vector const & vec)
+	vector&	operator=(vector const & other)
 	{
-		if (&vec != this)
+		if (&other != this)
 		{
 			this->clear();
-			this->m_size = vec.size();
-			this->m_capacity = vec.capacity();
+			this->m_size = other.size();
+			this->m_capacity = other.capacity();
 			for (size_type i = 0; i < this->size(); ++i)
-				this->get_allocator().construct(this->m_data + i, vec.at(i));
+				this->get_allocator().construct(this->m_data + i, other.at(i));
 		}
 		return *this;
 	}
 
-	iterator        	begin() { return iterator(this->m_data); }
-	const_iterator 		begin() const { return const_iterator(this->m_data); }
-	iterator        	end() { return iterator(this->m_data + this->size()); }
-	const_iterator 		end() const { return const_iterator(this->m_data + this->size()); }
+	iterator        begin() { return iterator(this->m_data); }
+	const_iterator 	begin() const { return const_iterator(this->m_data); }
+	iterator        end() { return iterator(this->m_data + this->size()); }
+	const_iterator 	end() const { return const_iterator(this->m_data + this->size()); }
 
 	reverse_iterator		rbegin() { return reverse_iterator(end()); }
 	const_reverse_iterator  rbegin() const { return const_reverse_iterator(end()); }
@@ -176,14 +176,14 @@ public:
 		--this->m_size;
 		this->get_allocator().destroy(this->m_data + this->size());
 	}
-	// 1. insert single element
+	// 1. single element insertion
 	iterator    insert(iterator position, value_type const & val)
 	{
 		difference_type	pos = ft::distance(this->begin(), position);
 		this->insert(position, 1, val);
 		return iterator(this->m_data + pos);
 	}
-	// 2. fill
+	// 2. fill insertion
 	void        insert(iterator position, size_type n, value_type const & val)
 	{
 		vector	tmp(position, this->end());
@@ -194,7 +194,7 @@ public:
 		for (iterator it = tmp.begin(); it != tmp.end(); ++it)
 			this->push_back(*it);
 	}
-	// 3. range
+	// 3. range insertion
 	template <class Iterator>
 	void        insert(iterator position, Iterator first, Iterator last,
 					   typename ft::_void_t<typename ft::iterator_traits<Iterator>::iterator_category>::type * = 0)
@@ -210,6 +210,7 @@ public:
 		for (iterator it = tmp.begin(); it != tmp.end(); ++it)
 			this->push_back(*it);
 	}
+	// 1. erase single element
 	iterator    erase(iterator position)
 	{
 		vector	tmp(position + 1, this->end());
@@ -219,6 +220,7 @@ public:
 			this->push_back(*it);
 		return position;
 	}
+	// 2. erase range of elements
 	iterator    erase(iterator first, iterator last)
 	{
 		vector	tmp(last, this->end());
@@ -228,10 +230,10 @@ public:
 			this->push_back(*it);
 		return first;
 	}
-	void        swap(vector & vec)
+	void        swap(vector & other)
 	{
-		vector	tmp(vec);
-		vec = *this;
+		vector	tmp(other);
+		other = *this;
 		*this = tmp;
 	}
 	void        clear()
