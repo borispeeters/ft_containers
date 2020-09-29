@@ -6,6 +6,29 @@
 namespace ft
 {
 
+template <class T>
+struct Node
+{
+	T		data;
+	Node	*prev;
+	Node	*next;
+
+	Node():	data(0), prev(0), next(0) {}
+	Node(T const & val = T()): data(val), prev(0), next(0) {}
+	Node(Node const & other) { *this = other; }
+	~Node() {}
+	Node&	operator=(Node const & other)
+	{
+		if (&other != this)
+		{
+			this->data = other.data;
+			this->prev = other.prev;
+			this->next = other.next;
+		}
+		return *this;
+	}
+};
+
 template <class T, class Alloc = std::allocator<T> >
 class list
 {
@@ -24,22 +47,55 @@ public:
 	typedef	typename allocator_type::size_type							size_type;
 
 private:
+	Node<T>			*m_head;
+	Node<T>			*m_tail;
 	size_type		m_size;
 	allocator_type	m_alloc;
 public:
 	// 1. default constructor
-	explicit list(allocator_type const & alloc = allocator_type());
+	explicit list(allocator_type const & alloc = allocator_type()):
+		m_head(0),
+		m_tail(0),
+		m_size(0),
+		m_alloc(alloc)
+	{
+		this->m_head = new Node<T>();
+		this->m_tail = new Node<T>();
+		this->m_head->next = this->m_tail;
+		this->m_tail->prev = this->m_head;
+	}
+
 	// 2. fill constructor
 	explicit list(size_type n, value_type const & val = value_type(),
-			   allocator_type const & alloc = allocator_type());
+			   allocator_type const & alloc = allocator_type()):
+		m_head(),
+		m_tail(),
+		m_size(0),
+		m_alloc(alloc)
+	{}
+
 	// 3. range constructor
 	template <class Iterator>
 	list(Iterator first, Iterator last,
-	  allocator_type const & alloc = allocator_type());
+	  allocator_type const & alloc = allocator_type()):
+	 	m_head(),
+	 	m_tail(),
+	 	m_size(0),
+	 	m_alloc(alloc)
+	{
+		asd;
+	}
+
 	// 4. copy constructor
-	list(list const & other);
+	list(list const & other):
+		m_head(other.m_head),
+		m_tail(other.m_tail),
+		m_size(other.m_size),
+		m_alloc(other.m_alloc)
+	{}
+
 	// destructor
-	~list();
+	~list() {}
 	// assignment operator overload
 	list&	operator=(list const & other);
 

@@ -39,14 +39,16 @@ public:
 	explicit vector(allocator_type const & alloc = allocator_type()):
 		m_data(0),
 		m_size(0),
-		m_capacity(0)
+		m_capacity(0),
+		m_alloc(alloc)
 	{}
 	// 2. fill constructor
 	explicit vector(size_type n, value_type const & val = value_type(),
 				 allocator_type const & alloc = allocator_type()):
 		m_data(0),
 		m_size(n),
-		m_capacity(n)
+		m_capacity(n),
+		m_alloc(alloc)
 	{
 		this->m_data = this->get_allocator().allocate(n);
 		for (size_type i = 0; i < this->size(); ++i)
@@ -58,7 +60,8 @@ public:
 		   typename ft::_void_t<typename ft::iterator_traits<Iterator>::iterator_category>::type * = 0):
 		m_data(0),
 		m_size(ft::distance(first, last)),
-		m_capacity(ft::distance(first, last))
+		m_capacity(ft::distance(first, last)),
+		m_alloc(alloc)
 	{
 		this->m_data = this->get_allocator().allocate(this->capacity());
 		for (size_type i = 0; i < this->size(); ++i)
@@ -71,7 +74,8 @@ public:
 	vector(vector const & other):
 		m_data(0),
 		m_size(other.size()),
-		m_capacity(other.capacity())
+		m_capacity(other.capacity()),
+		m_alloc(other.get_allocator())
 	{
 		this->m_data = this->get_allocator().allocate(this->capacity());
 		for (size_type i = 0; i < this->size(); ++i)
