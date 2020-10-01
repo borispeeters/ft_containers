@@ -113,7 +113,7 @@ public:
 	const_reverse_iterator 	rend() const { return const_reverse_iterator(begin()); }
 
 	size_type	size() const { return this->m_size; }
-	size_type	max_size() const { return m_alloc.max_size(); }
+	size_type	max_size() const { return this->get_allocator().max_size(); }
 	void		resize(size_type n, value_type val = value_type()) 
 	{
 		while (this->m_capacity < n)

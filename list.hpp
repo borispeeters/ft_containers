@@ -2,32 +2,11 @@
 # define LIST_HPP
 
 # include <memory>
+# include "listIterator.hpp"
+# include "listNode.hpp"
 
 namespace ft
 {
-
-template <class T>
-struct Node
-{
-	T		data;
-	Node	*prev;
-	Node	*next;
-
-	Node():	data(0), prev(0), next(0) {}
-	Node(T const & val = T()): data(val), prev(0), next(0) {}
-	Node(Node const & other) { *this = other; }
-	~Node() {}
-	Node&	operator=(Node const & other)
-	{
-		if (&other != this)
-		{
-			this->data = other.data;
-			this->prev = other.prev;
-			this->next = other.next;
-		}
-		return *this;
-	}
-};
 
 template <class T, class Alloc = std::allocator<T> >
 class list
@@ -39,18 +18,19 @@ public:
 	typedef	typename allocator_type::const_reference					const_reference;
 	typedef	typename allocator_type::pointer							pointer;
 	typedef	typename allocator_type::const_pointer						const_pointer;
-//	typedef ft::listIterator<value_type>								iterator;
-//	typedef ft::listIterator<const value_type>							const_iterator;
+	typedef ft::listIterator<value_type>								iterator;
+	typedef ft::listIterator<const value_type>							const_iterator;
 //	typedef std::reverse_iterator<iterator>								reverse_iterator;
 //	typedef std::reverse_iterator<const_iterator>						const_reverse_iterator;
 //	typedef typename ft::iterator_traits<iterator>::difference_type		difference_type;
 	typedef	typename allocator_type::size_type							size_type;
 
 private:
-	Node<T>			*m_head;
-	Node<T>			*m_tail;
+	listNode<T>		*m_head;
+	listNode<T>		*m_tail;
 	size_type		m_size;
 	allocator_type	m_alloc;
+
 public:
 	// 1. default constructor
 	explicit list(allocator_type const & alloc = allocator_type()):
@@ -59,20 +39,19 @@ public:
 		m_size(0),
 		m_alloc(alloc)
 	{
-		this->m_head = new Node<T>();
-		this->m_tail = new Node<T>();
-		this->m_head->next = this->m_tail;
-		this->m_tail->prev = this->m_head;
+		this->listInit();
 	}
 
 	// 2. fill constructor
 	explicit list(size_type n, value_type const & val = value_type(),
 			   allocator_type const & alloc = allocator_type()):
-		m_head(),
-		m_tail(),
+		m_head(0),
+		m_tail(0),
 		m_size(0),
 		m_alloc(alloc)
-	{}
+	{
+		this->listInit();
+	}
 
 	// 3. range constructor
 	template <class Iterator>
@@ -83,7 +62,6 @@ public:
 	 	m_size(0),
 	 	m_alloc(alloc)
 	{
-		asd;
 	}
 
 	// 4. copy constructor
@@ -96,38 +74,84 @@ public:
 
 	// destructor
 	~list() {}
+
 	// assignment operator overload
 	list&	operator=(list const & other);
 
-	iterator		begin();
-	const_iterator	begin() const;
-	iterator		end();
-	const_iterator	end() const;
+	iterator		begin() { return this->head()->next; }
+	const_iterator	begin() const { return this->head()->next; }
+	iterator		end() { return this->tail(); }
+	const_iterator	end() const { return this->tail(); }
 
-	reverse_iterator		rbegin();
-	const_reverse_iterator	rbegin() const;
-	reverse_iterator		rend();
-	const_reverse_iterator	rend() const;
+//	reverse_iterator		rbegin();
+//	const_reverse_iterator	rbegin() const;
+//	reverse_iterator		rend();
+//	const_reverse_iterator	rend() const;
 
-	bool 		empty() const;
-	size_type	size() const;
-	size_type	max_size() const;
+	bool 		empty() const { return this->size() == 0; }
+	size_type	size() const { return this->m_size; }
+	size_type	max_size() const { return this->get_allocator().max_size(); }
 
-	reference 		front();
-	const_reference	front() const;
-	reference 		back();
-	const_reference	back() const;
+	reference 		front() { return *(this->head()->next->data); }
+	const_reference	front() const { return *(this->head()->next->data); }
+	reference 		back() { return *(this->tail()->prev->data); }
+	const_reference	back() const { return *(this->tail()->prev->data); }
 
 	// 1. range assign
 	template <class Iterator>
-	void assign(Iterator first, Iterator last);
-	// 2. fill assign
-	void assign(size_type n, value_type const & val);
+	void assign(Iterator first, Iterator last,
+				typename ft::_void_t<typename ft::iterator_traits<Iterator>::iterator_category>::type * = 0)
+	{
+		this->clear();
+		while (first != last)
+		{
+			this->push_back(*first);
+			++first;
+		}
+	}
 
-	void push_front(value_type const & val);
-	void pop_front();
-	void push_back(value_type const & val);
-	void pop_back();
+	// 2. fill assign
+	void assign(size_type n, value_type const & val)
+	{
+		this->clear();
+		for (size_type i = 0; i < n; ++i)
+			this->push_back(val);
+	}
+
+	void push_front(value_type const & val)
+	{
+		listNode<T>*	newNode = new listNode<T>(val);
+		newNode->next = this->head()->next;
+		newNode->next->prev = newNode;
+		newNode->prev = this->head();
+		this->head()->next = newNode;
+		++this->m_size;
+	}
+	void pop_front()
+	{
+		listNode<T>*	delNode = this->head()->next;
+		this->head()->next = delNode->next;
+		this->head()->next->prev = this->head();
+		delete delNode;
+		--this->m_size;
+	}
+	void push_back(value_type const & val)
+	{
+		listNode<T>*	newNode = new listNode<T>(val);
+		newNode->prev = this->tail()->prev;
+		newNode->prev->next = newNode;
+		newNode->next = this->tail();
+		this->tail()->prev = newNode;
+		++this->m_size;
+	}
+	void pop_back()
+	{
+		listNode<T>*	delNode = this->tail()->prev;
+		this->tail()->prev = delNode->prev;
+		this->tail()->prev->next = this->tail();
+		delete delNode;
+		--this->m_size;
+	}
 
 	// 1. single element insertion
 	iterator	insert(iterator position, value_type const & val);
@@ -150,7 +174,11 @@ public:
 	}
 
 	void resize(size_type n, value_type val = value_type());
-	void clear();
+	void clear()
+	{
+		for (size_type i = 0; i < this->size(); ++i)
+			this->pop_back();
+	}
 
 	// 1. splice entire list
 	void splice(iterator position, list & other);
@@ -179,6 +207,17 @@ public:
 	void reverse();
 
 	allocator_type	get_allocator() const { return this->m_alloc; }
+private:
+	void 	listInit()
+	{
+		this->m_head = new listNode<T>;
+		this->m_tail = new listNode<T>;
+		this->m_head->next = this->tail();
+		this->m_tail->prev = this->head();
+	}
+
+	listNode<T>*	head() { return this->m_head; }
+	listNode<T>*	tail() { return this->m_tail; }
 };
 
 }; //end of namespace ft

@@ -1,22 +1,24 @@
-#include <exception>
 #include <iostream>
 #include <list>
-#include <vector>
 #include "list.hpp"
-#include "vector.hpp"
 
 int main ()
 {
-	std::vector<int>	vec1;
-	for (int i = 1; i <= 6; ++i)
-		vec1.push_back(i);
+	ft::list<int>	li;
 
-	std::vector<int>	vec2;
-	for (int i = 1; i <= 6; ++i)
-		vec2.push_back(i);
+	li.push_front(42);
 
-	if (vec1 == vec2)
-		std::cout << "equal" << std::endl;
+	li.assign(7, 100);
+
+	std::cout << "size: " << li.size() << std::endl;
+
+	ft::list<int>::iterator it = li.begin();
+
+	while (it != li.end())
+	{
+		std::cout << *it << std::endl;
+		++it;
+	}
 
 	return 0;
 }

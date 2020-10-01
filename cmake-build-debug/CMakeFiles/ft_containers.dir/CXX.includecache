@@ -6,45 +6,35 @@
 
 #IncludeRegexTransform: 
 
-/Users/bpeeters/Projects/ft_containers/algorithm.hpp
-
 /Users/bpeeters/Projects/ft_containers/iterator.hpp
 cstddef
 -
 type_traits.hpp
 /Users/bpeeters/Projects/ft_containers/type_traits.hpp
-vector.hpp
-/Users/bpeeters/Projects/ft_containers/vector.hpp
 
-/Users/bpeeters/Projects/ft_containers/main.cpp
-exception
--
-iostream
--
-vector
--
-vector.hpp
-/Users/bpeeters/Projects/ft_containers/vector.hpp
-
-/Users/bpeeters/Projects/ft_containers/type_traits.hpp
-
-/Users/bpeeters/Projects/ft_containers/vector.hpp
+/Users/bpeeters/Projects/ft_containers/list.hpp
 memory
 -
-stdexcept
--
-algorithm.hpp
-/Users/bpeeters/Projects/ft_containers/algorithm.hpp
-iterator.hpp
-/Users/bpeeters/Projects/ft_containers/iterator.hpp
-type_traits.hpp
-/Users/bpeeters/Projects/ft_containers/type_traits.hpp
-vectorIterator.hpp
-/Users/bpeeters/Projects/ft_containers/vectorIterator.hpp
+listIterator.hpp
+/Users/bpeeters/Projects/ft_containers/listIterator.hpp
+listNode.hpp
+/Users/bpeeters/Projects/ft_containers/listNode.hpp
 
-/Users/bpeeters/Projects/ft_containers/vectorIterator.hpp
-cstddef
--
+/Users/bpeeters/Projects/ft_containers/listIterator.hpp
 iterator.hpp
 /Users/bpeeters/Projects/ft_containers/iterator.hpp
+listNode.hpp
+/Users/bpeeters/Projects/ft_containers/listNode.hpp
+
+/Users/bpeeters/Projects/ft_containers/listNode.hpp
+
+/Users/bpeeters/Projects/ft_containers/main.cpp
+iostream
+-
+list
+-
+list.hpp
+/Users/bpeeters/Projects/ft_containers/list.hpp
+
+/Users/bpeeters/Projects/ft_containers/type_traits.hpp
 

@@ -3,7 +3,6 @@
 
 # include <cstddef>
 # include "type_traits.hpp"
-# include "vector.hpp"
 
 namespace ft
 {
@@ -135,6 +134,6 @@ typename iterator_traits<Iterator>::difference_type
 	return distance;
 }
 
-};
+}; //end of namespace ft
 
 #endif
