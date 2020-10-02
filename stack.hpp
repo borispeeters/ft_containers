@@ -17,7 +17,6 @@ protected:
 	container_type c;
 
 public:
-	// constructor
 	explicit stack(container_type const & ctnr = container_type()) : c(ctnr) {}
 	~stack() {}
 

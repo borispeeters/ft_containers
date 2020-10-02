@@ -2,8 +2,11 @@
 # define LIST_HPP
 
 # include <memory>
+# include "algorithm.hpp"
 # include "listIterator.hpp"
 # include "listNode.hpp"
+
+# include <iostream>
 
 namespace ft
 {
@@ -354,12 +357,45 @@ public:
 		x.clear();
 	}
 
-	void sort();
+	void sort()
+	{
+		if (this->size() <= 1) return ;
+		list	tmp(this->begin(), this->end());
+		this->clear();
+
+		while (tmp.size() > 0)
+		{
+			iterator	min = ft::min_element(tmp.begin(), tmp.end());
+			this->push_back(*min);
+			tmp.erase(min);
+		}
+	}
 
 	template <class Compare>
-	void sort(Compare comp);
+	void sort(Compare comp)
+	{
+		if (this->size() <= 1) return ;
+		list	tmp(this->begin(), this->end());
+		this->clear();
 
-	void reverse();
+		while (tmp.size() > 0)
+		{
+			iterator	min = ft::min_element(tmp.begin(), tmp.end(), comp);
+			this->push_back(*min);
+			tmp.erase(min);
+		}
+	}
+
+	void reverse()
+	{
+		if (this->size() <= 1)
+			return ;
+		list	tmp(this->begin(), this->end());
+		this->clear();
+		for (iterator it = tmp.begin(); it != tmp.end(); ++it)
+			this->push_front(*it);
+		tmp.clear();
+	}
 
 	allocator_type	get_allocator() const { return this->m_alloc; }
 private:
@@ -374,6 +410,59 @@ private:
 	listNode<T>*	head() { return this->m_head; }
 	listNode<T>*	tail() { return this->m_tail; }
 };
+
+template <class T, class Alloc>
+bool operator==(list<T, Alloc> const & lhs, list<T, Alloc> const & rhs)
+{
+	typedef typename ft::list<T, Alloc>::size_type	size_type;
+
+	if (lhs.size() != rhs.size()) return false;
+
+	typename ft::list<T, Alloc>::iterator	lit = lhs.begin();
+	typename ft::list<T, Alloc>::iterator	rit = rhs.begin();
+
+	while (lit != lhs.end() && rit != rhs.end())
+	{
+		if (*lit != *rit) return false;
+		++lit;
+		++rit;
+	}
+	return true;
+}
+
+template <class T, class Alloc>
+bool operator!=(list<T, Alloc> const & lhs, list<T, Alloc> const & rhs) { return !(lhs == rhs); }
+
+template <class T, class Alloc>
+bool operator<(list<T, Alloc> const & lhs, list<T, Alloc> const & rhs)
+{
+	typedef typename ft::list<T, Alloc>::size_type	size_type;
+
+	if (lhs.size() > rhs.size()) return false;
+
+	typename ft::list<T, Alloc>::iterator lit = lhs.begin();
+	typename ft::list<T, Alloc>::iterator rit = rhs.begin();
+
+	while (lit != lhs.end() && rit != rhs.end())
+	{
+		if (*lit != *rit) return *lit < *rit;
+		++lit;
+		++rit;
+	}
+	return false;
+}
+
+template <class T, class Alloc>
+bool operator<=(list<T, Alloc> const & lhs, list<T, Alloc> const & rhs) { return !(rhs < lhs); }
+
+template <class T, class Alloc>
+bool operator>(list<T, Alloc> const & lhs, list<T, Alloc> const & rhs) { return rhs < lhs; }
+
+template <class T, class Alloc>
+bool operator>=(list<T, Alloc> const & lhs, list<T, Alloc> const & rhs) { return !(lhs < rhs); }
+
+template <class T, class Alloc>
+void swap(list<T, Alloc> & x, list<T, Alloc> & y) { x.swap(y); }
 
 }; //end of namespace ft
 

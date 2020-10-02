@@ -18,7 +18,6 @@ protected:
 	container_type	c;
 
 public:
-	// constructor
 	explicit queue(container_type const & ctnr = container_type()) : c(ctnr) {}
 	~queue() {}
 

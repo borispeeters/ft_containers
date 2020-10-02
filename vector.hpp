@@ -270,12 +270,10 @@ bool operator==(vector<T, Alloc> const & lhs, vector<T, Alloc> const & rhs)
 {
 	typedef typename ft::vector<T, Alloc>::size_type	size_type;
 
-	if (lhs.size() != rhs.size())
-		return false;
+	if (lhs.size() != rhs.size()) return false;
 	for (size_type i = 0; i < lhs.size(); ++i)
 	{
-		if (lhs.at(i) != lhs.at(i))
-			return false;
+		if (lhs.at(i) != lhs.at(i)) return false;
 	}
 	return true;
 }
@@ -308,7 +306,7 @@ template <class T, class Alloc>
 bool operator>=(vector<T, Alloc> const & lhs, vector<T, Alloc> const & rhs) { return !(lhs < rhs); }
 
 template <class T, class Alloc>
-void swap(vector<T,Alloc>& x, vector<T,Alloc>& y) {	x.swap(y); }
+void swap(vector<T,Alloc> & x, vector<T,Alloc> & y) { x.swap(y); }
 
 }; //end of namespace ft
 
