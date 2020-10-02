@@ -18,13 +18,11 @@ public:
 	typedef ft::bidirectional_iterator_tag	iterator_category;
 
 private:
-	typedef listNode<T>*					node;
-
-	node m_node;
+	listNode<T>* m_node;
 
 public:
 	listIterator(): m_node(0) {}
-	listIterator(node n): m_node(n) {}
+	listIterator(listNode<T>* n): m_node(n) {}
 	listIterator(listIterator const & other): m_node(other.m_node) {}
 	listIterator&	operator=(listIterator const & rhs)
 	{
@@ -58,6 +56,8 @@ public:
 	reference	operator*() { return *this->m_node->data; }
 	bool		operator==(listIterator const & rhs) const { return this->m_node == rhs.m_node; }
 	bool 		operator!=(listIterator const & rhs) const { return !(*this == rhs); }
+
+	listNode<T>*	node() const { return this->m_node; }
 };
 
 }; //end of namespace ft

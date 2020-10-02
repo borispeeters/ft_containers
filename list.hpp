@@ -51,29 +51,39 @@ public:
 		m_alloc(alloc)
 	{
 		this->listInit();
+		this->assign(n, val);
 	}
 
 	// 3. range constructor
 	template <class Iterator>
 	list(Iterator first, Iterator last,
 	  allocator_type const & alloc = allocator_type()):
-	 	m_head(),
-	 	m_tail(),
+	 	m_head(0),
+	 	m_tail(0),
 	 	m_size(0),
 	 	m_alloc(alloc)
 	{
+		this->listInit();
+		this->assign(first, last);
 	}
 
 	// 4. copy constructor
 	list(list const & other):
-		m_head(other.m_head),
-		m_tail(other.m_tail),
-		m_size(other.m_size),
+		m_head(0),
+		m_tail(0),
+		m_size(0),
 		m_alloc(other.m_alloc)
-	{}
+	{
+		this->listInit();
+		this->assign(other.begin(), other.end());
+	}
 
 	// destructor
-	~list() {}
+	~list()
+	{
+		delete this->m_head;
+		delete this->m_tail;
+	}
 
 	// assignment operator overload
 	list&	operator=(list const & other);
@@ -154,17 +164,58 @@ public:
 	}
 
 	// 1. single element insertion
-	iterator	insert(iterator position, value_type const & val);
+	iterator	insert(iterator position, value_type const & val)
+	{
+		listNode<T>*	newNode = new listNode<T>(val);
+		newNode->next = position.node();
+		newNode->prev = position.node()->prev;
+		newNode->prev->next = newNode;
+		newNode->next->prev = newNode;
+		++this->m_size;
+		return iterator(newNode);
+	}
+
 	// 2. fill insertion
-	void 		insert(iterator position, size_type n, value_type const & val);
+	void 		insert(iterator position, size_type n, value_type const & val)
+	{
+		for (size_type i = 0; i < n; ++i)
+			this->insert(position, val);
+	}
+
 	// 3. range insertion
 	template <class Iterator>
-	void 		insert(iterator position, Iterator first, Iterator last);
+	void 		insert(iterator position, Iterator first, Iterator last,
+					   typename ft::_void_t<typename ft::iterator_traits<Iterator>::iterator_category>::type * = 0)
+	{
+		while (first != last)
+		{
+			this->insert(position, *first);
+			++first;
+		}
+	}
 
 	// 1. erase single element
-	iterator	erase(iterator position);
+	iterator	erase(iterator position)
+	{
+		listNode<T>*	delNode = position.node();
+		position.node()->prev->next = position.node()->next;
+		position.node()->next->prev = position.node()->prev;
+		++position;
+		delete delNode;
+		--this->m_size;
+		return position;
+	}
+
 	// 2. erase range of elements
-	iterator	erase(iterator first, iterator last);
+	iterator	erase(iterator first, iterator last)
+	{
+		while (first != last)
+		{
+			erase(first);
+			++first;
+		}
+		return first;
+	}
 
 	void 	swap(list & other)
 	{
@@ -173,34 +224,138 @@ public:
 		*this = tmp;
 	}
 
-	void resize(size_type n, value_type val = value_type());
-	void clear()
+	void resize(size_type n, value_type val = value_type())
 	{
-		for (size_type i = 0; i < this->size(); ++i)
+		while (this->size() > n)
 			this->pop_back();
+		while (this->size < n)
+			this->push_back(val);
 	}
 
-	// 1. splice entire list
-	void splice(iterator position, list & other);
-	// 2. splice single element
-	void splice(iterator position, list & other, iterator i);
-	// 3. splice range of elements
-	void splice(iterator position, list & other, iterator first, iterator last);
+	void clear() { while (this->size() > 0) this->pop_back(); }
 
-	void remove(value_type const & val);
+	// 1. splice entire list
+	void splice(iterator position, list & x)
+	{
+		this->insert(position, x.begin(), x.end());
+		x.clear();
+	}
+
+	// 2. splice single element
+	void splice(iterator position, list & x, iterator i)
+	{
+		this->insert(position, *i);
+		x.erase(i);
+	}
+
+	// 3. splice range of elements
+	void splice(iterator position, list & x, iterator first, iterator last)
+	{
+		this->insert(position, first, last);
+		x.erase(first, last);
+	}
+
+	void remove(value_type const & val)
+	{
+		iterator	it = this->begin();
+		while (it != this->end())
+		{
+			if (*it == val)
+				it = this->erase(it);
+			else
+				++it;
+		}
+	}
 
 	template <class Predicate>
-	void remove_if(Predicate pred);
+	void remove_if(Predicate pred)
+	{
+		iterator	it = this->begin();
+		while (it != this->end())
+		{
+			if (pred(*it))
+				it = this->erase(it);
+			else
+				++it;
+		}
+	}
 
-	void unique();
+	void unique()
+	{
+		if (this->size() <= 1)
+			return ;
+		iterator	it = this->begin();
+		++it;
+		while (it != this->end())
+		{
+			iterator	prev = it;
+			--prev;
+			if (*it == *prev)
+				it = this->erase(it);
+			else
+				++it;
+		}
+	}
+
 	template <class BinaryPredicate>
-	void unique(BinaryPredicate binary_pred);
+	void unique(BinaryPredicate binary_pred)
+	{
+		if (this->size() <= 1)
+			return ;
+		iterator	it = this->begin();
+		++it;
+		while (it != this->end())
+		{
+			iterator	prev = it;
+			--prev;
+			if (binary_pred(*it, *prev))
+				it = this->erase(it);
+			else
+				++it;
+		}
+	}
 
-	void merge(list & other);
+	void merge(list & x)
+	{
+		iterator	it = this->begin();
+		while (it != this->end())
+		{
+			iterator	xit = x.begin();
+			if (xit == x.end())
+				return ;
+			if (*xit < *it)
+			{
+				this->insert(it, *xit);
+				x.pop_front();
+			}
+			++it;
+		}
+		this->insert(this->end(), x.begin(), x.end());
+		x.clear();
+	}
+
 	template <class Compare>
-	void merge(list & other, Compare comp);
+	void merge(list & x, Compare comp)
+	{
+		iterator	it = this->begin();
+		while (it != this->end())
+		{
+			iterator	xit = x.begin();
+			if (xit == x.end())
+				return ;
+			if (comp(*xit, *it))
+			{
+				this->insert(it, *xit);
+				x.pop_front();
+			}
+			++it;
+		}
+		this->insert(this->end(), x.begin(), x.end());
+		x.clear();
+	}
 
 	void sort();
+
 	template <class Compare>
 	void sort(Compare comp);
 

@@ -1,24 +1,35 @@
 #include <iostream>
-#include <list>
-#include "list.hpp"
+#include <stack>
+#include <vector>
+#include "stack.hpp"
 
 int main ()
 {
-	ft::list<int>	li;
+	ft::stack<int, std::vector<int> >	first, second;
 
-	li.push_front(42);
-
-	li.assign(7, 100);
-
-	std::cout << "size: " << li.size() << std::endl;
-
-	ft::list<int>::iterator it = li.begin();
-
-	while (it != li.end())
+	for (int i = 1; i <= 6; ++i)
 	{
-		std::cout << *it << std::endl;
-		++it;
+		first.push(i);
+		second.push(i);
 	}
+
+	second.pop();
+
+	if (first == second)
+		std::cout << "first is equal to second" << std::endl;
+	if (first != second)
+		std::cout << "first is NOT equal to second" << std::endl;
+	if (first < second)
+		std::cout << "first is smaller than second" << std::endl;
+	if (first <= second)
+		std::cout << "first is smaller than or equal to second" << std::endl;
+	if (first > second)
+		std::cout << "first is bigger than second" << std::endl;
+	if (first >= second)
+		std::cout << "first is bigger than or equal to second" << std::endl;
+
+
+//	system("leaks ft_containers");
 
 	return 0;
 }
