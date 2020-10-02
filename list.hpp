@@ -220,10 +220,10 @@ public:
 		return first;
 	}
 
-	void 	swap(list & other)
+	void 	swap(list & x)
 	{
-		list	tmp(other);
-		other = *this;
+		list	tmp(x);
+		x = *this;
 		*this = tmp;
 	}
 

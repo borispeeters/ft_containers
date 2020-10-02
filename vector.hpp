@@ -42,6 +42,7 @@ public:
 		m_capacity(0),
 		m_alloc(alloc)
 	{}
+
 	// 2. fill constructor
 	explicit vector(size_type n, value_type const & val = value_type(),
 				 allocator_type const & alloc = allocator_type()):
@@ -54,6 +55,7 @@ public:
 		for (size_type i = 0; i < this->size(); ++i)
 			this->get_allocator().construct(this->m_data + i, val);
 	}
+
 	// 3. range constructor
 	template <class Iterator>
 	vector(Iterator first, Iterator last, allocator_type const & alloc = allocator_type(),
@@ -70,6 +72,7 @@ public:
 			++first;
 		}
 	}
+
 	// 4. copy constructor
 	vector(vector const & other):
 		m_data(0),
@@ -81,6 +84,7 @@ public:
 		for (size_type i = 0; i < this->size(); ++i)
 			this->get_allocator().construct(this->m_data + i, other.at(i));
 	}
+
 	// destructor
 	~vector()
 	{
@@ -88,6 +92,7 @@ public:
 			this->get_allocator().destroy(this->m_data + i);
 		this->get_allocator().deallocate(this->m_data, this->capacity());
 	}
+
 	// assignment operator overload
 	vector&	operator=(vector const & other)
 	{
@@ -234,10 +239,10 @@ public:
 			this->push_back(*it);
 		return first;
 	}
-	void        swap(vector & other)
+	void        swap(vector & x)
 	{
-		vector	tmp(other);
-		other = *this;
+		vector	tmp(x);
+		x = *this;
 		*this = tmp;
 	}
 	void        clear()
