@@ -1,68 +1,26 @@
-//#include <iostream>
-//#include <list>
-//#include "list.hpp"
-//
-//int main ()
-//{
-//	ft::list<int>	li;
-//	li.push_back(15);
-//	li.push_back(37);
-//	li.push_back(4);
-//	li.push_back(9);
-//	li.push_back(28);
-//
-//
-//	li.sort();
-//
-//	for (int value : li)
-//		std::cout << value << std::endl;
-//
-////	system("leaks ft_containers");
-//
-//	return 0;
-//}
-
-// list::sort
 #include <iostream>
-#include <list>
-#include "list.hpp"
+#include <map>
 #include <string>
-#include <cctype>
-
-// comparison, not case sensitive.
-bool compare_nocase (const std::string& first, const std::string& second)
-{
-	unsigned int i=0;
-	while ( (i<first.length()) && (i<second.length()) )
-	{
-		if (tolower(first[i])<tolower(second[i])) return true;
-		else if (tolower(first[i])>tolower(second[i])) return false;
-		++i;
-	}
-	return ( first.length() < second.length() );
-}
+#include "map.hpp"
 
 int main ()
 {
-	ft::list<std::string> mylist;
-	ft::list<std::string>::iterator it;
-	mylist.push_back ("one");
-	mylist.push_back ("two");
-	mylist.push_back ("Three");
+	ft::map<char, std::string>	mp;
 
-	mylist.sort();
+	mp['a'] = "an element";
+	mp['b'] = "another element";
+	mp['c'] = mp['b'];
 
-	std::cout << "mylist contains:";
-	for (it=mylist.begin(); it!=mylist.end(); ++it)
-		std::cout << ' ' << *it;
-	std::cout << '\n';
+	std::cout << "mp contains " << mp.size() << " elements." << std::endl;
 
-	mylist.sort(compare_nocase);
+	std::cout << "mp['a'] is " << mp['a'] << std::endl;
+	std::cout << "mp['b'] is " << mp['b'] << std::endl;
+	std::cout << "mp['c'] is " << mp['c'] << std::endl;
+	std::cout << "mp['d'] is " << mp['d'] << std::endl;
 
-	std::cout << "mylist contains:";
-	for (it=mylist.begin(); it!=mylist.end(); ++it)
-		std::cout << ' ' << *it;
-	std::cout << '\n';
+	std::cout << "mp now contains " << mp.size() << " elements." << std::endl;
+
+//	system("leaks ft_containers");
 
 	return 0;
 }

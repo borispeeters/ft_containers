@@ -13,6 +13,14 @@ T const &	max(T const & a, T const & b) { return (a < b) ? b : a; }
 template <class T>
 T const &	min(T const & a, T const & b) { return !(b < a) ? a : b; }
 
+template <class T>
+void 		swap(T & a, T & b)
+{
+	T	c(a);
+	a = b;
+	b = c;
+}
+
 template <class Iterator>
 Iterator	min_element(Iterator first, Iterator last,
 						typename ft::_void_t<typename ft::iterator_traits<Iterator>::iterator_category>::type * = 0)

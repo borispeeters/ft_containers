@@ -75,7 +75,7 @@ public:
 		m_head(0),
 		m_tail(0),
 		m_size(0),
-		m_alloc(other.m_alloc)
+		m_alloc(other.get_allocator())
 	{
 		this->listInit();
 		this->assign(other.begin(), other.end());
@@ -407,8 +407,8 @@ private:
 		this->m_tail->prev = this->head();
 	}
 
-	listNode<T>*	head() { return this->m_head; }
-	listNode<T>*	tail() { return this->m_tail; }
+	listNode<T>*	head() const { return this->m_head; }
+	listNode<T>*	tail() const { return this->m_tail; }
 };
 
 template <class T, class Alloc>

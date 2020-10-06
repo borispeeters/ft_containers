@@ -8,7 +8,7 @@ namespace ft
 {
 
 template <class T>
-class vectorIterator : public iterator<ft::random_access_iterator_tag, T>
+class vectorIterator : public ft::iterator<ft::random_access_iterator_tag, T>
 {
 public:
 	typedef	T								value_type;
