@@ -17,10 +17,11 @@ struct mapNode
 	mapNode		*parent;
 	enum Colour	colour;
 
-	mapNode(): value(0), left(0), right(0), parent(0), colour(RED) {}
+	mapNode(): value(new Pair()), left(0), right(0), parent(0), colour(RED) {}
 	mapNode(Pair const & val): value(new Pair(val)), left(0), right(0), parent(0), colour(RED) {}
-	mapNode(mapNode const & other): value(0), left(0), right(0), parent(0), colour(RED) {}
-	~mapNode() { delete value; }
+	mapNode(mapNode const & other): value(0) { *this = other; }
+	mapNode(enum Colour col): value(new Pair()), left(0), right(0), parent(0), colour(col) {}
+	~mapNode() { delete this->value; }
 	mapNode&	operator=(mapNode const & other)
 	{
 		if (&other != this)

@@ -38,7 +38,7 @@ public:
 	}
 	listIterator  operator++(int)
 	{
-		listIterator  iterator = *this;
+		listIterator  iterator(*this);
 		++(*this);
 		return iterator;
 	}
@@ -49,7 +49,7 @@ public:
 	}
 	listIterator  operator--(int)
 	{
-		listIterator  iterator = *this;
+		listIterator  iterator(*this);
 		--(*this);
 		return iterator;
 	}

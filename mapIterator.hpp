@@ -33,8 +33,57 @@ public:
 
 	mapIterator&	operator++()
 	{
-		this->m_node;
+		if (this->node() == this->lastNode())
+			this->m_node = this->node()->right;
+		else if (this->node()->right)
+		{
+			this->m_node = this->node()->right;
+			this->m_node = leftEnd(this->node());
+		}
+		else
+		{
+			mapNode<value_type>*	prev(this->node());
+			this->m_node = this->node()->parent;
+			while (this->node()->right == prev)
+			{
+				prev = this->node();
+				this->m_node = this->node()->parent;
+			}
+		}
 		return *this;
+	}
+	mapIterator&	operator++(int)
+	{
+		mapIterator	iterator(*this);
+		++(*this);
+		return iterator;
+	}
+	mapIterator&	operator--()
+	{
+		if (this->node() == this->firstNode())
+			this->m_node = this->node()->left;
+		else if (this->node()->left)
+		{
+			this->m_node = this->node()->left;
+			this->m_node = rightEnd(this->node());
+		}
+		else
+		{
+			mapNode<value_type>*	prev(this->node());
+			this->m_node = this->node()->parent;
+			while (this->node()->left == prev)
+			{
+				prev = this->node();
+				this->m_node = this->node()->parent;
+			}
+		}
+		return *this;
+	}
+	mapIterator&	operator--(int)
+	{
+		mapIterator	iterator(*this);
+		--(*this);
+		return iterator;
 	}
 
 	pointer		operator->() const { return this->node()->value; }
@@ -43,6 +92,30 @@ public:
 	bool 		operator!=(mapIterator const & rhs) const { return !(*this == rhs); }
 
 	mapNode<value_type>*	node() const { return this->m_node; }
+
+private:
+	mapNode<value_type>*	leftEnd(mapNode<value_type>* node)
+	{
+		while (node->left)
+			node = node->left;
+		return node;
+	}
+	mapNode<value_type>*	rightEnd(mapNode<value_type>* node)
+	{
+		while (node->right)
+			node = node->right;
+		return node;
+	}
+	mapNode<value_type>*	findRoot()
+	{
+		mapNode<value_type>*	root(this->node());
+		while (root->parent)
+			root = root->parent;
+		return root;
+	}
+
+	mapNode<value_type>*	firstNode() { return leftEnd(findRoot()); }
+	mapNode<value_type>*	lastNode() { return rightEnd(findRoot()); }
 };
 
 }; //end of namespace ft

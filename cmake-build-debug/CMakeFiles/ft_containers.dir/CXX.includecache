@@ -39,12 +39,20 @@ algorithm.hpp
 /Users/bpeeters/Projects/ft_containers/algorithm.hpp
 iterator.hpp
 /Users/bpeeters/Projects/ft_containers/iterator.hpp
+mapIterator.hpp
+/Users/bpeeters/Projects/ft_containers/mapIterator.hpp
 mapNode.hpp
 /Users/bpeeters/Projects/ft_containers/mapNode.hpp
 type_traits.hpp
 /Users/bpeeters/Projects/ft_containers/type_traits.hpp
 iostream
 -
+
+/Users/bpeeters/Projects/ft_containers/mapIterator.hpp
+iterator.hpp
+/Users/bpeeters/Projects/ft_containers/iterator.hpp
+mapNode.hpp
+/Users/bpeeters/Projects/ft_containers/mapNode.hpp
 
 /Users/bpeeters/Projects/ft_containers/mapNode.hpp
 utility

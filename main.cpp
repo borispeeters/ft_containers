@@ -7,18 +7,24 @@ int main ()
 {
 	ft::map<char, std::string>	mp;
 
-	mp['a'] = "an element";
-	mp['b'] = "another element";
-	mp['c'] = mp['b'];
 
-	std::cout << "mp contains " << mp.size() << " elements." << std::endl;
+	mp['a'] = "first element";
+	mp['b'] = "second element";
+	mp['c'] = "third element";
+	mp['d'] = "last element";
 
-	std::cout << "mp['a'] is " << mp['a'] << std::endl;
-	std::cout << "mp['b'] is " << mp['b'] << std::endl;
-	std::cout << "mp['c'] is " << mp['c'] << std::endl;
-	std::cout << "mp['d'] is " << mp['d'] << std::endl;
+	std::cout << "sup bro" << std::endl;
 
-	std::cout << "mp now contains " << mp.size() << " elements." << std::endl;
+
+	ft::map<char, std::string>::iterator it;
+
+	it = mp.begin();
+
+	while (it != mp.end())
+	{
+		std::cout << it->second << std::endl;
+		++it;
+	}
 
 //	system("leaks ft_containers");
 

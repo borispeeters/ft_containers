@@ -13,7 +13,7 @@ struct listNode
 
 	listNode():	data(0), prev(0), next(0) {}
 	listNode(T const & val): data(new T(val)), prev(0), next(0) {}
-	listNode(listNode const & other) { *this = other; }
+	listNode(listNode const & other): data(0) { *this = other; }
 	~listNode() { delete this->data; }
 	listNode&	operator=(listNode const & other)
 	{

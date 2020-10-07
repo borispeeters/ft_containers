@@ -29,10 +29,10 @@ public:
 	typedef	typename allocator_type::size_type							size_type;
 
 private:
-	listNode<T>		*m_head;
-	listNode<T>		*m_tail;
-	size_type		m_size;
-	allocator_type	m_alloc;
+	listNode<value_type>	*m_head;
+	listNode<value_type>	*m_tail;
+	size_type				m_size;
+	allocator_type			m_alloc;
 
 public:
 	// 1. default constructor
@@ -133,7 +133,7 @@ public:
 
 	void push_front(value_type const & val)
 	{
-		listNode<T>*	newNode = new listNode<T>(val);
+		listNode<value_type>*	newNode = new listNode<value_type>(val);
 		newNode->next = this->head()->next;
 		newNode->next->prev = newNode;
 		newNode->prev = this->head();
@@ -142,7 +142,7 @@ public:
 	}
 	void pop_front()
 	{
-		listNode<T>*	delNode = this->head()->next;
+		listNode<value_type>*	delNode = this->head()->next;
 		this->head()->next = delNode->next;
 		this->head()->next->prev = this->head();
 		delete delNode;
@@ -150,7 +150,7 @@ public:
 	}
 	void push_back(value_type const & val)
 	{
-		listNode<T>*	newNode = new listNode<T>(val);
+		listNode<value_type>*	newNode = new listNode<value_type>(val);
 		newNode->prev = this->tail()->prev;
 		newNode->prev->next = newNode;
 		newNode->next = this->tail();
@@ -159,7 +159,7 @@ public:
 	}
 	void pop_back()
 	{
-		listNode<T>*	delNode = this->tail()->prev;
+		listNode<value_type>*	delNode = this->tail()->prev;
 		this->tail()->prev = delNode->prev;
 		this->tail()->prev->next = this->tail();
 		delete delNode;
@@ -169,7 +169,7 @@ public:
 	// 1. single element insertion
 	iterator	insert(iterator position, value_type const & val)
 	{
-		listNode<T>*	newNode = new listNode<T>(val);
+		listNode<value_type>*	newNode = new listNode<value_type>(val);
 		newNode->next = position.node();
 		newNode->prev = position.node()->prev;
 		newNode->prev->next = newNode;
@@ -200,7 +200,7 @@ public:
 	// 1. erase single element
 	iterator	erase(iterator position)
 	{
-		listNode<T>*	delNode = position.node();
+		listNode<value_type>*	delNode = position.node();
 		position.node()->prev->next = position.node()->next;
 		position.node()->next->prev = position.node()->prev;
 		++position;
@@ -399,16 +399,16 @@ public:
 
 	allocator_type	get_allocator() const { return this->m_alloc; }
 private:
-	void 	listInit()
+	void listInit()
 	{
-		this->m_head = new listNode<T>;
-		this->m_tail = new listNode<T>;
+		this->m_head = new listNode<value_type>();
+		this->m_tail = new listNode<value_type>();
 		this->m_head->next = this->tail();
 		this->m_tail->prev = this->head();
 	}
 
-	listNode<T>*	head() const { return this->m_head; }
-	listNode<T>*	tail() const { return this->m_tail; }
+	listNode<value_type>*	head() const { return this->m_head; }
+	listNode<value_type>*	tail() const { return this->m_tail; }
 };
 
 template <class T, class Alloc>
