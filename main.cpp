@@ -16,8 +16,8 @@ int main ()
 
 	ft::list<int>::const_iterator it;
 
-	for (it = li.begin(); it != li.end(); ++it)
-		std::cout << *it << std::endl;
+//	for (it = li.begin(); it != li.end(); ++it)
+//		std::cout << *it << std::endl;
 
 
 /*																		*\
@@ -32,22 +32,9 @@ int main ()
 	mp.insert(std::make_pair('c', "third element"));
 	mp.insert(std::make_pair('d', "last element"));
 
-	std::cout << mp.begin()->second << std::endl;
-
-//	std::cout << "mp has a size of " << mp.size() << std::endl;
-
-//	std::cout << "mp['a'] = " << mp['a'] << std::endl;
-//	std::cout << "mp['b'] = " << mp['b'] << std::endl;
-//	std::cout << "mp['c'] = " << mp['c'] << std::endl;
-//	std::cout << "mp['d'] = " << mp['d'] << std::endl;
-
-
-//	ft::map<char, std::string>::iterator mit;
-//	for (it = mp.begin(); it != mp.end(); ++it)
-//	{
-//		std::cout << "key: " << it->first << std::endl;
-//		std::cout << "value: " << it->second << std::endl;
-//	}
+	ft::map<char, std::string>::iterator mit = mp.begin();
+	for (mit = mp.begin(); mit != mp.end(); ++mit)
+		std::cout << mit->first << " has a value of " << mit->second << std::endl;
 
 //	system("leaks ft_containers");
 

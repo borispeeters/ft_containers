@@ -196,7 +196,7 @@ public:
 private:
 	void mapInit()
 	{
-		this->m_root = new mapNode<value_type>(BLACK);
+//		this->m_root = new mapNode<value_type>(BLACK);
 		this->m_first = new mapNode<value_type>(BLACK);
 		this->m_last = new mapNode<value_type>(BLACK);
 		this->firstNode()->parent = this->lastNode();
@@ -226,6 +226,7 @@ private:
 			}
 			else if (newNode->value->first < curr->value->first)
 			{
+				std::cout << "SMALLER" << std::endl;
 				if (curr->left == firstNode())
 				{
 					newNode->parent = curr;
@@ -244,6 +245,7 @@ private:
 			}
 			else if (newNode->value->first > curr->value->first)
 			{
+//				std::cout << "BIGGER: " << newNode->value->first << std::endl;
 				if (curr->right == lastNode())
 				{
 					newNode->parent = curr;
