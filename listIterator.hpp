@@ -15,9 +15,11 @@ public:
 	typedef	std::ptrdiff_t					difference_type;
 	typedef	value_type*						pointer;
 	typedef value_type&						reference;
+	typedef const value_type* 				const_pointer;
+	typedef const value_type&				const_reference;
 	typedef ft::bidirectional_iterator_tag	iterator_category;
 
-private:
+protected:
 	listNode<value_type>*	m_node;
 
 public:
@@ -29,7 +31,7 @@ public:
 		if (&rhs != this) this->m_node = rhs.node();
 		return *this;
 	}
-	~listIterator() {}
+	virtual ~listIterator() {}
 
 	listIterator& operator++()
 	{
@@ -60,6 +62,38 @@ public:
 	bool 		operator!=(listIterator const & rhs) const { return !(*this == rhs); }
 
 	listNode<value_type>*	node() const { return this->m_node; }
+};
+
+template <class T>
+class constListIterator : public listIterator<T>
+{
+public:
+	typedef	T								value_type;
+	typedef	std::ptrdiff_t					difference_type;
+	typedef	value_type*						pointer;
+	typedef value_type&						reference;
+	typedef const value_type* 				const_pointer;
+	typedef const value_type&				const_reference;
+	typedef ft::bidirectional_iterator_tag	iterator_category;
+
+	constListIterator(): listIterator<value_type>() {}
+	constListIterator(listNode<value_type>* n): listIterator<value_type>(n) {}
+	constListIterator(listIterator<value_type> const & other): listIterator<value_type>(other) {}
+	constListIterator(constListIterator const & other): listIterator<value_type>(other.node()) {}
+	constListIterator&	operator=(listIterator<value_type> const & rhs)
+	{
+		if (&rhs != this) this->m_node = rhs.node();
+		return *this;
+	}
+	constListIterator&	operator=(constListIterator const & rhs)
+	{
+		if (&rhs != this) this->m_node = rhs.node();
+		return *this;
+	}
+	virtual ~constListIterator() {}
+
+	const_pointer	operator->() const { return this->node()->data; }
+	const_reference	operator*() const { return *this->node()->data; }
 };
 
 }; //end of namespace ft

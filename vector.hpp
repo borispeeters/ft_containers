@@ -22,7 +22,7 @@ public:
 	typedef	typename allocator_type::pointer							pointer;
 	typedef	typename allocator_type::const_pointer						const_pointer;
 	typedef ft::vectorIterator<value_type>								iterator;
-	typedef ft::vectorIterator<const value_type>						const_iterator;
+	typedef ft::constVectorIterator<value_type>							const_iterator;
 	typedef std::reverse_iterator<iterator>								reverse_iterator;
 	typedef std::reverse_iterator<const_iterator>						const_reverse_iterator;
 	typedef typename ft::iterator_traits<iterator>::difference_type		difference_type;

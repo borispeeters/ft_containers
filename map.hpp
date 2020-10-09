@@ -130,7 +130,7 @@ public:
 	{
 		mapNode<value_type>*	node = new mapNode<value_type>(val);
 
-		this->m_root = (BSTInsert(this->m_root, node));
+		node = BSTInsert(node);
 
 		fixViolation(this->m_root, node);
 
@@ -199,31 +199,69 @@ private:
 		this->m_root = new mapNode<value_type>(BLACK);
 		this->m_first = new mapNode<value_type>(BLACK);
 		this->m_last = new mapNode<value_type>(BLACK);
-		this->m_first->parent = this->lastNode();
-//		this->m_last->left = this->firstNode();
+		this->firstNode()->parent = this->lastNode();
+//		this->lastNode()->left = this->firstNode();
 	}
 
-	mapNode<value_type>*	BSTInsert(mapNode<value_type>* root, mapNode<value_type>* node) {
-		if (root == 0)
+	mapNode<value_type>*	BSTInsert(mapNode<value_type>* newNode)
+	{
+
+		if (this->root() == 0)
 		{
-			node->left = this->firstNode();
-			this->m_first->parent = node;
-			node->right = this->lastNode();
-			this->m_last->parent = node;
-			return node;
+			this->m_root = newNode;
+			this->root()->left = this->firstNode();
+			this->firstNode()->parent = this->root();
+			this->root()->right = this->lastNode();
+			this->lastNode()->parent = this->root();
+			return this->root();
 		}
 
-		if (node->value->first < root->value->first)
+		mapNode<value_type>*	curr(this->root());
+		while (curr)
 		{
-			root->left = BSTInsert(root->left, node);
-			root->left->parent = root;
+			if (newNode->value->first == curr->value->first)
+			{
+				delete newNode;
+				return curr;
+			}
+			else if (newNode->value->first < curr->value->first)
+			{
+				if (curr->left == firstNode())
+				{
+					newNode->parent = curr;
+					newNode->left = firstNode();
+					curr->left = newNode;
+					firstNode()->parent = newNode;
+					return newNode;
+				}
+				else if (curr->left == 0)
+				{
+					curr->left = newNode;
+					newNode->parent = curr;
+					return newNode;
+				}
+				curr = curr->left;
+			}
+			else if (newNode->value->first > curr->value->first)
+			{
+				if (curr->right == lastNode())
+				{
+					newNode->parent = curr;
+					newNode->right = lastNode();
+					curr->right = newNode;
+					lastNode()->parent = newNode;
+					return newNode;
+				}
+				else if (curr->right == 0)
+				{
+					curr->right = newNode;
+					newNode->parent = curr;
+					return newNode;
+				}
+				curr = curr->right;
+			}
 		}
-		else if (node->value->first > root->value->first)
-		{
-			root->right = BSTInsert(root->right, node);
-			root->right->parent = root;
-		}
-		return root;
+		return 0;
 	}
 
 	void rotateLeft(mapNode<value_type>*& root, mapNode<value_type>*& node)

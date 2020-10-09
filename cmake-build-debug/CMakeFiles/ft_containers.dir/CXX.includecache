@@ -18,6 +18,26 @@ cstddef
 type_traits.hpp
 /Users/bpeeters/Projects/ft_containers/type_traits.hpp
 
+/Users/bpeeters/Projects/ft_containers/list.hpp
+memory
+-
+algorithm.hpp
+/Users/bpeeters/Projects/ft_containers/algorithm.hpp
+listIterator.hpp
+/Users/bpeeters/Projects/ft_containers/listIterator.hpp
+listNode.hpp
+/Users/bpeeters/Projects/ft_containers/listNode.hpp
+iostream
+-
+
+/Users/bpeeters/Projects/ft_containers/listIterator.hpp
+iterator.hpp
+/Users/bpeeters/Projects/ft_containers/iterator.hpp
+listNode.hpp
+/Users/bpeeters/Projects/ft_containers/listNode.hpp
+
+/Users/bpeeters/Projects/ft_containers/listNode.hpp
+
 /Users/bpeeters/Projects/ft_containers/main.cpp
 iostream
 -
@@ -25,6 +45,10 @@ map
 -
 string
 -
+vector
+-
+list.hpp
+/Users/bpeeters/Projects/ft_containers/list.hpp
 map.hpp
 /Users/bpeeters/Projects/ft_containers/map.hpp
 
