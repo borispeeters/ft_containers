@@ -88,7 +88,11 @@ public:
 	}
 
 	// destructor
-	~map() {}
+	~map()
+	{
+		delete this->m_first;
+		delete this->m_last;
+	}
 
 	// assignment operator overload
 	map&	operator=(map const & other)
@@ -116,44 +120,43 @@ public:
 
 	mapped_type&	operator[](key_type const & k)
 	{
-		mapNode<value_type>*	node;
-		node = this->search(this->m_root, k);
-		if (node)
-		{
-			return node->value->second;
-		}
-		this->insert(std::make_pair(k, mapped_type()));
-		return this->search(this->m_root, k)->value->second;
+		std::pair<iterator, bool>	p = this->insert(std::make_pair(k, mapped_type()));
+		std::cout << "p.first->first: " << p.first->first << std::endl;
+		return p.first->second;
 	}
 
-	void insert(value_type const & val)
+	// 1. single element insertion
+	std::pair<iterator, bool> insert(value_type const & val)
 	{
 		mapNode<value_type>*	node = new mapNode<value_type>(val);
 
-		node = BSTInsert(node);
+		std::pair<mapNode<value_type>*, bool>	ret = BSTInsert(this->root(), node);
 
-		fixViolation(this->m_root, node);
-
-		++this->m_size;
+		if (ret.second)
+		{
+//			fixViolation(this->m_root, ret.first);
+			++this->m_size;
+		}
+		return ret;
 	}
 
-//	// 1. single element insertion
-//	std::pair<iterator, bool>	insert(value_type const & val)
-//	{
-//		mapNode<value_type>*	node = new mapNode<value_type>(val);
-//
-//		this->m_root = BSTInsert(this->m_root, node);
-//
-//		fixViolation(this->m_root, node);
-//	}
-//
-//	// 2. insertion with hint
-//	iterator	insert(iterator position, value_type const & val);
-//
-//	// 3. range insertion
-//	template <class Iterator>
-//	void		insert(Iterator first, Iterator last,
-//					   typename ft::_void_t<typename ft::iterator_traits<Iterator>::iterator_category>::type * = 0);
+	// 2. insertion with hint
+	iterator	insert(iterator position, value_type const & val)
+	{
+		BSTInsert();
+	}
+
+	// 3. range insertion
+	template <class Iterator>
+	void		insert(Iterator first, Iterator last,
+					   typename ft::_void_t<typename ft::iterator_traits<Iterator>::iterator_category>::type * = 0)
+	{
+		while (first != last)
+		{
+			this->insert(*first);
+			++first;
+		}
+	}
 
 
 //	// 1. erase iterator
@@ -196,16 +199,13 @@ public:
 private:
 	void mapInit()
 	{
-//		this->m_root = new mapNode<value_type>(BLACK);
 		this->m_first = new mapNode<value_type>(BLACK);
 		this->m_last = new mapNode<value_type>(BLACK);
 		this->firstNode()->parent = this->lastNode();
-//		this->lastNode()->left = this->firstNode();
 	}
 
-	mapNode<value_type>*	BSTInsert(mapNode<value_type>* newNode)
+	std::pair<mapNode<value_type>*, bool>	BSTInsert(mapNode<value_type>* curr, mapNode<value_type>* newNode)
 	{
-
 		if (this->root() == 0)
 		{
 			this->m_root = newNode;
@@ -213,57 +213,55 @@ private:
 			this->firstNode()->parent = this->root();
 			this->root()->right = this->lastNode();
 			this->lastNode()->parent = this->root();
-			return this->root();
+			return std::make_pair(this->root(), true);
 		}
 
-		mapNode<value_type>*	curr(this->root());
 		while (curr)
 		{
 			if (newNode->value->first == curr->value->first)
 			{
 				delete newNode;
-				return curr;
+				return std::make_pair(curr, false);
 			}
 			else if (newNode->value->first < curr->value->first)
 			{
-				std::cout << "SMALLER" << std::endl;
 				if (curr->left == firstNode())
 				{
 					newNode->parent = curr;
 					newNode->left = firstNode();
 					curr->left = newNode;
 					firstNode()->parent = newNode;
-					return newNode;
+					return std::make_pair(newNode, true);
 				}
 				else if (curr->left == 0)
 				{
 					curr->left = newNode;
 					newNode->parent = curr;
-					return newNode;
+					return std::make_pair(newNode, true);
 				}
 				curr = curr->left;
 			}
 			else if (newNode->value->first > curr->value->first)
 			{
-//				std::cout << "BIGGER: " << newNode->value->first << std::endl;
 				if (curr->right == lastNode())
 				{
 					newNode->parent = curr;
 					newNode->right = lastNode();
 					curr->right = newNode;
 					lastNode()->parent = newNode;
-					return newNode;
+					return std::make_pair(newNode, true);
 				}
 				else if (curr->right == 0)
 				{
 					curr->right = newNode;
 					newNode->parent = curr;
-					return newNode;
+					return std::make_pair(newNode, true);
 				}
 				curr = curr->right;
 			}
 		}
-		return 0;
+		std::cout << "LOLOL THIS WILL NEVER PRINT LOLOLOL AT LEAST I HOPE SO LOL" << std::endl;
+		return std::pair<mapNode<value_type>*, bool>(0, false);
 	}
 
 	void rotateLeft(mapNode<value_type>*& root, mapNode<value_type>*& node)
