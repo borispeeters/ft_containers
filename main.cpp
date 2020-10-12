@@ -39,12 +39,15 @@ int main ()
 	std::pair<ft::map<char, std::string>::iterator, bool>	p;
 
 
-	mp['a'] = "first element";
-	mp['b'] = "second element";
-	mp['c'] = "third element";
-	mp['d'] = "last element";
-	mp['a'] = "lol element";
+	mp.insert(mp.begin(), std::make_pair('a', "first element"));
+	mp.insert(mp.end(), std::make_pair('b', "second element"));
+	mp.insert(mp.end(), std::make_pair('c', "third element"));
+	mp.insert(mp.end(), std::make_pair('d', "last element"));
 
+//	mp['a'] = "first element";
+//	mp['b'] = "second element";
+//	mp['c'] = "third element";
+//	mp['d'] = "last element";
 
 //	p = mp.insert(std::make_pair('a', "first element")); check_insertion(p);
 //	p = mp.insert(std::make_pair('b', "second element")); check_insertion(p);
@@ -53,14 +56,11 @@ int main ()
 
 //	p = mp.insert(std::make_pair('a', "lol this not good")); check_insertion(p);
 
-
-
 	std::cout << std::endl << "this boi has a size of " << mp.size() << std::endl << std::endl;
 
 	ft::map<char, std::string>::iterator mit = mp.begin();
 	for (mit = mp.begin(); mit != mp.end(); ++mit)
-		std::cout << mit->first << " has a value of " << mit->second << std::endl;
-
+		std::cout << mit->first << " => " << mit->second << std::endl;
 
 /*																		*\
 **	------------------------------------------------------------------	**

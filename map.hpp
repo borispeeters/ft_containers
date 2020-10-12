@@ -41,13 +41,26 @@ public:
 //	typedef ft::iterator_traits<iterator>::difference_type	difference_type;
 	typedef typename allocator_type::size_type				size_type;
 
-
+	// yoinked from the cplusplus site
+	struct value_compare : public std::binary_function<value_type, value_type, bool>
+	{
+		friend class map;
+	protected:
+		Compare	comp;
+		value_compare (Compare c) : comp(c) {}
+	public:
+		typedef bool		result_type;
+		typedef value_type	first_argument_type;
+		typedef value_type	second_argument_type;
+		bool operator()(value_type const & x, value_type const & y) const { return comp(x.first, y.first); }
+	};
 
 private:
 	mapNode<value_type>*	m_root;
 	mapNode<value_type>*	m_first;
 	mapNode<value_type>*	m_last;
 	size_type				m_size;
+	key_compare				m_comp;
 	allocator_type			m_alloc;
 
 public:
@@ -57,6 +70,7 @@ public:
 		m_first(0),
 		m_last(0),
 		m_size(0),
+		m_comp(comp),
 		m_alloc(alloc)
 	{
 		this->mapInit();
@@ -71,6 +85,7 @@ public:
 		m_first(0),
 		m_last(0),
 		m_size(0),
+		m_comp(comp),
 		m_alloc(alloc)
 	{
 		this->mapInit();
@@ -82,6 +97,7 @@ public:
 		m_first(0),
 		m_last(0),
 		m_size(0),
+		m_comp(other.key_comp()),
 		m_alloc(other.get_allocator())
 	{
 		this->mapInit();
@@ -118,19 +134,14 @@ public:
 	size_type	size() const { return this->m_size; }
 	size_type	max_size() const { return this->get_allocator().max_size(); }
 
-	mapped_type&	operator[](key_type const & k)
-	{
-		std::pair<iterator, bool>	p = this->insert(std::make_pair(k, mapped_type()));
-		std::cout << "p.first->first: " << p.first->first << std::endl;
-		return p.first->second;
-	}
+	mapped_type&	operator[](key_type const & k) { return this->insert(std::make_pair(k, mapped_type())).first->second; }
 
 	// 1. single element insertion
 	std::pair<iterator, bool> insert(value_type const & val)
 	{
-		mapNode<value_type>*	node = new mapNode<value_type>(val);
+		mapNode<value_type>*	newNode = new mapNode<value_type>(val);
 
-		std::pair<mapNode<value_type>*, bool>	ret = BSTInsert(this->root(), node);
+		std::pair<mapNode<value_type>*, bool>	ret = this->BSTInsert(this->root(), newNode);
 
 		if (ret.second)
 		{
@@ -143,7 +154,25 @@ public:
 	// 2. insertion with hint
 	iterator	insert(iterator position, value_type const & val)
 	{
-		BSTInsert();
+		if (position->first < val.first)
+		{
+			while (position->first < val.first && position.node()->right != this->lastNode() && position.node()->right)
+				++position;
+		}
+		else if (position->first > val.first)
+		{
+			while (position->first > val.first && position.node()->left != this->firstNode() && position.node()->left)
+				--position;
+		}
+
+		mapNode<value_type>*	newNode = new mapNode<value_type>(val);
+		std::pair<mapNode<value_type>*, bool>	ret = this->BSTInsert(position.node(), newNode);
+
+		if (ret.second)
+		{
+			++this->m_size;
+		}
+		return ret.first;
 	}
 
 	// 3. range insertion
@@ -177,13 +206,13 @@ public:
 
 	void clear();
 
-//	key_compare		key_comp() const;
-//	value_compare	value_comp() const;
+	key_compare		key_comp() const { return this->m_comp; }
+	value_compare	value_comp() const { return this->value_comp(this->m_comp); }
 //
 //	iterator		find(key_type const & k);
 //	const_iterator	find(key_type const & k);
 //
-//	size_type	count(key_type const & k) const;
+//	size_type		count(key_type const & k) const;
 //
 //	iterator		lower_bound(key_type const & k);
 //	const_iterator	lower_bound(key_type const & k) const;
