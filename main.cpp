@@ -39,7 +39,7 @@ int main ()
 	std::pair<ft::map<char, std::string>::iterator, bool>	p;
 
 
-	mp.insert(mp.begin(), std::make_pair('a', "first element"));
+	mp.insert(mp.end(), std::make_pair('a', "first element"));
 	mp.insert(mp.end(), std::make_pair('b', "second element"));
 	mp.insert(mp.end(), std::make_pair('c', "third element"));
 	mp.insert(mp.end(), std::make_pair('d', "last element"));
@@ -60,7 +60,12 @@ int main ()
 
 	ft::map<char, std::string>::iterator mit = mp.begin();
 	for (mit = mp.begin(); mit != mp.end(); ++mit)
+	{
+		std::cout << "sup bro" << std::endl;
 		std::cout << mit->first << " => " << mit->second << std::endl;
+		std::cout << "goodbye bro" << std::endl;
+	}
+
 
 /*																		*\
 **	------------------------------------------------------------------	**

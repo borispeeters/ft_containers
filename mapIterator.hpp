@@ -39,6 +39,7 @@ public:
 		{
 			this->m_node = this->node()->right;
 			this->m_node = leftEnd(this->node());
+			std::cout << "yey" << m_node->value->first << std::endl;
 		}
 		else
 		{
@@ -102,8 +103,13 @@ private:
 	}
 	mapNode<value_type>*	rightEnd(mapNode<value_type>* node)
 	{
-		while (node->right)
+		int i = 0;
+		while (node->right && i < 10)
+		{
+			std::cout << node->value->first << std::endl;
 			node = node->right;
+			++i;
+		}
 		return node;
 	}
 	mapNode<value_type>*	findRoot()

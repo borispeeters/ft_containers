@@ -154,16 +154,10 @@ public:
 	// 2. insertion with hint
 	iterator	insert(iterator position, value_type const & val)
 	{
-		if (position->first < val.first)
-		{
-			while (position->first < val.first && position.node()->right != this->lastNode() && position.node()->right)
-				++position;
-		}
-		else if (position->first > val.first)
-		{
-			while (position->first > val.first && position.node()->left != this->firstNode() && position.node()->left)
-				--position;
-		}
+		while (position->first < val.first && position != this->begin() && position != this->end())
+			++position;
+		while (position->first > val.first && position != this->begin() && position != this->end())
+			--position;
 
 		mapNode<value_type>*	newNode = new mapNode<value_type>(val);
 		std::pair<mapNode<value_type>*, bool>	ret = this->BSTInsert(position.node(), newNode);
@@ -242,48 +236,54 @@ private:
 			this->firstNode()->parent = this->root();
 			this->root()->right = this->lastNode();
 			this->lastNode()->parent = this->root();
+			std::cout << "root inserted" << std::endl;
 			return std::make_pair(this->root(), true);
 		}
 
 		while (curr)
 		{
-			if (newNode->value->first == curr->value->first)
+			if (curr != firstNode() && curr != lastNode() && newNode->value->first == curr->value->first)
 			{
 				delete newNode;
+				std::cout << "element already existed" << std::endl;
 				return std::make_pair(curr, false);
 			}
 			else if (newNode->value->first < curr->value->first)
 			{
-				if (curr->left == firstNode())
+				if (curr->left == this->firstNode() || curr == this->firstNode())
 				{
 					newNode->parent = curr;
-					newNode->left = firstNode();
+					newNode->left = this->firstNode();
 					curr->left = newNode;
-					firstNode()->parent = newNode;
+					this->firstNode()->parent = newNode;
+					std::cout << "element inserted at the begin" << std::endl;
 					return std::make_pair(newNode, true);
 				}
 				else if (curr->left == 0)
 				{
 					curr->left = newNode;
 					newNode->parent = curr;
+					std::cout << "element inserted to the left" << std::endl;
 					return std::make_pair(newNode, true);
 				}
 				curr = curr->left;
 			}
 			else if (newNode->value->first > curr->value->first)
 			{
-				if (curr->right == lastNode())
+				if (curr->right == this->lastNode() || curr == this->lastNode())
 				{
 					newNode->parent = curr;
-					newNode->right = lastNode();
+					newNode->right = this->lastNode();
 					curr->right = newNode;
-					lastNode()->parent = newNode;
+					this->lastNode()->parent = newNode;
+					std::cout << "element inserted at the end" << std::endl;
 					return std::make_pair(newNode, true);
 				}
 				else if (curr->right == 0)
 				{
 					curr->right = newNode;
 					newNode->parent = curr;
+					std::cout << "element inserted to the right" << std::endl;
 					return std::make_pair(newNode, true);
 				}
 				curr = curr->right;
