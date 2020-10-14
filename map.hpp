@@ -154,9 +154,11 @@ public:
 	// 2. insertion with hint
 	iterator	insert(iterator position, value_type const & val)
 	{
+		std::cout << "key: " << position.node()->left->first << std::endl;
+		std::cout << "value: " << position.node()->left->second << std::endl;
 		while (position->first < val.first && position != this->begin() && position != this->end())
 			++position;
-		while (position->first > val.first && position != this->begin() && position != this->end())
+		while (position->first > val.first && position.node()->left && position != this->end())
 			--position;
 
 		mapNode<value_type>*	newNode = new mapNode<value_type>(val);

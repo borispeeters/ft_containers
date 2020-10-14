@@ -60,11 +60,7 @@ int main ()
 
 	ft::map<char, std::string>::iterator mit = mp.begin();
 	for (mit = mp.begin(); mit != mp.end(); ++mit)
-	{
-		std::cout << "sup bro" << std::endl;
 		std::cout << mit->first << " => " << mit->second << std::endl;
-		std::cout << "goodbye bro" << std::endl;
-	}
 
 
 /*																		*\

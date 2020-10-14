@@ -104,9 +104,11 @@ private:
 	mapNode<value_type>*	rightEnd(mapNode<value_type>* node)
 	{
 		int i = 0;
-		while (node->right && i < 10)
+		while (node->right)
 		{
-			std::cout << node->value->first << std::endl;
+//			std::cout << "key - " << node->value->first << std::endl;
+//			std::cout << "value - " << node->value->second << std::endl;
+//			std::cout << std::endl;
 			node = node->right;
 			++i;
 		}
