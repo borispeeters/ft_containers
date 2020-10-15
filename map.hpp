@@ -154,21 +154,39 @@ public:
 	// 2. insertion with hint
 	iterator	insert(iterator position, value_type const & val)
 	{
-		std::cout << "key: " << position.node()->left->first << std::endl;
-		std::cout << "value: " << position.node()->left->second << std::endl;
-		while (position->first < val.first && position != this->begin() && position != this->end())
-			++position;
-		while (position->first > val.first && position.node()->left && position != this->end())
-			--position;
+//		if (position->first == val.first)
+//			return position;
+//		mapNode<value_type>*	newNode = new mapNode<value_type>(val);
+//		std::pair<mapNode<value_type>*, bool>	ret;
+//		if (position == this->begin())
+//		{
+//			if ()
+//		}
+//		else if (position == this->end())
+//		{
+//			asd;
+//		}
+//		else if (position->first < val.first)
+//		{
+//			iterator	tmp(position);
+//			++tmp;
+//			std::cout << "bruh" << std::endl;
+//			if (tmp->first > val.first)
+//				ret = this->BSTInsert(position.node(), newNode);
+//		}
+//		else if (position->first > val.first)
+//		{
+//			iterator	tmp(position);
+//			--tmp;
+//			if (tmp->first < val.first)
+//				ret = this->BSTInsert(position.node(), newNode);
+//		}
 
-		mapNode<value_type>*	newNode = new mapNode<value_type>(val);
-		std::pair<mapNode<value_type>*, bool>	ret = this->BSTInsert(position.node(), newNode);
-
-		if (ret.second)
-		{
-			++this->m_size;
-		}
-		return ret.first;
+//		if (ret.second)
+//		{
+//			++this->m_size;
+//		}
+//		return ret.first;
 	}
 
 	// 3. range insertion
@@ -184,14 +202,50 @@ public:
 	}
 
 
-//	// 1. erase iterator
-//	void erase(iterator position);
-//
-//	// 2. erase key
-//	size_type	erase(key_type const & k);
-//
-//	// 3. erase range
-//	void erase(iterator first, iterator, last);
+	// 1. erase iterator
+	void erase(iterator position)
+	{
+		mapNode<value_type>*	node(position.node());
+
+		if ((node->left == 0 || node->left == this->firstNode()) &&
+				(node->right == 0 || node->right == this->lastNode()))
+			this->erase_no_children(node);
+		else if (node->left && node->right)
+		{
+			mapNode<value_type>*	successor((++position).node());
+			*node->value = *successor->value;
+			if ((successor->left == 0 || successor->left == this->firstNode()) &&
+				(successor->right == 0 || successor->right == this->lastNode()))
+				this->erase_no_children(successor);
+			else
+				this->erase_one_child(node);
+		}
+		else
+			this->erase_one_child(node);
+
+		--this->m_size;
+	}
+
+	// 2. erase key
+	size_type	erase(key_type const & k)
+	{
+		iterator	it = this->find(k);
+		if (it == this->end())
+			return 0;
+		this->erase(it);
+		return 1;
+	}
+
+	// 3. erase range
+	void erase(iterator first, iterator last)
+	{
+		while (first != last)
+		{
+			iterator	tmp(first);
+			++first;
+			this->erase(tmp);
+		}
+	}
 
 	void swap(map & x)
 	{
@@ -200,24 +254,83 @@ public:
 		*this = tmp;
 	}
 
-	void clear();
+	void clear() { this->erase(this->begin(), this->end()); }
 
 	key_compare		key_comp() const { return this->m_comp; }
 	value_compare	value_comp() const { return this->value_comp(this->m_comp); }
-//
-//	iterator		find(key_type const & k);
-//	const_iterator	find(key_type const & k);
-//
-//	size_type		count(key_type const & k) const;
-//
-//	iterator		lower_bound(key_type const & k);
-//	const_iterator	lower_bound(key_type const & k) const;
-//
-//	iterator		upper_bound(key_type const & k);
-//	const_iterator	upper_bound(key_type const & k) const;
 
-//	std::pair<iterator, iterator>				equal_range(key_type const & k);
-//	std::pair<const_iterator, const_iterator>	equal_range(key_type const & k) const;
+	iterator		find(key_type const & k)
+	{
+		for (iterator it = this->begin(); it != this->end(); ++it)
+		{
+			if (it->first == k)
+				return it;
+		}
+		return this->end();
+	}
+
+	const_iterator	find(key_type const & k) const
+	{
+		for (iterator it = this->begin(); it != this->end(); ++it)
+		{
+			if (it->first == k)
+				return it;
+		}
+		return this->end();
+	}
+
+	size_type		count(key_type const & k) const
+	{
+		for (iterator it = this->begin(); it != this->end(); ++it)
+		{
+			if (it->first == k)
+				return 1;
+		}
+		return 0;
+	}
+
+	iterator		lower_bound(key_type const & k)
+	{
+		for (iterator it = this->begin(); it != this->end(); ++it)
+		{
+			if (!this->key_comp()(it->first, k))
+				return it;
+		}
+		return this->end();
+	}
+
+	const_iterator	lower_bound(key_type const & k) const
+	{
+		for (iterator it = this->begin(); it != this->end(); ++it)
+		{
+			if (!this->key_comp()(it->first, k))
+				return it;
+		}
+		return this->end();
+	}
+
+	iterator		upper_bound(key_type const & k)
+	{
+		for (iterator it = this->begin(); it != this->end(); ++it)
+		{
+			if (this->key_comp()(it->first, k))
+				return it;
+		}
+		return this->end();
+	}
+
+	const_iterator	upper_bound(key_type const & k) const
+	{
+		for (iterator it = this->begin(); it != this->end(); ++it)
+		{
+			if (this->key_comp()(it->first, k))
+				return it;
+		}
+		return this->end();
+	}
+
+	std::pair<iterator, iterator>				equal_range(key_type const & k) { return std::make_pair(this->lower_bound(k), this->upper_bound(k)); }
+	std::pair<const_iterator, const_iterator>	equal_range(key_type const & k) const { return std::make_pair(this->lower_bound(k), this->upper_bound(k)); }
 
 	allocator_type	get_allocator() const { return this->m_alloc; }
 
@@ -293,6 +406,33 @@ private:
 		}
 		std::cout << "LOLOL THIS WILL NEVER PRINT LOLOLOL AT LEAST I HOPE SO LOL" << std::endl;
 		return std::pair<mapNode<value_type>*, bool>(0, false);
+	}
+
+	void erase_no_children(mapNode<value_type> *& node)
+	{
+		if (node != this->root())
+		{
+			if (node == node->parent->right)
+				node->parent->right = 0;
+			else if (node == node->parent->left)
+				node->parent->left = 0;
+		}
+		delete node;
+		node = 0;
+	}
+	void erase_one_child(mapNode<value_type> *& node)
+	{
+		mapNode<value_type>*	child;
+		child = (node->left) ? node->left : node->right;
+		if (node == this->root())
+			this->m_root = child;
+		else if (node == node->parent->left)
+			node->parent->left = child;
+		else if (node == node->parent->right)
+			node->parent->right = child;
+		child->parent = node->parent;
+		delete node;
+		node = 0;
 	}
 
 	void rotateLeft(mapNode<value_type>*& root, mapNode<value_type>*& node)

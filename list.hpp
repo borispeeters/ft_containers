@@ -25,7 +25,7 @@ public:
 	typedef ft::constListIterator<value_type>							const_iterator;
 //	typedef std::reverse_iterator<iterator>								reverse_iterator;
 //	typedef std::reverse_iterator<const_iterator>						const_reverse_iterator;
-//	typedef typename ft::iterator_traits<iterator>::difference_type		difference_type;
+	typedef typename ft::iterator_traits<iterator>::difference_type		difference_type;
 	typedef	typename allocator_type::size_type							size_type;
 
 private:
@@ -89,7 +89,7 @@ public:
 	}
 
 	// assignment operator overload
-	list&	operator=(list const & other);
+	list&	operator=(list const & rhs);
 
 	iterator		begin() { return this->head()->next; }
 	const_iterator	begin() const { return this->head()->next; }

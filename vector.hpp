@@ -137,14 +137,12 @@ public:
 	const_reference	operator[](size_type n) const { return *(this->m_data + n); }
 	reference		at (size_type n)
 	{
-		if (n < 0 || n >= this->size())
-			throw std::out_of_range("vector");
+		if (n >= this->size()) throw std::out_of_range("vector");
 		return *(this->m_data + n);
 	}
 	const_reference	at (size_type n) const
 	{
-		if (n < 0 || n >= this->size())
-			throw std::out_of_range("vector");
+		if (n >= this->size()) throw std::out_of_range("vector");
 		return *(this->m_data + n);
 	}
 	reference   	front() { return *(this->m_data); }

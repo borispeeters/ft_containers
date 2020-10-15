@@ -34,15 +34,28 @@ int main ()
 \*																		*/
 
 
-	ft::map<char, std::string>	mp;
-
+	std::map<char, std::string>	mp;
 	std::pair<ft::map<char, std::string>::iterator, bool>	p;
 
+	std::map<char, std::string>::iterator mit;
 
-	mp.insert(mp.end(), std::make_pair('a', "first element"));
-	mp.insert(mp.end(), std::make_pair('b', "second element"));
-	mp.insert(mp.end(), std::make_pair('c', "third element"));
-	mp.insert(mp.end(), std::make_pair('d', "last element"));
+	mp.insert(std::make_pair('A', "test lol"));
+	mp.insert(std::make_pair('B', "another test lol"));
+	mp.insert(std::make_pair('C', "final test lol"));
+
+	mit = mp.end();
+
+	--mit;
+
+	std::cout << "-first-" << std::endl;
+	mp.insert(mit, std::make_pair('a', "first element"));
+	std::cout << "-second-" << std::endl;
+	mp.insert(mit, std::make_pair('b', "second element"));
+	std::cout << "-third-" << std::endl;
+	mp.insert(mit, std::make_pair('c', "third element"));
+	std::cout << "-last-" << std::endl;
+	mp.insert(mit, std::make_pair('d', "last element"));
+	std::cout << "-done motherfuckers-" << std::endl;
 
 //	mp['a'] = "first element";
 //	mp['b'] = "second element";
@@ -58,7 +71,7 @@ int main ()
 
 	std::cout << std::endl << "this boi has a size of " << mp.size() << std::endl << std::endl;
 
-	ft::map<char, std::string>::iterator mit = mp.begin();
+
 	for (mit = mp.begin(); mit != mp.end(); ++mit)
 		std::cout << mit->first << " => " << mit->second << std::endl;
 
