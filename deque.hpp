@@ -30,32 +30,37 @@ private:
 	map_pointer		m_map;
 	size_type const	m_map_size;
 	size_type		m_size;
+	size_type		m_map_amount;
 	allocator_type	m_alloc;
 
 public:
 	// 1. default constructor
 	explicit deque(allocator_type const & alloc = allocator_type()):
 		m_map(0),
-		m_map_size(8),
+		m_map_size((sizeof(value_type) < 512) ? size_type(512 / sizeof(value_type)) : size_type(1)),
 		m_size(0),
+		m_map_amount(0),
 		m_alloc(alloc)
-	{
-		this->m_map = new pointer[1];
-	}
+	{}
 
 	// 2. fill constructor
 	explicit deque(size_type n, value_type const & val = value_type(), allocator_type const & alloc = allocator_type()):
 		m_map(0),
-		m_map_size(8),
-		m_size(0),
+		m_map_size((sizeof(value_type) < 512) ? size_type(512 / sizeof(value_type)) : size_type(1)),
+		m_size(n),
+		m_map_amount(this->size() / this->map_size()),
 		m_alloc(alloc)
-	{}
+	{
+		this->m_map_amount = this->size() / this->map_size();
+
+		this->m_map = new pointer[this->size() / this->map_size()];
+	}
 
 	// 3. range constructor
 	template <class Iterator>
 	deque(Iterator first, Iterator last, allocator_type const & alloc = allocator_type()):
 		m_map(0),
-		m_map_size(8),
+		m_map_size((sizeof(value_type) < 512) ? size_type(512 / sizeof(value_type)) : size_type(1)),
 		m_size(0),
 		m_alloc(alloc)
 	{}
@@ -63,7 +68,7 @@ public:
 	// 4. copy constructor
 	deque(deque const & other):
 		m_map(0),
-		m_map_size(8),
+		m_map_size((sizeof(value_type) < 512) ? size_type(512 / sizeof(value_type)) : size_type(1)),
 		m_size(0),
 		m_alloc(other.get_allocator())
 	{}
@@ -136,6 +141,9 @@ public:
 	void clear();
 
 	allocator_type	get_allocator() const { return this->m_alloc; }
+
+private:
+	size_type	map_size() const { return this->m_map_size; }
 
 };
 
