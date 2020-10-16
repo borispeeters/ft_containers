@@ -8,6 +8,7 @@
 
 int main ()
 {
+	const std::vector<int>	ve;
 	std::vector<int>	ve;
 	ve.push_back(1);
 	ve.push_back(2);
@@ -39,13 +40,19 @@ int main ()
 //	mp['c'] = "third element";
 //	mp['d'] = "last element";
 
-//	mp.insert(std::make_pair('a', "first element"));
-//	mp.insert(std::make_pair('b', "second element"));
-//	mp.insert(std::make_pair('c', "third element"));
-//	mp.insert(std::make_pair('d', "last element"));
+	mp.insert(std::make_pair('a', "first element"));
+	mp.insert(std::make_pair('c', "second element"));
+	mp.insert(std::make_pair('e', "third element"));
+	mp.insert(std::make_pair('g', "last element"));
+//
+//	mp.erase('g');
 
 //	std::cout << std::endl << "this boi has a size of " << mp.size() << std::endl << std::endl;
 
+
+	mit = mp.end();
+
+	std::cout << mit->first << " => " << mit->second << std::endl;
 
 //	for (mit = mp.begin(); mit != mp.end(); ++mit)
 //		std::cout << mit->first << " => " << mit->second << std::endl;
@@ -65,8 +72,8 @@ de.push_back(24);
 
 de.resize(7);
 
-for (int value : de)
-	std::cout << value << std::endl;
+//for (int value : de)
+//	std::cout << value << std::endl;
 
 
 /*																		*\

@@ -14,10 +14,12 @@ public:
 	typedef	T								value_type;
 	typedef std::ptrdiff_t					difference_type;
 	typedef value_type*						pointer;
+	typedef const value_type*				const_pointer;
 	typedef value_type&						reference;
+	typedef const value_type&				const_reference;
 	typedef	ft::bidirectional_iterator_tag	iterator_category;
 
-private:
+protected:
 	mapNode<value_type>*	m_node;
 
 public:
@@ -39,7 +41,6 @@ public:
 		{
 			this->m_node = this->node()->right;
 			this->m_node = leftEnd(this->node());
-			std::cout << "yey" << m_node->value->first << std::endl;
 		}
 		else
 		{
@@ -117,6 +118,38 @@ private:
 
 	mapNode<value_type>*	firstNode() { return leftEnd(findRoot()); }
 	mapNode<value_type>*	lastNode() { return rightEnd(findRoot()); }
+};
+
+template<class T>
+class constMapIterator : public mapIterator<T>
+{
+public:
+	typedef T								value_type;
+	typedef std::ptrdiff_t					difference_type;
+	typedef value_type*						pointer;
+	typedef const value_type*				const_pointer;
+	typedef value_type&						reference;
+	typedef const value_type&				const_reference;
+	typedef ft::bidirectional_iterator_tag	iterator_category;
+
+	constMapIterator(): mapIterator<value_type>() {}
+	constMapIterator(mapNode<value_type>* n): mapIterator<value_type>(n) {}
+	constMapIterator(mapIterator<value_type> const & other): mapIterator<value_type>(other) {}
+	constMapIterator(constMapIterator const & other): mapIterator<value_type>(other.node()) {}
+	constMapIterator&	operator=(mapIterator<value_type> const & rhs)
+	{
+		if (&rhs != this) this->m_node = rhs.node();
+		return *this;
+	}
+	constMapIterator&	operator=(constMapIterator const & rhs)
+	{
+		if (&rhs != this) this->m_node = rhs.node();
+		return *this;
+	}
+	virtual ~constMapIterator() {}
+
+	const_pointer	operator->() const { return this->node()->value; }
+	const_reference	operator*() const { return *this->node()->value; }
 };
 
 }; //end of namespace ft

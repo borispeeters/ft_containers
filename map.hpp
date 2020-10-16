@@ -24,30 +24,29 @@ template <class Key,											// map::key_type
 class map
 {
 public:
-	typedef Key												key_type;
-	typedef T												mapped_type;
-	typedef std::pair<const key_type, mapped_type>			value_type;
-	typedef Compare											key_compare;
-//	typedef lolwat											value_compare;
-	typedef Alloc											allocator_type;
-	typedef typename allocator_type::reference				reference;
-	typedef typename allocator_type::const_reference		const_reference;
-	typedef typename allocator_type::pointer				pointer;
-	typedef typename allocator_type::const_pointer			const_pointer;
-	typedef ft::mapIterator<value_type>						iterator;
-	typedef ft::mapIterator<const value_type>				const_iterator;
-//	typedef std::reverse_iterator<iterator>					reverse_iterator;
-//	typedef std::reverse_iterator<const_iterator>			const_reverse_iterator;
-//	typedef ft::iterator_traits<iterator>::difference_type	difference_type;
-	typedef typename allocator_type::size_type				size_type;
+	typedef Key														key_type;
+	typedef T														mapped_type;
+	typedef std::pair<const key_type, mapped_type>					value_type;
+	typedef Compare													key_compare;
+//	typedef lolwat													value_compare;
+	typedef Alloc													allocator_type;
+	typedef typename allocator_type::reference						reference;
+	typedef typename allocator_type::const_reference				const_reference;
+	typedef typename allocator_type::pointer						pointer;
+	typedef typename allocator_type::const_pointer					const_pointer;
+	typedef ft::mapIterator<value_type>								iterator;
+	typedef ft::constMapIterator<value_type>						const_iterator;
+//	typedef ft::reverse_iterator<iterator>							reverse_iterator;
+//	typedef ft::reverse_iterator<const_iterator>					const_reverse_iterator;
+	typedef typename ft::iterator_traits<iterator>::difference_type	difference_type;
+	typedef typename allocator_type::size_type						size_type;
 
-	// yoinked from the cplusplus site
 	struct value_compare : public std::binary_function<value_type, value_type, bool>
 	{
 		friend class map;
 	protected:
 		Compare	comp;
-		value_compare (Compare c) : comp(c) {}
+		value_compare(Compare c): comp(c) {}
 	public:
 		typedef bool		result_type;
 		typedef value_type	first_argument_type;
@@ -210,18 +209,17 @@ public:
 		if ((node->left == 0 || node->left == this->firstNode()) &&
 				(node->right == 0 || node->right == this->lastNode()))
 			this->erase_no_children(node);
-		else if (node->left && node->right)
+		else if (node->left && node->left != firstNode() &&
+		node->right && node->right != lastNode())
 		{
 			mapNode<value_type>*	successor((++position).node());
-			*node->value = *successor->value;
+//			*node->value = *successor->value;
 			if ((successor->left == 0 || successor->left == this->firstNode()) &&
 				(successor->right == 0 || successor->right == this->lastNode()))
 				this->erase_no_children(successor);
-			else
-				this->erase_one_child(node);
+			else this->erase_one_child(node);
 		}
-		else
-			this->erase_one_child(node);
+		else this->erase_one_child(node);
 
 		--this->m_size;
 	}
@@ -263,8 +261,7 @@ public:
 	{
 		for (iterator it = this->begin(); it != this->end(); ++it)
 		{
-			if (it->first == k)
-				return it;
+			if (!this->key_comp()(it->first, k) && !this->key_comp()(k, it->first)) return it;
 		}
 		return this->end();
 	}
@@ -273,8 +270,7 @@ public:
 	{
 		for (iterator it = this->begin(); it != this->end(); ++it)
 		{
-			if (it->first == k)
-				return it;
+			if (!this->key_comp()(it->first, k) && !this->key_comp()(k, it->first)) return it;
 		}
 		return this->end();
 	}
@@ -283,8 +279,7 @@ public:
 	{
 		for (iterator it = this->begin(); it != this->end(); ++it)
 		{
-			if (it->first == k)
-				return 1;
+			if (!this->key_comp()(it->first, k) && !this->key_comp()(k, it->first)) return 1;
 		}
 		return 0;
 	}
@@ -293,8 +288,7 @@ public:
 	{
 		for (iterator it = this->begin(); it != this->end(); ++it)
 		{
-			if (!this->key_comp()(it->first, k))
-				return it;
+			if (!this->key_comp()(it->first, k)) return it;
 		}
 		return this->end();
 	}
@@ -303,8 +297,7 @@ public:
 	{
 		for (iterator it = this->begin(); it != this->end(); ++it)
 		{
-			if (!this->key_comp()(it->first, k))
-				return it;
+			if (!this->key_comp()(it->first, k)) return it;
 		}
 		return this->end();
 	}
@@ -313,8 +306,7 @@ public:
 	{
 		for (iterator it = this->begin(); it != this->end(); ++it)
 		{
-			if (this->key_comp()(it->first, k))
-				return it;
+			if (this->key_comp()(k, it->first)) return it;
 		}
 		return this->end();
 	}
@@ -323,8 +315,7 @@ public:
 	{
 		for (iterator it = this->begin(); it != this->end(); ++it)
 		{
-			if (this->key_comp()(it->first, k))
-				return it;
+			if (this->key_comp()(k, it->first)) return it;
 		}
 		return this->end();
 	}
@@ -351,7 +342,7 @@ private:
 			this->firstNode()->parent = this->root();
 			this->root()->right = this->lastNode();
 			this->lastNode()->parent = this->root();
-			std::cout << "root inserted" << std::endl;
+//			std::cout << "root inserted" << std::endl;
 			return std::make_pair(this->root(), true);
 		}
 
@@ -360,45 +351,45 @@ private:
 			if (curr != firstNode() && curr != lastNode() && newNode->value->first == curr->value->first)
 			{
 				delete newNode;
-				std::cout << "element already existed" << std::endl;
+//				std::cout << "element already existed" << std::endl;
 				return std::make_pair(curr, false);
 			}
 			else if (newNode->value->first < curr->value->first)
 			{
-				if (curr->left == this->firstNode() || curr == this->firstNode())
+				if (curr->left == this->firstNode())
 				{
 					newNode->parent = curr;
 					newNode->left = this->firstNode();
 					curr->left = newNode;
 					this->firstNode()->parent = newNode;
-					std::cout << "element inserted at the begin" << std::endl;
+//					std::cout << "element inserted at the begin" << std::endl;
 					return std::make_pair(newNode, true);
 				}
 				else if (curr->left == 0)
 				{
 					curr->left = newNode;
 					newNode->parent = curr;
-					std::cout << "element inserted to the left" << std::endl;
+//					std::cout << "element inserted to the left" << std::endl;
 					return std::make_pair(newNode, true);
 				}
 				curr = curr->left;
 			}
 			else if (newNode->value->first > curr->value->first)
 			{
-				if (curr->right == this->lastNode() || curr == this->lastNode())
+				if (curr->right == this->lastNode())
 				{
 					newNode->parent = curr;
 					newNode->right = this->lastNode();
 					curr->right = newNode;
 					this->lastNode()->parent = newNode;
-					std::cout << "element inserted at the end" << std::endl;
+//					std::cout << "element inserted at the end" << std::endl;
 					return std::make_pair(newNode, true);
 				}
 				else if (curr->right == 0)
 				{
 					curr->right = newNode;
 					newNode->parent = curr;
-					std::cout << "element inserted to the right" << std::endl;
+//					std::cout << "element inserted to the right" << std::endl;
 					return std::make_pair(newNode, true);
 				}
 				curr = curr->right;
@@ -413,9 +404,21 @@ private:
 		if (node != this->root())
 		{
 			if (node == node->parent->right)
+			{
+				if (node == this->lastNode()->parent)
+				{
+					;
+				}
 				node->parent->right = 0;
+			}
 			else if (node == node->parent->left)
+			{
+				if (node == this->firstNode()->parent)
+				{
+					;
+				}
 				node->parent->left = 0;
+			}
 		}
 		delete node;
 		node = 0;
@@ -423,13 +426,42 @@ private:
 	void erase_one_child(mapNode<value_type> *& node)
 	{
 		mapNode<value_type>*	child;
-		child = (node->left) ? node->left : node->right;
+		if (node->left && node->left != this->firstNode())
+			child = node->left;
+		else if (node->right && node->right != this->lastNode())
+			child = node->right;
 		if (node == this->root())
+		{
 			this->m_root = child;
+			if (child == node->left)
+			{
+				this->lastNode()->parent = this->root();
+				this->root()->right = this->lastNode();
+			}
+			else if (child == node->right)
+			{
+				this->root()->left = this->firstNode();
+				this->firstNode()->parent = this->root();
+			}
+		}
 		else if (node == node->parent->left)
+		{
+			if (node->left == this->firstNode())
+			{
+				child->left = this->firstNode();
+				this->firstNode()->parent = child;
+			}
 			node->parent->left = child;
+		}
 		else if (node == node->parent->right)
+		{
+			if (node->right == this->lastNode())
+			{
+				child->right = this->lastNode();
+				this->lastNode()->parent = child;
+			}
 			node->parent->right = child;
+		}
 		child->parent = node->parent;
 		delete node;
 		node = 0;
@@ -544,9 +576,9 @@ private:
 
 	mapNode<value_type>*	search(mapNode<value_type>* root, key_type const & key)
 	{
-		if (!root || key == root->value->first)
+		if (!root || (!this->key_comp()(key, root->value->first) && !this->key_comp()(root->value->first, key)))
 			return root;
-		if (key > root->value->first)
+		if (this->key_comp()(root->value->first, key))
 			return search(root->right, key);
 		return search(root->left, key);
 	}

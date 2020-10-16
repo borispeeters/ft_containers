@@ -14,8 +14,8 @@ public:
 	typedef	T								value_type;
 	typedef	std::ptrdiff_t					difference_type;
 	typedef	value_type*						pointer;
-	typedef value_type&						reference;
 	typedef const value_type* 				const_pointer;
+	typedef value_type&						reference;
 	typedef const value_type&				const_reference;
 	typedef ft::bidirectional_iterator_tag	iterator_category;
 
@@ -71,8 +71,8 @@ public:
 	typedef	T								value_type;
 	typedef	std::ptrdiff_t					difference_type;
 	typedef	value_type*						pointer;
-	typedef value_type&						reference;
 	typedef const value_type* 				const_pointer;
+	typedef value_type&						reference;
 	typedef const value_type&				const_reference;
 	typedef ft::bidirectional_iterator_tag	iterator_category;
 
