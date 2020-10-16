@@ -23,25 +23,53 @@ public:
 //	typedef typename ft::iterator_traits<iterator>::difference_type	difference_type;
 	typedef typename allocator_type::size_type						size_type;
 
+protected:
+	typedef pointer*	map_pointer;
+
 private:
-	// variables
+	map_pointer		m_map;
+	size_type const	m_map_size;
+	size_type		m_size;
+	allocator_type	m_alloc;
 
 public:
 	// 1. default constructor
-	explicit deque(allocator_type const & alloc = allocator_type());
+	explicit deque(allocator_type const & alloc = allocator_type()):
+		m_map(0),
+		m_map_size(8),
+		m_size(0),
+		m_alloc(alloc)
+	{
+		this->m_map = new pointer[1];
+	}
 
 	// 2. fill constructor
-	explicit deque(size_type n, value_type const & val = value_type(), allocator_type const & alloc = allocator_type());
+	explicit deque(size_type n, value_type const & val = value_type(), allocator_type const & alloc = allocator_type()):
+		m_map(0),
+		m_map_size(8),
+		m_size(0),
+		m_alloc(alloc)
+	{}
 
 	// 3. range constructor
 	template <class Iterator>
-	deque(Iterator first, Iterator last, allocator_type const & alloc = allocator_type());
+	deque(Iterator first, Iterator last, allocator_type const & alloc = allocator_type()):
+		m_map(0),
+		m_map_size(8),
+		m_size(0),
+		m_alloc(alloc)
+	{}
 
 	// 4. copy constructor
-	deque(deque const & other);
+	deque(deque const & other):
+		m_map(0),
+		m_map_size(8),
+		m_size(0),
+		m_alloc(other.get_allocator())
+	{}
 
 	// destructor
-	~deque();
+	~deque() {}
 
 	// assignment operator overload
 	deque&	operator=(deque const & rhs);
@@ -56,8 +84,8 @@ public:
 	reverse_iterator		rend();
 	const_reverse_iterator	rend() const;
 
-	size_type	size() const;
-	size_type	max_size() const;
+	size_type	size() const { return this->m_size; }
+	size_type	max_size() const { return this->get_allocator().max_size(); }
 
 	void resize(size_type n, value_type val = value_type());
 
@@ -107,7 +135,7 @@ public:
 
 	void clear();
 
-	allocator_type	get_allocator() const;
+	allocator_type	get_allocator() const { return this->m_alloc; }
 
 };
 
