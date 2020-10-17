@@ -200,7 +200,6 @@ public:
 		}
 	}
 
-
 	// 1. erase iterator
 	void erase(iterator position)
 	{
@@ -259,30 +258,29 @@ public:
 
 	iterator		find(key_type const & k)
 	{
-		for (iterator it = this->begin(); it != this->end(); ++it)
+		mapNode<value_type>*	node(this->root());
+		while (node && node != this->firstNode() && node != this->lastNode())
 		{
-			if (!this->key_comp()(it->first, k) && !this->key_comp()(k, it->first)) return it;
+			if (!this->key_comp()(node->value->first, k) && !this->key_comp()(k, node->value->first)) return iterator(node);
+			else if (this->key_comp()(node->value->first, k)) node = node->right;
+			else if (this->key_comp()(k, node->value->first)) node = node->left;
 		}
 		return this->end();
 	}
 
 	const_iterator	find(key_type const & k) const
 	{
-		for (iterator it = this->begin(); it != this->end(); ++it)
+		mapNode<value_type>*	node(this->root());
+		while (node && node != this->firstNode() && node != this->lastNode())
 		{
-			if (!this->key_comp()(it->first, k) && !this->key_comp()(k, it->first)) return it;
+			if (!this->key_comp()(node->value->first, k) && !this->key_comp()(k, node->value->first)) return const_iterator(node);
+			else if (this->key_comp()(node->value->first, k)) node = node->right;
+			else if (this->key_comp()(k, node->value->first)) node = node->left;
 		}
 		return this->end();
 	}
 
-	size_type		count(key_type const & k) const
-	{
-		for (iterator it = this->begin(); it != this->end(); ++it)
-		{
-			if (!this->key_comp()(it->first, k) && !this->key_comp()(k, it->first)) return 1;
-		}
-		return 0;
-	}
+	size_type		count(key_type const & k) const { return this->find(k) != this->end(); }
 
 	iterator		lower_bound(key_type const & k)
 	{
@@ -342,7 +340,6 @@ private:
 			this->firstNode()->parent = this->root();
 			this->root()->right = this->lastNode();
 			this->lastNode()->parent = this->root();
-//			std::cout << "root inserted" << std::endl;
 			return std::make_pair(this->root(), true);
 		}
 
@@ -351,7 +348,6 @@ private:
 			if (curr != firstNode() && curr != lastNode() && newNode->value->first == curr->value->first)
 			{
 				delete newNode;
-//				std::cout << "element already existed" << std::endl;
 				return std::make_pair(curr, false);
 			}
 			else if (newNode->value->first < curr->value->first)
@@ -362,14 +358,12 @@ private:
 					newNode->left = this->firstNode();
 					curr->left = newNode;
 					this->firstNode()->parent = newNode;
-//					std::cout << "element inserted at the begin" << std::endl;
 					return std::make_pair(newNode, true);
 				}
 				else if (curr->left == 0)
 				{
 					curr->left = newNode;
 					newNode->parent = curr;
-//					std::cout << "element inserted to the left" << std::endl;
 					return std::make_pair(newNode, true);
 				}
 				curr = curr->left;
@@ -382,14 +376,12 @@ private:
 					newNode->right = this->lastNode();
 					curr->right = newNode;
 					this->lastNode()->parent = newNode;
-//					std::cout << "element inserted at the end" << std::endl;
 					return std::make_pair(newNode, true);
 				}
 				else if (curr->right == 0)
 				{
 					curr->right = newNode;
 					newNode->parent = curr;
-//					std::cout << "element inserted to the right" << std::endl;
 					return std::make_pair(newNode, true);
 				}
 				curr = curr->right;
