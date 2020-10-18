@@ -8,7 +8,6 @@
 
 int main ()
 {
-	const std::vector<int>	ve;
 	std::vector<int>	ve;
 	ve.push_back(1);
 	ve.push_back(2);
@@ -27,8 +26,8 @@ int main ()
 \*																		*/
 
 
-	std::map<char, std::string>	mp;
-	std::map<char, std::string>::iterator mit;
+	ft::map<char, std::string>	mp;
+	ft::map<char, std::string>::iterator mit;
 
 //	mp.insert(std::make_pair('A', "test lol"));
 //	mp.insert(std::make_pair('B', "another test lol"));
@@ -40,22 +39,20 @@ int main ()
 //	mp['c'] = "third element";
 //	mp['d'] = "last element";
 
-	mp.insert(std::make_pair('a', "first element"));
-	mp.insert(std::make_pair('c', "second element"));
-	mp.insert(std::make_pair('e', "third element"));
-	mp.insert(std::make_pair('g', "last element"));
+	mit = mp.begin();
+
+	mp.insert(mit, std::make_pair('a', "first element"));
+	mp.insert(mit, std::make_pair('c', "second element"));
+	mp.insert(mit, std::make_pair('e', "third element"));
+	mp.insert(mit, std::make_pair('g', "last element"));
 //
 //	mp.erase('g');
 
-//	std::cout << std::endl << "this boi has a size of " << mp.size() << std::endl << std::endl;
+	std::cout << std::endl << "this boi has a size of " << mp.size() << std::endl << std::endl;
 
 
-	mit = mp.end();
-
-	std::cout << mit->first << " => " << mit->second << std::endl;
-
-//	for (mit = mp.begin(); mit != mp.end(); ++mit)
-//		std::cout << mit->first << " => " << mit->second << std::endl;
+	for (mit = mp.begin(); mit != mp.end(); ++mit)
+		std::cout << mit->first << " => " << mit->second << std::endl;
 
 
 /*																		*\

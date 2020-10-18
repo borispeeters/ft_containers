@@ -138,9 +138,7 @@ public:
 	// 1. single element insertion
 	std::pair<iterator, bool> insert(value_type const & val)
 	{
-		mapNode<value_type>*	newNode = new mapNode<value_type>(val);
-
-		std::pair<mapNode<value_type>*, bool>	ret = this->BSTInsert(this->root(), newNode);
+		std::pair<mapNode<value_type>*, bool>	ret = this->BSTInsert(this->root(), val);
 
 		if (ret.second)
 		{
@@ -153,39 +151,45 @@ public:
 	// 2. insertion with hint
 	iterator	insert(iterator position, value_type const & val)
 	{
-//		if (position->first == val.first)
-//			return position;
-//		mapNode<value_type>*	newNode = new mapNode<value_type>(val);
-//		std::pair<mapNode<value_type>*, bool>	ret;
-//		if (position == this->begin())
-//		{
-//			if ()
-//		}
-//		else if (position == this->end())
-//		{
-//			asd;
-//		}
-//		else if (position->first < val.first)
-//		{
-//			iterator	tmp(position);
-//			++tmp;
-//			std::cout << "bruh" << std::endl;
-//			if (tmp->first > val.first)
-//				ret = this->BSTInsert(position.node(), newNode);
-//		}
-//		else if (position->first > val.first)
-//		{
-//			iterator	tmp(position);
-//			--tmp;
-//			if (tmp->first < val.first)
-//				ret = this->BSTInsert(position.node(), newNode);
-//		}
+		if (position != this->end() && this->equal(position->first, val.first)) return position;
 
-//		if (ret.second)
-//		{
-//			++this->m_size;
-//		}
-//		return ret.first;
+		std::pair<mapNode<value_type>*, bool>	ret;
+
+		if (this->empty())
+		{
+			ret = this->BSTInsert(this->root(), val);
+		}
+		else if (position == this->end())
+		{
+			--position;
+			if (val.first >= position->first)
+				ret = this->BSTInsert(position.node(), val);
+			else
+				ret = this->BSTInsert(this->root(), val);
+		}
+		else if (position->first < val.first)
+		{
+			iterator	tmp(position);
+			++tmp;
+			if (tmp == this->end() || tmp->first > val.first)
+				ret = this->BSTInsert(position.node(), val);
+			else
+				ret = this->BSTInsert(this->root(), val);
+		}
+		else if (position->first > val.first)
+		{
+			iterator	tmp(position);
+			--tmp;
+			if (tmp->first < val.first)
+				ret = this->BSTInsert(position.node(), val);
+			else
+				ret = this->BSTInsert(this->root(), val);
+		}
+		if (ret.second)
+		{
+			++this->m_size;
+		}
+		return ret.first;
 	}
 
 	// 3. range insertion
@@ -254,14 +258,14 @@ public:
 	void clear() { this->erase(this->begin(), this->end()); }
 
 	key_compare		key_comp() const { return this->m_comp; }
-	value_compare	value_comp() const { return this->value_comp(this->m_comp); }
+	value_compare	value_comp() const { return value_compare(this->m_comp); }
 
 	iterator		find(key_type const & k)
 	{
 		mapNode<value_type>*	node(this->root());
 		while (node && node != this->firstNode() && node != this->lastNode())
 		{
-			if (!this->key_comp()(node->value->first, k) && !this->key_comp()(k, node->value->first)) return iterator(node);
+			if (this->equal(node->value->first, k)) return iterator(node);
 			else if (this->key_comp()(node->value->first, k)) node = node->right;
 			else if (this->key_comp()(k, node->value->first)) node = node->left;
 		}
@@ -273,7 +277,7 @@ public:
 		mapNode<value_type>*	node(this->root());
 		while (node && node != this->firstNode() && node != this->lastNode())
 		{
-			if (!this->key_comp()(node->value->first, k) && !this->key_comp()(k, node->value->first)) return const_iterator(node);
+			if (this->equal(node->value->first, k)) return const_iterator(node);
 			else if (this->key_comp()(node->value->first, k)) node = node->right;
 			else if (this->key_comp()(k, node->value->first)) node = node->left;
 		}
@@ -331,8 +335,10 @@ private:
 		this->firstNode()->parent = this->lastNode();
 	}
 
-	std::pair<mapNode<value_type>*, bool>	BSTInsert(mapNode<value_type>* curr, mapNode<value_type>* newNode)
+	std::pair<mapNode<value_type>*, bool>	BSTInsert(mapNode<value_type>* curr, value_type const & val)
 	{
+		mapNode<value_type>*	newNode = new mapNode<value_type>(val);
+
 		if (this->root() == 0)
 		{
 			this->m_root = newNode;
@@ -345,12 +351,12 @@ private:
 
 		while (curr)
 		{
-			if (curr != firstNode() && curr != lastNode() && newNode->value->first == curr->value->first)
+			if (curr != firstNode() && curr != lastNode() && this->equal(*newNode->value, *curr->value))
 			{
 				delete newNode;
-				return std::make_pair(curr, false);
+				break ;
 			}
-			else if (newNode->value->first < curr->value->first)
+			else if (this->value_comp()(*newNode->value, *curr->value))
 			{
 				if (curr->left == this->firstNode())
 				{
@@ -368,7 +374,7 @@ private:
 				}
 				curr = curr->left;
 			}
-			else if (newNode->value->first > curr->value->first)
+			else if (this->value_comp()(*curr->value, *newNode->value))
 			{
 				if (curr->right == this->lastNode())
 				{
@@ -387,8 +393,7 @@ private:
 				curr = curr->right;
 			}
 		}
-		std::cout << "LOLOL THIS WILL NEVER PRINT LOLOLOL AT LEAST I HOPE SO LOL" << std::endl;
-		return std::pair<mapNode<value_type>*, bool>(0, false);
+		return std::make_pair(curr, false);
 	}
 
 	void erase_no_children(mapNode<value_type> *& node)
@@ -566,14 +571,8 @@ private:
 		root->colour = BLACK;
 	}
 
-	mapNode<value_type>*	search(mapNode<value_type>* root, key_type const & key)
-	{
-		if (!root || (!this->key_comp()(key, root->value->first) && !this->key_comp()(root->value->first, key)))
-			return root;
-		if (this->key_comp()(root->value->first, key))
-			return search(root->right, key);
-		return search(root->left, key);
-	}
+	bool equal(value_type const & x, value_type const & y) const { return (!this->value_comp()(x, y) && !this->value_comp()(y, x)); }
+	bool equal(key_type const & x, key_type const & y) const { return (!this->key_comp()(x, y) && !this->key_comp()(y, x)); }
 
 	mapNode<value_type>*	root() const { return this->m_root; }
 	mapNode<value_type>*	firstNode() const { return this->m_first; }
