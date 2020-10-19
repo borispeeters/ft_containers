@@ -75,19 +75,31 @@ public:
 		this->m_ptr -= rhs.data();
 		return *this;
 	}
-	friend	vectorIterator	operator+(vectorIterator const & lhs, vectorIterator const & rhs) { return vectorIterator(lhs.m_ptr + rhs.m_ptr); }
-	friend	vectorIterator	operator+(vectorIterator const & lhs, difference_type rhs) { return vectorIterator(lhs.m_ptr + rhs); }
-	friend	vectorIterator	operator+(difference_type lhs, vectorIterator const & rhs) { return vectorIterator(lhs + rhs.m_ptr); }
-	friend	vectorIterator	operator-(vectorIterator const & lhs, vectorIterator const & rhs) { return vectorIterator(lhs.m_ptr - rhs.m_ptr); }
-	friend	vectorIterator	operator-(vectorIterator const & lhs, difference_type rhs) { return vectorIterator(lhs.m_ptr - rhs); }
-	friend	vectorIterator	operator-(difference_type lhs, vectorIterator const & rhs) { return vectorIterator(lhs - rhs.m_ptr); }
+	vectorIterator	operator+(vectorIterator const & rhs)
+	{ return vectorIterator(this->data() + rhs.m_ptr); }
+
+	vectorIterator	operator+(difference_type rhs)
+	{ return vectorIterator(this->data() + rhs); }
+
+	friend	vectorIterator	operator+(difference_type lhs, vectorIterator const & rhs)
+	{ return vectorIterator(lhs + rhs.m_ptr); }
+
+	vectorIterator	operator-(vectorIterator const & rhs)
+	{ return vectorIterator(this->data() - rhs.m_ptr); }
+
+	vectorIterator	operator-(difference_type rhs)
+	{ return vectorIterator(this->data() - rhs); }
+
+	friend	vectorIterator	operator-(difference_type lhs, vectorIterator const & rhs)
+	{ return vectorIterator(lhs - rhs.m_ptr); }
+
 	bool		operator==(vectorIterator const & rhs) const { return this->m_ptr == rhs.m_ptr; }
 	bool 		operator!=(vectorIterator const & rhs) const { return !(*this == rhs); }
 	bool 		operator<(vectorIterator const & rhs) const { return this->m_ptr < rhs.m_ptr; }
 	bool 		operator>(vectorIterator const & rhs) const { return rhs < *this; }
 	bool 		operator<=(vectorIterator const & rhs) const { return !(rhs < *this); }
 	bool 		operator>=(vectorIterator const & rhs) const { return !(*this < rhs); }
-	reference	operator[](int index) { return *(this->m_ptr + index); }
+	reference	operator[](difference_type index) { return *(this->m_ptr + index); }
 	pointer		operator->() { return this->m_ptr; }
 	reference	operator*() { return *this->m_ptr; }
 	pointer		data() const { return this->m_ptr; }
