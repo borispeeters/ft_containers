@@ -413,44 +413,14 @@ private:
 
 template <class T, class Alloc>
 bool operator==(list<T, Alloc> const & lhs, list<T, Alloc> const & rhs)
-{
-	typedef typename ft::list<T, Alloc>::size_type	size_type;
-
-	if (lhs.size() != rhs.size()) return false;
-
-	typename ft::list<T, Alloc>::iterator	lit = lhs.begin();
-	typename ft::list<T, Alloc>::iterator	rit = rhs.begin();
-
-	while (lit != lhs.end() && rit != rhs.end())
-	{
-		if (*lit != *rit) return false;
-		++lit;
-		++rit;
-	}
-	return true;
-}
+{ return lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin()); }
 
 template <class T, class Alloc>
 bool operator!=(list<T, Alloc> const & lhs, list<T, Alloc> const & rhs) { return !(lhs == rhs); }
 
 template <class T, class Alloc>
 bool operator<(list<T, Alloc> const & lhs, list<T, Alloc> const & rhs)
-{
-	typedef typename ft::list<T, Alloc>::size_type	size_type;
-
-	if (lhs.size() > rhs.size()) return false;
-
-	typename ft::list<T, Alloc>::iterator lit = lhs.begin();
-	typename ft::list<T, Alloc>::iterator rit = rhs.begin();
-
-	while (lit != lhs.end() && rit != rhs.end())
-	{
-		if (*lit != *rit) return *lit < *rit;
-		++lit;
-		++rit;
-	}
-	return false;
-}
+{ return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()); }
 
 template <class T, class Alloc>
 bool operator<=(list<T, Alloc> const & lhs, list<T, Alloc> const & rhs) { return !(rhs < lhs); }

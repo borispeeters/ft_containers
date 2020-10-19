@@ -270,34 +270,14 @@ private:
 
 template <class T, class Alloc>
 bool operator==(vector<T, Alloc> const & lhs, vector<T, Alloc> const & rhs)
-{
-	typedef typename ft::vector<T, Alloc>::size_type	size_type;
-
-	if (lhs.size() != rhs.size()) return false;
-	for (size_type i = 0; i < lhs.size(); ++i)
-	{
-		if (lhs.at(i) != lhs.at(i)) return false;
-	}
-	return true;
-}
+{ return lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin()); }
 
 template <class T, class Alloc>
 bool operator!=(vector<T, Alloc> const & lhs, vector<T, Alloc> const & rhs) { return !(lhs == rhs); }
 
 template <class T, class Alloc>
 bool operator<(vector<T, Alloc> const & lhs, vector<T, Alloc> const & rhs)
-{
-	typedef typename ft::vector<T, Alloc>::size_type	size_type;
-
-	if (lhs.size() > rhs.size())
-		return false;
-	for (size_type i = 0; i < lhs.size(); ++i)
-	{
-		if (lhs.at(i) != rhs.at(i))
-			return lhs.at(i) < rhs.at(i);
-	}
-	return false;
-}
+{ return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()); }
 
 template <class T, class Alloc>
 bool operator<=(vector<T, Alloc> const & lhs, vector<T, Alloc> const & rhs) { return !(rhs < lhs); }

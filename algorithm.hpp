@@ -81,6 +81,52 @@ Iterator	max_element(Iterator first, Iterator last, Compare comp,
 	return largest;
 }
 
+template <class Iterator1, class Iterator2>
+bool equal(Iterator1 first1, Iterator1 last1, Iterator2 first2)
+{
+	while (first1 != last1)
+	{
+		if (!(*first1 == *first2)) return false;
+		++first1; ++first2;
+	}
+	return true;
+}
+
+template <class Iterator1, class Iterator2, class BinaryPredicate>
+bool equal(Iterator1 first1, Iterator1 last1, Iterator2 first2, BinaryPredicate pred)
+{
+	while (first1 != last1)
+	{
+		if (!pred(*first1, *first2)) return false;
+		++first1; ++first2;
+	}
+	return true;
+}
+
+template <class Iterator1, class Iterator2>
+bool lexicographical_compare(Iterator1 first1, Iterator1 last1, Iterator2 first2, Iterator2 last2)
+{
+	while (first1 != last1)
+	{
+		if (first2 == last2 || *first2 < *first1) return false;
+		else if (*first1 < *first2) return true;
+		++first1; ++first2;
+	}
+	return first2 != last2;
+}
+
+template <class Iterator1, class Iterator2, class Compare>
+bool lexicographical_compare(Iterator1 first1, Iterator1 last1, Iterator2 first2, Iterator2 last2, Compare comp)
+{
+	while (first1 != last1)
+	{
+		if (first2 == last2 || comp(*first2, *first1)) return false;
+		else if (comp(*first1, *first2)) return true;
+		++first1; ++first2;
+	}
+	return first2 != last2;
+}
+
 };
 
 #endif

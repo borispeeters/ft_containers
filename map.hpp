@@ -88,6 +88,7 @@ public:
 		m_alloc(alloc)
 	{
 		this->mapInit();
+		this->insert(first, last);
 	}
 
 	// 3. copy constructor
@@ -187,6 +188,7 @@ public:
 		}
 		if (ret.second)
 		{
+//			fixViolation(this->m_root, ret.first);
 			++this->m_size;
 		}
 		return ret.first;
@@ -211,7 +213,12 @@ public:
 
 		if ((node->left == 0 || node->left == this->firstNode()) &&
 				(node->right == 0 || node->right == this->lastNode()))
+		{
 			this->erase_no_children(node);
+			std::cout << "node: " << node << std::endl;
+			std::cout << "root: " << this->root() << std::endl;
+			std::cout << std::endl;
+		}
 		else if (node->left && node->left != firstNode() &&
 		node->right && node->right != lastNode())
 		{
@@ -327,7 +334,25 @@ public:
 
 	allocator_type	get_allocator() const { return this->m_alloc; }
 
+	void printBT() const {
+		this->printBT("", this->root(), false);
+		std::cout << std::endl;
+	}
 private:
+	void printBT(const std::string& prefix, mapNode<value_type>* trav, bool isLeft) const {
+		if (trav && trav != this->firstNode() && trav != this->lastNode()) {
+			std::cout << prefix;
+			std::cout << (isLeft ? "├──" : "└──" );
+			// print the value of the node
+			if (trav->colour == RED)
+				std::cout << "\033[1;31m";
+			std::cout << trav->value->first << std::endl;
+			std::cout << "\033[0m";
+			// enter the next tree level - left and right branch
+			printBT( prefix + (isLeft ? "│   " : "    "), trav->left, true);
+			printBT( prefix + (isLeft ? "│   " : "    "), trav->right, false);
+		}
+	}
 	void mapInit()
 	{
 		this->m_first = new mapNode<value_type>(BLACK);
@@ -404,22 +429,30 @@ private:
 			{
 				if (node == this->lastNode()->parent)
 				{
-					;
+					node->parent->right = this->lastNode();
+					this->lastNode()->parent = node->parent;
 				}
-				node->parent->right = 0;
+				else node->parent->right = 0;
 			}
 			else if (node == node->parent->left)
 			{
 				if (node == this->firstNode()->parent)
 				{
-					;
+					node->parent->left = this->firstNode();
+					this->lastNode()->parent = node->parent;
 				}
-				node->parent->left = 0;
+				else node->parent->left = 0;
 			}
 		}
+		else this->firstNode()->parent = this->lastNode();
+
+		std::cout << "node: " << node << std::endl;
+		std::cout << "root: " << this->root() << std::endl;
+
 		delete node;
 		node = 0;
 	}
+
 	void erase_one_child(mapNode<value_type> *& node)
 	{
 		mapNode<value_type>*	child;
@@ -579,6 +612,30 @@ private:
 	mapNode<value_type>*	lastNode() const { return this->m_last; }
 
 };
+
+template <class Key, class T, class Compare, class Alloc>
+bool operator==(map<Key, T, Compare, Alloc> const & lhs, map<Key, T, Compare, Alloc> const & rhs)
+{ return lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin()); }
+
+template <class Key, class T, class Compare, class Alloc>
+bool operator!=(map<Key, T, Compare, Alloc> const & lhs, map<Key, T, Compare, Alloc> const & rhs) { return !(lhs == rhs); }
+
+template <class Key, class T, class Compare, class Alloc>
+bool operator<(map<Key, T, Compare, Alloc> const & lhs, map<Key, T, Compare, Alloc> const & rhs)
+{ return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()); }
+
+template <class Key, class T, class Compare, class Alloc>
+bool operator<=(map<Key, T, Compare, Alloc> const & lhs, map<Key, T, Compare, Alloc> const & rhs) { return !(rhs < lhs); }
+
+template <class Key, class T, class Compare, class Alloc>
+bool operator>(map<Key, T, Compare, Alloc> const & lhs, map<Key, T, Compare, Alloc> const & rhs) { return rhs < lhs; }
+
+template <class Key, class T, class Compare, class Alloc>
+bool operator>=(map<Key, T, Compare, Alloc> const & lhs, map<Key, T, Compare, Alloc> const & rhs) { return !(lhs < rhs); }
+
+
+template <class Key, class T, class Compare, class Alloc>
+void swap(map<Key, T, Compare, Alloc> const & x, map<Key, T, Compare, Alloc> const & y) { x.swap(y); }
 
 }; //end of namespace ft
 
