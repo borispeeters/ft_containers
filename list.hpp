@@ -6,8 +6,6 @@
 # include "listIterator.hpp"
 # include "listNode.hpp"
 
-# include <iostream>
-
 namespace ft
 {
 
@@ -23,8 +21,8 @@ public:
 	typedef	typename allocator_type::const_pointer						const_pointer;
 	typedef ft::listIterator<value_type>								iterator;
 	typedef ft::constListIterator<value_type>							const_iterator;
-//	typedef std::reverse_iterator<iterator>								reverse_iterator;
-//	typedef std::reverse_iterator<const_iterator>						const_reverse_iterator;
+	typedef ft::reverse_iterator<iterator>								reverse_iterator;
+	typedef ft::reverse_iterator<const_iterator>						const_reverse_iterator;
 	typedef typename ft::iterator_traits<iterator>::difference_type		difference_type;
 	typedef	typename allocator_type::size_type							size_type;
 
@@ -89,17 +87,25 @@ public:
 	}
 
 	// assignment operator overload
-	list&	operator=(list const & rhs);
+	list&	operator=(list const & rhs)
+	{
+		if (&rhs != this)
+		{
+			this->m_alloc = rhs.get_allocator();
+			this->assign(rhs.begin(), rhs.end());
+		}
+		return *this;
+	}
 
 	iterator		begin() { return this->head()->next; }
 	const_iterator	begin() const { return this->head()->next; }
 	iterator		end() { return this->tail(); }
 	const_iterator	end() const { return this->tail(); }
 
-//	reverse_iterator		rbegin();
-//	const_reverse_iterator	rbegin() const;
-//	reverse_iterator		rend();
-//	const_reverse_iterator	rend() const;
+	reverse_iterator		rbegin() { return reverse_iterator(this->end()); }
+	const_reverse_iterator	rbegin() const { return const_reverse_iterator(this->end()); }
+	reverse_iterator		rend() { return reverse_iterator(this->begin()); }
+	const_reverse_iterator	rend() const { return const_reverse_iterator(this->begin()); }
 
 	bool 		empty() const { return this->size() == 0; }
 	size_type	size() const { return this->m_size; }
@@ -240,22 +246,40 @@ public:
 	// 1. splice entire list
 	void splice(iterator position, list & x)
 	{
-		this->insert(position, x.begin(), x.end());
-		x.clear();
+		if (this != &x && !x.empty())
+		{
+			position.node()->prev->next = x.head()->next;
+			position.node()->prev = x.tail()->prev;
+			x.head()->next->prev = position.node()->prev;
+			x.tail()->prev->next = position.node();
+			x.head()->next = x.tail();
+			x.tail()->prev = x.head();
+			this->m_size += x.size();
+			x.m_size = 0;
+		}
 	}
 
 	// 2. splice single element
 	void splice(iterator position, list & x, iterator i)
 	{
-		this->insert(position, *i);
-		x.erase(i);
+		if (this != &x && !x.empty())
+		{
+			i.node()->prev->next = i.node()->next;
+			i.node()->next->prev = i.node()->prev;
+			i.node()->prev = position.node()->prev;
+//			i.node()
+		}
 	}
 
 	// 3. splice range of elements
 	void splice(iterator position, list & x, iterator first, iterator last)
 	{
-		this->insert(position, first, last);
-		x.erase(first, last);
+		while (first != last)
+		{
+			iterator	tmp(first);
+			++first;
+			this->splice(position, x, first);
+		}
 	}
 
 	void remove(value_type const & val)
@@ -403,8 +427,8 @@ private:
 	{
 		this->m_head = new listNode<value_type>();
 		this->m_tail = new listNode<value_type>();
-		this->m_head->next = this->tail();
-		this->m_tail->prev = this->head();
+		this->head()->next = this->tail();
+		this->tail()->prev = this->head();
 	}
 
 	listNode<value_type>*	head() const { return this->m_head; }

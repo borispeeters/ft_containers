@@ -27,8 +27,6 @@ listIterator.hpp
 /Users/bpeeters/Projects/ft_containers/listIterator.hpp
 listNode.hpp
 /Users/bpeeters/Projects/ft_containers/listNode.hpp
-iostream
--
 
 /Users/bpeeters/Projects/ft_containers/listIterator.hpp
 iterator.hpp
@@ -49,6 +47,8 @@ string
 -
 vector
 -
+vector.hpp
+/Users/bpeeters/Projects/ft_containers/vector.hpp
 list
 -
 list.hpp
@@ -56,6 +56,8 @@ list.hpp
 map.hpp
 /Users/bpeeters/Projects/ft_containers/map.hpp
 algorithm
+-
+iterator
 -
 
 /Users/bpeeters/Projects/ft_containers/map.hpp
@@ -89,4 +91,24 @@ utility
 -
 
 /Users/bpeeters/Projects/ft_containers/type_traits.hpp
+
+/Users/bpeeters/Projects/ft_containers/vector.hpp
+memory
+-
+stdexcept
+-
+algorithm.hpp
+/Users/bpeeters/Projects/ft_containers/algorithm.hpp
+iterator.hpp
+/Users/bpeeters/Projects/ft_containers/iterator.hpp
+type_traits.hpp
+/Users/bpeeters/Projects/ft_containers/type_traits.hpp
+vectorIterator.hpp
+/Users/bpeeters/Projects/ft_containers/vectorIterator.hpp
+
+/Users/bpeeters/Projects/ft_containers/vectorIterator.hpp
+cstddef
+-
+iterator.hpp
+/Users/bpeeters/Projects/ft_containers/iterator.hpp
 

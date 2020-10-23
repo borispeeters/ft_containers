@@ -187,52 +187,95 @@ public:
 };
 
 template <class Iterator>
-bool operator==(reverse_iterator<Iterator> const & lhs, reverse_iterator<Iterator> const & rhs)
-{ return lhs.base() == rhs.base(); }
+bool operator==(reverse_iterator<Iterator> const & lhs, reverse_iterator<Iterator> const & rhs) {
+	return lhs.base() == rhs.base();
+}
 
 template <class Iterator>
-bool operator!=(reverse_iterator<Iterator> const & lhs, reverse_iterator<Iterator> const & rhs)
-{ return lhs.base() != rhs.base(); }
+bool operator!=(reverse_iterator<Iterator> const & lhs, reverse_iterator<Iterator> const & rhs) {
+	return lhs.base() != rhs.base();
+}
 
 template <class Iterator>
-bool operator<(reverse_iterator<Iterator> const & lhs, reverse_iterator<Iterator> const & rhs)
-{ return lhs.base() > rhs.base(); }
+bool operator<(reverse_iterator<Iterator> const & lhs, reverse_iterator<Iterator> const & rhs) {
+	return lhs.base() > rhs.base();
+}
 
 template <class Iterator>
-bool operator>(reverse_iterator<Iterator> const & lhs, reverse_iterator<Iterator> const & rhs)
-{ return lhs.base() < rhs.base(); }
+bool operator>(reverse_iterator<Iterator> const & lhs, reverse_iterator<Iterator> const & rhs) {
+	return lhs.base() < rhs.base();
+}
 
 template <class Iterator>
-bool operator<=(reverse_iterator<Iterator> const & lhs, reverse_iterator<Iterator> const & rhs)
-{ return lhs.base() >= rhs.base(); }
+bool operator<=(reverse_iterator<Iterator> const & lhs, reverse_iterator<Iterator> const & rhs) {
+	return lhs.base() >= rhs.base();
+}
 
 template <class Iterator>
-bool operator>=(reverse_iterator<Iterator> const & lhs, reverse_iterator<Iterator> const & rhs)
-{ return lhs.base() <= rhs.base(); }
+bool operator>=(reverse_iterator<Iterator> const & lhs, reverse_iterator<Iterator> const & rhs) {
+	return lhs.base() <= rhs.base();
+}
 
 template <class Iterator>
 reverse_iterator<Iterator>	operator+(typename reverse_iterator<Iterator>::difference_type n,
-										reverse_iterator<Iterator> const & rev_it)
-{ return reverse_iterator<Iterator>(rev_it.base() - n); }
+										reverse_iterator<Iterator> const & rev_it) {
+	return reverse_iterator<Iterator>(rev_it.base() - n);
+}
 
 template <class Iterator>
 typename reverse_iterator<Iterator>::difference_type
-operator-(reverse_iterator<Iterator> const & lhs, reverse_iterator<Iterator> const & rhs)
-{ return rhs.base() - lhs.base(); }
+operator-(reverse_iterator<Iterator> const & lhs, reverse_iterator<Iterator> const & rhs) {
+	return rhs.base() - lhs.base();
+}
 
-template <class Iterator>
-typename iterator_traits<Iterator>::difference_type
-	distance(Iterator first, Iterator last,
-			 typename ft::_void_t<typename ft::iterator_traits<Iterator>::iterator_category>::type * = 0)
+template <class InputIter>
+typename ft::iterator_traits<InputIter>::difference_type
+	_distance(InputIter first, InputIter last, ft::input_iterator_tag)
 {
-	typename iterator_traits<Iterator>::difference_type	distance = 0;
+	typename ft::iterator_traits<InputIter>::difference_type	dist(0);
+	for (; first != last; ++first)
+		++dist;
+	return dist;
+}
 
-	while (first != last)
-	{
-		++first;
-		++distance;
-	}
-	return distance;
+template <class RandIter>
+typename ft::iterator_traits<RandIter>::difference_type
+	_distance(RandIter first, RandIter last, ft::random_access_iterator_tag) {
+	return last - first;
+}
+
+template <class InputIter>
+typename ft::iterator_traits<InputIter>::difference_type
+	distance(InputIter first, InputIter last,
+			 typename ft::_void_t<typename ft::iterator_traits<InputIter>::iterator_category>::type * = 0) {
+	return ft::_distance(first, last, typename ft::iterator_traits<InputIter>::iterator_category());
+}
+
+template <class InputIter>
+void _advance(InputIter & it,
+			  typename ft::iterator_traits<InputIter>::difference_type n, ft::input_iterator_tag) {
+	for (; n > 0; --n) ++it;
+}
+
+template <class BiDirIter>
+void _advance(BiDirIter & it,
+			  typename ft::iterator_traits<BiDirIter>::difference_type n, ft::bidirectional_iterator_tag)
+{
+	if (n >= 0)
+		for (; n > 0; --n) ++it;
+	else
+		for (; n < 0; ++n) --it;
+}
+
+template <class RandIter>
+void _advance(RandIter & it,
+			  typename ft::iterator_traits<RandIter>::difference_type n, ft::random_access_iterator_tag){
+	it += n;
+}
+
+template <class InputIter>
+void advance(InputIter & it, typename ft::iterator_traits<InputIter>::difference_type n) {
+	ft::_advance(it, n, typename ft::iterator_traits<InputIter>::iterator_category());
 }
 
 }; //end of namespace ft

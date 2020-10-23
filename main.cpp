@@ -3,52 +3,92 @@
 #include <map>
 #include <string>
 #include <vector>
+#include "vector.hpp"
 #include <list>
 #include "list.hpp"
 #include "map.hpp"
 
 #include <algorithm>
+#include <iterator>
 
-void	my_relational_operators() {
-	ft::list<std::string> myList;
-	ft::list<std::string> otherList(6, "");
-	if (myList == otherList)
-		std::cout << "mylist == otherlist" << std::endl;
-	if (myList != otherList)
-		std::cout << "mylist != otherlist" << std::endl;
-	if (myList < otherList)
-		std::cout << "mylist < otherlist" << std::endl;
-	if (myList > otherList)
-		std::cout << "mylist > otherlist" << std::endl;
-	if (myList <= otherList)
-		std::cout << "mylist <= otherlist" << std::endl;
-	if (myList >= otherList)
-		std::cout << "mylist >= otherlist" << std::endl;
+void lol()
+{
+	std::map<int, int>			mymap;
+	std::map<int, int>::iterator it;
+
+	mymap[8] = 8;
+	mymap[3] = 3;
+	mymap[10] = 10;
+	mymap[1] = 1;
+	mymap[6] = 6;
+	mymap[14] = 14;
+	mymap[7] = 7;
+	mymap[13] = 13;
+
+	it = mymap.find(13);
+	--it;
+	std::cout << "*it = " << it->first << " >= " << it->second << std::endl;
 }
 
-void	relational_operators() {
-	std::list<std::string> myList;
-	std::list<std::string> otherList(6, "");
-	if (myList == otherList)
-		std::cout << "mylist == otherlist" << std::endl;
-	if (myList != otherList)
-		std::cout << "mylist != otherlist" << std::endl;
-	if (myList < otherList)
-		std::cout << "mylist < otherlist" << std::endl;
-	if (myList > otherList)
-		std::cout << "mylist > otherlist" << std::endl;
-	if (myList <= otherList)
-		std::cout << "mylist <= otherlist" << std::endl;
-	if (myList >= otherList)
-		std::cout << "mylist >= otherlist" << std::endl;
+void list_splice()
+{
+	std::list<int>	l1;
+	for (int i = 1; i <= 5; ++i)
+		l1.push_back(i);
+
+	std::list<int>	l2;
+	for (int i = 8; i <= 10; ++i)
+		l2.push_front(i);
+
+	std::list<int>::iterator	i1 = l1.begin();
+	++i1;
+
+	std::list<int>::iterator	i2 = l2.begin();
+	++i2;
+
+	l1.splice(i1, l2, i2);
+
+	std::cout << "l1 size: " << l1.size() << std::endl;
+	std::cout << "l2 size: " << l2.size() << std::endl;
+
+	std::cout << std::endl;
+
+	std::cout << "l1 contains: " << std::endl;
+	for (int value : l1)
+		std::cout << value << std::endl;
+
+	std::cout << std::endl;
+
+	std::cout << "l2 contains: " << std::endl;
+	for (int value : l2)
+		std::cout << value << std::endl;
+
+//	system("leaks ft_containers");
 }
 
 int main ()
 {
-	std::cout << "std: " << std::endl;
-	relational_operators();
-	std::cout << std::endl << "ft: " << std::endl;
-	my_relational_operators();
+	list_splice();
+//	lol();
+	return 0;
+
+	ft::vector<int> first(3,100);   // three ints with a value of 100
+	ft::vector<int> second(5,200);  // five ints with a value of 200
+
+	first.swap(second);
+
+	std::cout << "first contains:";
+	for (ft::vector<int>::iterator it=first.begin(); it != first.end(); it++)
+		std::cout << ' ' << *it;
+	std::cout << '\n';
+
+	std::cout << "second contains:";
+	for (ft::vector<int>::iterator it=second.begin(); it!=second.end(); it++)
+		std::cout << ' ' << *it;
+	std::cout << '\n';
+
+
+//	system("leaks ft_containers");
 
 	return 0;
 

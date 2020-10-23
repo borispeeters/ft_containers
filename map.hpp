@@ -604,6 +604,18 @@ private:
 		root->colour = BLACK;
 	}
 
+	mapNode<value_type>*	findNode(iterator position)
+	{
+		mapNode<value_type>*	node(this->root());
+		while (node && node != this->firstNode() && node != this->lastNode())
+		{
+			if (this->key_comp()(position->first, node->value->first)) node = node->left;
+			else if (this->key_comp()(node->value->first, position->first)) node = node->right;
+			else return (node);
+		}
+		return this->lastNode();
+	}
+
 	bool equal(value_type const & x, value_type const & y) const { return (!this->value_comp()(x, y) && !this->value_comp()(y, x)); }
 	bool equal(key_type const & x, key_type const & y) const { return (!this->key_comp()(x, y) && !this->key_comp()(y, x)); }
 

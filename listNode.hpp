@@ -26,6 +26,8 @@ struct listNode
 		}
 		return *this;
 	}
+//	listNode*	next() const { return this->next; }
+//	listNode*
 };
 
 }; //end of namespace ft

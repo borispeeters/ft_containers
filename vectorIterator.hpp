@@ -121,7 +121,7 @@ public:
 	constVectorIterator(): vectorIterator<value_type>() {}
 	constVectorIterator(pointer ptr): vectorIterator<value_type>(ptr) {}
 	constVectorIterator(vectorIterator<value_type> const & other): vectorIterator<value_type>(other) {}
-	constVectorIterator(constVectorIterator const & other): vectorIterator<value_type>(other.data()) {}
+	constVectorIterator(constVectorIterator const & other): vectorIterator<value_type>() { *this = other; }
 	constVectorIterator&	operator=(vectorIterator<value_type> const & rhs)
 	{
 		if (&rhs != this) this->m_ptr = rhs.data();
@@ -137,8 +137,6 @@ public:
 	const_reference	operator[](int index) const { return *(this->m_ptr + index); }
 	const_pointer	operator->() const { return this->m_ptr; }
 	const_reference	operator*() const { return *this->m_ptr; }
-	const_pointer	data() const { return this->m_ptr; }
-
 };
 
 }; //end of namespace ft
