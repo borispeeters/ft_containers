@@ -30,45 +30,108 @@ void lol()
 	std::cout << "*it = " << it->first << " >= " << it->second << std::endl;
 }
 
+void list_splice_print(ft::list<int> & mylist1, ft::list<int> & mylist2)
+{
+	ft::list<int>::iterator it;
+
+	std::cout << "mylist1 contains:";
+	for (it = mylist1.begin(); it!=mylist1.end(); ++it)
+		std::cout << ' ' << *it;
+	std::cout << '\n';
+
+	std::cout << "mylist2 contains:";
+	for (it = mylist2.begin(); it!=mylist2.end(); ++it)
+		std::cout << ' ' << *it;
+	std::cout << '\n';
+
+	std::cout << std::endl;
+}
+
 void list_splice()
 {
-	std::list<int>	l1;
-	for (int i = 1; i <= 5; ++i)
-		l1.push_back(i);
+	ft::list<int> mylist1, mylist2;
+	ft::list<int>::iterator it;
 
-	std::list<int>	l2;
-	for (int i = 8; i <= 10; ++i)
-		l2.push_front(i);
+	// set some initial values:
+	for (int i=1; i<=4; ++i)
+		mylist1.push_back(i);      // mylist1: 1 2 3 4
 
-	std::list<int>::iterator	i1 = l1.begin();
-	++i1;
+	for (int i=1; i<=3; ++i)
+		mylist2.push_back(i*10);   // mylist2: 10 20 30
 
-	std::list<int>::iterator	i2 = l2.begin();
-	++i2;
+	list_splice_print(mylist1, mylist2);
 
-	l1.splice(i1, l2, i2);
+	it = mylist1.begin();
+	++it;                         // points to 2
 
-	std::cout << "l1 size: " << l1.size() << std::endl;
-	std::cout << "l2 size: " << l2.size() << std::endl;
+	mylist1.splice (it, mylist2); // mylist1: 1 10 20 30 2 3 4
 
-	std::cout << std::endl;
+	list_splice_print(mylist1, mylist2);
 
-	std::cout << "l1 contains: " << std::endl;
-	for (int value : l1)
-		std::cout << value << std::endl;
+	// mylist2 (empty)
+	// "it" still points to 2 (the 5th element)
+	std::cout << "it points to: " << *it << '\n' << std::endl;
 
-	std::cout << std::endl;
+	mylist2.splice (mylist2.begin(),mylist1, it);
 
-	std::cout << "l2 contains: " << std::endl;
-	for (int value : l2)
-		std::cout << value << std::endl;
+	list_splice_print(mylist1, mylist2);
+
+	// mylist1: 1 10 20 30 3 4
+	// mylist2: 2
+	// "it" is now invalid.
+	it = mylist1.begin();
+	++it; ++it; ++it;
+	std::cout << "it points to: " << *it << '\n' << std::endl;
+
+//	std::advance(it,3);           // "it" points now to 30
+
+	mylist1.splice ( mylist1.begin(), mylist1, it, mylist1.end());
+	// mylist1: 30 3 4 1 10 20
+
+	list_splice_print(mylist1, mylist2);
 
 //	system("leaks ft_containers");
 }
 
+// compare only integral part:
+bool mycomparison (double first, double second)
+{ return ( int(first)<int(second) ); }
+
+void list_merge()
+{
+	ft::list<double> first, second;
+
+	first.push_back (2.2);
+	first.push_back (2.9);
+	first.push_back (3.1);
+
+	second.push_back (1.4);
+	second.push_back (3.7);
+	second.push_back (7.1);
+
+//	first.sort();
+//	second.sort();
+
+	first.merge(second);
+
+	// (second is now empty)
+
+	second.push_back (2.1);
+
+	first.merge(second,mycomparison);
+
+	std::cout << "first contains:";
+	for (ft::list<double>::iterator it=first.begin(); it!=first.end(); ++it)
+		std::cout << ' ' << *it;
+	std::cout << '\n';
+
+	std::cout << "first contains: 1.4 2.2 2.9 2.1 3.1 3.7 7.1" << std::endl;
+}
+
 int main ()
 {
-	list_splice();
+	list_merge();
+//	list_splice();
 //	lol();
 	return 0;
 

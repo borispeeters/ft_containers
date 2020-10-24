@@ -4,6 +4,9 @@
 # include "iterator.hpp"
 # include "listNode.hpp"
 
+# include "list.hpp"
+# include <memory>
+
 namespace ft
 {
 

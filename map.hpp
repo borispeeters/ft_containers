@@ -257,9 +257,12 @@ public:
 
 	void swap(map & x)
 	{
-		map	tmp(x);
-		x = *this;
-		*this = tmp;
+		ft::swap(this->m_first, x.m_first);
+		ft::swap(this->m_last, x.m_last);
+		ft::swap(this->m_root, x.m_root);
+		ft::swap(this->m_size, x.m_size);
+		ft::swap(this->m_comp, x.m_comp);
+		ft::swap(this->m_alloc, x.m_alloc);
 	}
 
 	void clear() { this->erase(this->begin(), this->end()); }

@@ -228,9 +228,10 @@ public:
 
 	void 	swap(list & x)
 	{
-		list	tmp(x);
-		x = *this;
-		*this = tmp;
+		ft::swap(this->m_head, x.m_head);
+		ft::swap(this->m_tail, x.m_tail);
+		ft::swap(this->m_size, x.m_size);
+		ft::swap(this->m_alloc, x.m_alloc);
 	}
 
 	void resize(size_type n, value_type val = value_type())
@@ -262,12 +263,16 @@ public:
 	// 2. splice single element
 	void splice(iterator position, list & x, iterator i)
 	{
-		if (this != &x && !x.empty())
+		if (!x.empty())
 		{
 			i.node()->prev->next = i.node()->next;
 			i.node()->next->prev = i.node()->prev;
 			i.node()->prev = position.node()->prev;
-//			i.node()
+			i.node()->next = position.node();
+			position.node()->prev->next = i.node();
+			position.node()->prev = i.node();
+			++this->m_size;
+			--x.m_size;
 		}
 	}
 
@@ -278,7 +283,7 @@ public:
 		{
 			iterator	tmp(first);
 			++first;
-			this->splice(position, x, first);
+			this->splice(position, x, tmp);
 		}
 	}
 
@@ -344,55 +349,36 @@ public:
 
 	void merge(list & x)
 	{
-		iterator	it = this->begin();
-		while (it != this->end())
+		if (this != &x)
 		{
-			iterator	xit = x.begin();
-			if (xit == x.end())
-				return ;
-			if (*xit < *it)
+			iterator	it = this->begin();
+			while (!x.empty())
 			{
-				this->insert(it, *xit);
-				x.pop_front();
+				if (it == this->end() || *(x.begin()) < *it) this->splice(it, x, x.begin());
+				else ++it;
 			}
-			++it;
 		}
-		this->insert(this->end(), x.begin(), x.end());
-		x.clear();
 	}
 
 	template <class Compare>
 	void merge(list & x, Compare comp)
 	{
-		iterator	it = this->begin();
-		while (it != this->end())
+		if (this != &x)
 		{
-			iterator	xit = x.begin();
-			if (xit == x.end())
-				return ;
-			if (comp(*xit, *it))
+			iterator	it = this->begin();
+			while (!x.empty())
 			{
-				this->insert(it, *xit);
-				x.pop_front();
+				if (it == this->end() || comp(*(x.begin()), *it)) this->splice(it, x, x.begin());
+				else ++it;
 			}
-			++it;
 		}
-		this->insert(this->end(), x.begin(), x.end());
-		x.clear();
 	}
 
 	void sort()
 	{
 		if (this->size() <= 1) return ;
-		list	tmp(this->begin(), this->end());
-		this->clear();
 
-		while (tmp.size() > 0)
-		{
-			iterator	min = ft::min_element(tmp.begin(), tmp.end());
-			this->push_back(*min);
-			tmp.erase(min);
-		}
+		iterator	it = this->begin();
 	}
 
 	template <class Compare>

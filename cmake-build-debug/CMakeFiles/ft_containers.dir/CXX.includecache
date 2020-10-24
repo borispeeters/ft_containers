@@ -33,6 +33,10 @@ iterator.hpp
 /Users/bpeeters/Projects/ft_containers/iterator.hpp
 listNode.hpp
 /Users/bpeeters/Projects/ft_containers/listNode.hpp
+list.hpp
+/Users/bpeeters/Projects/ft_containers/list.hpp
+memory
+-
 
 /Users/bpeeters/Projects/ft_containers/listNode.hpp
 
