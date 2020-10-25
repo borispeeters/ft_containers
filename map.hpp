@@ -238,7 +238,11 @@ public:
 		else this->erase_one_child(node);
 
 		--this->m_size;
-		if (this->empty()) this->m_root = 0;
+		if (this->empty())
+		{
+			this->m_root = 0;
+			this->firstNode()->parent = this->lastNode();
+		}
 	}
 
 	// 2. erase key
