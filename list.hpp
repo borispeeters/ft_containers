@@ -374,37 +374,21 @@ public:
 		}
 	}
 
-	void sort()
-	{
-		if (this->size() <= 1) return ;
-
-		iterator	it = this->begin();
-	}
+	void sort() { mergeSort(*this); }
 
 	template <class Compare>
-	void sort(Compare comp)
-	{
-		if (this->size() <= 1) return ;
-		list	tmp(this->begin(), this->end());
-		this->clear();
-
-		while (tmp.size() > 0)
-		{
-			iterator	min = ft::min_element(tmp.begin(), tmp.end(), comp);
-			this->push_back(*min);
-			tmp.erase(min);
-		}
-	}
+	void sort(Compare comp) { this->mergeSort(*this, comp); }
 
 	void reverse()
 	{
-		if (this->size() <= 1)
-			return ;
-		list	tmp(this->begin(), this->end());
-		this->clear();
-		for (iterator it = tmp.begin(); it != tmp.end(); ++it)
-			this->push_front(*it);
-		tmp.clear();
+		if (this->size() > 1)
+		{
+			for (iterator it(this->begin()); it != this->end(); --it)
+				ft::swap(it.node()->prev, it.node()->next);
+			ft::swap(this->m_head, this->m_tail);
+			ft::swap(this->head()->prev, this->head()->next);
+			ft::swap(this->tail()->prev, this->tail()->next);
+		}
 	}
 
 	allocator_type	get_allocator() const { return this->m_alloc; }
@@ -415,6 +399,43 @@ private:
 		this->m_tail = new listNode<value_type>();
 		this->head()->next = this->tail();
 		this->tail()->prev = this->head();
+	}
+
+	void mergeSort(list & first)
+	{
+		if (first.size() > 1)
+		{
+			list	second;
+			split(first, second);
+
+			mergeSort(first);
+			mergeSort(second);
+
+			first.merge(second);
+		}
+	}
+
+	template <class Compare>
+	void mergeSort(list & first, Compare comp)
+	{
+		if (first.size() > 1)
+		{
+			list	second;
+			split(first, second);
+
+			mergeSort(first);
+			mergeSort(second);
+
+			first.merge(second, comp);
+		}
+	}
+
+	void split(list & first, list & second)
+	{
+		iterator	it(first.begin());
+		for (size_type i(0); i < first.size() / 2; ++i)
+			++it;
+		second.splice(second.begin(), first, it, first.end());
 	}
 
 	listNode<value_type>*	head() const { return this->m_head; }
