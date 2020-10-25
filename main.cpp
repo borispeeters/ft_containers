@@ -187,32 +187,11 @@ void list_sort()
 
 int main ()
 {
-	list_sort();
+//	list_sort();
 //	list_reverse();
 //	list_merge();
 //	list_splice();
 //	lol();
-	return 0;
-
-	ft::vector<int> first(3,100);   // three ints with a value of 100
-	ft::vector<int> second(5,200);  // five ints with a value of 200
-
-	first.swap(second);
-
-	std::cout << "first contains:";
-	for (ft::vector<int>::iterator it=first.begin(); it != first.end(); it++)
-		std::cout << ' ' << *it;
-	std::cout << '\n';
-
-	std::cout << "second contains:";
-	for (ft::vector<int>::iterator it=second.begin(); it!=second.end(); it++)
-		std::cout << ' ' << *it;
-	std::cout << '\n';
-
-
-//	system("leaks ft_containers");
-
-	return 0;
 
 	std::vector<int>	ve;
 	ve.push_back(1);
@@ -245,15 +224,16 @@ int main ()
 //	mp['c'] = "third element";
 //	mp['d'] = "last element";
 
-	mp.insert(std::make_pair('c', "lol"));
-	mp.insert(std::make_pair('b', "lol"));
-	mp.insert(std::make_pair('d', "lol"));
+
 	mp.insert(std::make_pair('a', "lol"));
+	mp.insert(std::make_pair('b', "lol"));
+	mp.insert(std::make_pair('c', "lol"));
+	mp.insert(std::make_pair('d', "lol"));
 
 	mp.erase(mp.find('a'));
-	mp.erase(mp.find('d'));
 	mp.erase(mp.find('b'));
 	mp.erase(mp.find('c'));
+	mp.erase(mp.find('d'));
 
 	mp.printBT();
 

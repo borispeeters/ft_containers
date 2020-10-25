@@ -36,8 +36,8 @@ public:
 	typedef typename allocator_type::const_pointer					const_pointer;
 	typedef ft::mapIterator<value_type>								iterator;
 	typedef ft::constMapIterator<value_type>						const_iterator;
-//	typedef ft::reverse_iterator<iterator>							reverse_iterator;
-//	typedef ft::reverse_iterator<const_iterator>					const_reverse_iterator;
+	typedef ft::reverse_iterator<iterator>							reverse_iterator;
+	typedef ft::reverse_iterator<const_iterator>					const_reverse_iterator;
 	typedef typename ft::iterator_traits<iterator>::difference_type	difference_type;
 	typedef typename allocator_type::size_type						size_type;
 
@@ -101,6 +101,7 @@ public:
 		m_alloc(other.get_allocator())
 	{
 		this->mapInit();
+		this->insert(other.begin(), other.end());
 	}
 
 	// destructor
@@ -115,7 +116,8 @@ public:
 	{
 		if (&other != this)
 		{
-
+			this->erase(this->begin(), this->end());
+			this->insert(other.begin(), other.end());
 		}
 		return *this;
 	}
@@ -124,11 +126,11 @@ public:
 	const_iterator	begin() const { return this->firstNode()->parent; }
 	iterator		end() { return this->lastNode(); }
 	const_iterator	end() const { return this->lastNode(); }
-//
-//	reverse_iterator 		rbegin();
-//	const_reverse_iterator	rbegin() const;
-//	reverse_iterator 		rend();
-//	const_reverse_iterator	rend() const;
+
+	reverse_iterator 		rbegin() { return reverse_iterator(this->end()); }
+	const_reverse_iterator	rbegin() const { return reverse_iterator(this->end()); }
+	reverse_iterator 		rend() { return reverse_iterator(this->begin()); }
+	const_reverse_iterator	rend() const { reverse_iterator(this->begin()); }
 
 	bool 		empty() const { return this->size() == 0; }
 	size_type	size() const { return this->m_size; }
@@ -215,15 +217,19 @@ public:
 				(node->right == 0 || node->right == this->lastNode()))
 		{
 			this->erase_no_children(node);
-			std::cout << "node: " << node << std::endl;
-			std::cout << "root: " << this->root() << std::endl;
-			std::cout << std::endl;
 		}
 		else if (node->left && node->left != firstNode() &&
 		node->right && node->right != lastNode())
 		{
 			mapNode<value_type>*	successor((++position).node());
-//			*node->value = *successor->value;
+			std::cout << "BEFORE" << std::endl;
+			std::cout << "node: " << node->value->first << ", successor: " << successor->value->first << std::endl;
+
+			ft::swap(node->value, successor->value);
+			std::cout << std::endl;
+
+			std::cout << "AFTER" << std::endl;
+			std::cout << "node: " << node->value->first << ", successor: " << successor->value->first << std::endl;
 			if ((successor->left == 0 || successor->left == this->firstNode()) &&
 				(successor->right == 0 || successor->right == this->lastNode()))
 				this->erase_no_children(successor);
@@ -232,6 +238,7 @@ public:
 		else this->erase_one_child(node);
 
 		--this->m_size;
+		if (this->empty()) this->m_root = 0;
 	}
 
 	// 2. erase key
@@ -442,15 +449,12 @@ private:
 				if (node == this->firstNode()->parent)
 				{
 					node->parent->left = this->firstNode();
-					this->lastNode()->parent = node->parent;
+					this->firstNode()->parent = node->parent;
 				}
 				else node->parent->left = 0;
 			}
 		}
 		else this->firstNode()->parent = this->lastNode();
-
-		std::cout << "node: " << node << std::endl;
-		std::cout << "root: " << this->root() << std::endl;
 
 		delete node;
 		node = 0;

@@ -82,10 +82,6 @@ public:
 	{
 		this->reserve(other.capacity());
 		this->assign(other.begin(), other.end());
-
-//		this->m_data = this->get_allocator().allocate(this->capacity());
-//		for (size_type i = 0; i < this->size(); ++i)
-//			this->get_allocator().construct(this->m_data + i, other.at(i));
 	}
 
 	// destructor
@@ -243,9 +239,10 @@ public:
 	}
 	void        swap(vector & x)
 	{
-		vector	tmp(x);
-		x = *this;
-		*this = tmp;
+		ft::swap(this->m_data, x.m_data);
+		ft::swap(this->m_size, x.m_size);
+		ft::swap(this->m_capacity, x.m_capacity);
+		ft::swap(this->m_alloc, x.m_alloc);
 	}
 	void        clear()
 	{

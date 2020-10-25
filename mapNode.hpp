@@ -6,7 +6,7 @@
 namespace ft
 {
 
-enum Colour { RED, BLACK };
+enum Colour { RED, BLACK, DOUBLE_BLACK };
 
 template <class Pair>
 struct mapNode
