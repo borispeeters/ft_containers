@@ -213,13 +213,8 @@ public:
 	{
 		mapNode<value_type>*	node(position.node());
 
-		if ((node->left == 0 || node->left == this->firstNode()) &&
-				(node->right == 0 || node->right == this->lastNode()))
-		{
-			this->erase_no_children(node);
-		}
-		else if (node->left && node->left != firstNode() &&
-		node->right && node->right != lastNode())
+		if (!this->validNode(node->left) && !this->validNode(node->right)) this->erase_no_children(node);
+		else if (this->validNode(node->left) && this->validNode(node->right))
 		{
 			mapNode<value_type>*	successor((++position).node());
 			std::cout << "BEFORE" << std::endl;
@@ -627,8 +622,9 @@ private:
 		return this->lastNode();
 	}
 
-	bool equal(value_type const & x, value_type const & y) const { return (!this->value_comp()(x, y) && !this->value_comp()(y, x)); }
-	bool equal(key_type const & x, key_type const & y) const { return (!this->key_comp()(x, y) && !this->key_comp()(y, x)); }
+	bool	equal(value_type const & x, value_type const & y) const { return (!this->value_comp()(x, y) && !this->value_comp()(y, x)); }
+	bool	equal(key_type const & x, key_type const & y) const { return (!this->key_comp()(x, y) && !this->key_comp()(y, x)); }
+	bool	validNode(mapNode<value_type>* node) { return (node != 0 && node != this->firstNode() && node != this->lastNode()); }
 
 	mapNode<value_type>*	root() const { return this->m_root; }
 	mapNode<value_type>*	firstNode() const { return this->m_first; }

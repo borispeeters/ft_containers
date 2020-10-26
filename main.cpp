@@ -224,11 +224,14 @@ int main ()
 //	mp['c'] = "third element";
 //	mp['d'] = "last element";
 
+	mp.insert(std::make_pair('d', "lol"));
 	mp.insert(std::make_pair('b', "lol"));
 	mp.insert(std::make_pair('a', "lol"));
 	mp.insert(std::make_pair('c', "lol"));
-	mp.insert(std::make_pair('d', "lol"));
-	
+	mp.insert(std::make_pair('f', "lol"));
+	mp.insert(std::make_pair('e', "lol"));
+	mp.insert(std::make_pair('g', "lol"));
+
 	mp.erase(mp.find('b'));
 
 	mp.printBT();
