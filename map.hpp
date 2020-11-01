@@ -6,9 +6,16 @@
 # include <utility>
 # include "algorithm.hpp"
 # include "iterator.hpp"
-# include "mapIterator.hpp"
-# include "mapNode.hpp"
+# include "treeIterator.hpp"
+# include "treeNode.hpp"
 # include "type_traits.hpp"
+
+
+
+
+# include <iostream>
+
+
 
 namespace ft
 {
@@ -25,14 +32,13 @@ public:
 	typedef T														mapped_type;
 	typedef std::pair<const key_type, mapped_type>					value_type;
 	typedef Compare													key_compare;
-//	typedef lolwat													value_compare;
 	typedef Alloc													allocator_type;
 	typedef typename allocator_type::reference						reference;
 	typedef typename allocator_type::const_reference				const_reference;
 	typedef typename allocator_type::pointer						pointer;
 	typedef typename allocator_type::const_pointer					const_pointer;
-	typedef ft::mapIterator<value_type>								iterator;
-	typedef ft::constMapIterator<value_type>						const_iterator;
+	typedef ft::treeIterator<value_type>							iterator;
+	typedef ft::constTreeIterator<value_type>						const_iterator;
 	typedef ft::reverse_iterator<iterator>							reverse_iterator;
 	typedef ft::reverse_iterator<const_iterator>					const_reverse_iterator;
 	typedef typename ft::iterator_traits<iterator>::difference_type	difference_type;
@@ -52,9 +58,9 @@ public:
 	};
 
 private:
-	mapNode<value_type>*	m_root;
-	mapNode<value_type>*	m_first;
-	mapNode<value_type>*	m_last;
+	treeNode<value_type>*	m_root;
+	treeNode<value_type>*	m_first;
+	treeNode<value_type>*	m_last;
 	size_type				m_size;
 	key_compare				m_comp;
 	allocator_type			m_alloc;
@@ -138,7 +144,7 @@ public:
 	// 1. single element insertion
 	std::pair<iterator, bool>	insert(value_type const & val)
 	{
-		std::pair<mapNode<value_type>*, bool>	ret(this->BSTinsert(this->root(), val));
+		std::pair<treeNode<value_type>*, bool>	ret(this->BSTinsert(this->root(), val));
 
 		if (ret.second)
 		{
@@ -153,16 +159,14 @@ public:
 	{
 		if (position != this->end() && this->equal(position->first, val.first)) return position;
 
-		std::pair<mapNode<value_type>*, bool>	ret;
+		std::pair<treeNode<value_type>*, bool>	ret;
 
 		if (this->empty())
-		{
 			ret = this->BSTinsert(this->root(), val);
-		}
 		else if (position == this->end())
 		{
 			--position;
-			if (val.first >= position->first)
+			if (position->first < val.first)
 				ret = this->BSTinsert(position.node(), val);
 			else
 				ret = this->BSTinsert(this->root(), val);
@@ -180,7 +184,7 @@ public:
 		{
 			iterator	tmp(position);
 			--tmp;
-			if (tmp->first < val.first)
+			if (position == this->begin() || tmp->first < val.first)
 				ret = this->BSTinsert(position.node(), val);
 			else
 				ret = this->BSTinsert(this->root(), val);
@@ -208,7 +212,7 @@ public:
 	// 1. erase iterator
 	void erase(iterator position)
 	{
-		std::pair<mapNode<value_type>*, bool>	ret(this->BSTerase(position));
+		std::pair<treeNode<value_type>*, bool>	ret(this->BSTerase(position));
 
 		if (ret.second)
 			this->fixEraseViolation(ret.first);
@@ -259,7 +263,7 @@ public:
 
 	iterator		find(key_type const & k)
 	{
-		mapNode<value_type>*	node(this->root());
+		treeNode<value_type>*	node(this->root());
 		while (node && node != this->firstNode() && node != this->lastNode())
 		{
 			if (this->equal(node->value->first, k)) return iterator(node);
@@ -271,7 +275,7 @@ public:
 
 	const_iterator	find(key_type const & k) const
 	{
-		mapNode<value_type>*	node(this->root());
+		treeNode<value_type>*	node(this->root());
 		while (this->validNode(node))
 		{
 			if (this->equal(node->value->first, k)) return const_iterator(node);
@@ -294,7 +298,7 @@ public:
 
 	const_iterator	lower_bound(key_type const & k) const
 	{
-		for (iterator it = this->begin(); it != this->end(); ++it)
+		for (const_iterator it = this->begin(); it != this->end(); ++it)
 		{
 			if (!this->key_comp()(it->first, k)) return it;
 		}
@@ -319,19 +323,27 @@ public:
 		return this->end();
 	}
 
-	std::pair<iterator, iterator>				equal_range(key_type const & k) { return std::make_pair(this->lower_bound(k), this->upper_bound(k)); }
-	std::pair<const_iterator, const_iterator>	equal_range(key_type const & k) const { return std::make_pair(this->lower_bound(k), this->upper_bound(k)); }
+	std::pair<iterator, iterator>				equal_range(key_type const & k) {
+		return std::make_pair(this->lower_bound(k), this->upper_bound(k));
+	}
+	std::pair<const_iterator, const_iterator>	equal_range(key_type const & k) const {
+		return std::make_pair(this->lower_bound(k), this->upper_bound(k));
+	}
 
 	allocator_type	get_allocator() const { return this->m_alloc; }
 
 	void printBT() const
 	{
 		this->printBT("", this->root(), false);
+		if (this->firstNode()->parent && this->firstNode()->parent != this->lastNode())
+			std::cout << "parent of firstnode(): " << this->firstNode()->parent->value->first << std::endl;
+		if (this->lastNode()->parent && this->lastNode()->parent != this->firstNode())
+			std::cout << "parent of lastNode():  " << this->lastNode()->parent->value->first << std::endl;
 		std::cout << std::endl;
 	}
 
 private:
-	void printBT(std::string const & prefix, mapNode<value_type>* trav, bool isLeft) const
+	void printBT(std::string const & prefix, treeNode<value_type>* trav, bool isLeft) const
 	{
 		if (this->validNode(trav))
 		{
@@ -347,16 +359,17 @@ private:
 			printBT( prefix + (isLeft ? "│   " : "    "), trav->right, false);
 		}
 	}
+
 	void mapInit()
 	{
-		this->m_first = new mapNode<value_type>(BLACK);
-		this->m_last = new mapNode<value_type>(BLACK);
+		this->m_first = new treeNode<value_type>(BLACK);
+		this->m_last = new treeNode<value_type>(BLACK);
 		this->firstNode()->parent = this->lastNode();
 	}
 
-	std::pair<mapNode<value_type>*, bool>	BSTinsert(mapNode<value_type>* curr, value_type const & val)
+	std::pair<treeNode<value_type>*, bool>	BSTinsert(treeNode<value_type>* curr, value_type const & val)
 	{
-		mapNode<value_type>*	newNode = new mapNode<value_type>(val);
+		treeNode<value_type>*	newNode = new treeNode<value_type>(val);
 
 		if (this->root() == 0)
 		{
@@ -415,11 +428,11 @@ private:
 		return std::make_pair(curr, false);
 	}
 
-	bool 	BSTerase(iterator position)
+	std::pair<treeNode<value_type>*, bool> 	BSTerase(iterator position)
 	{
-		mapNode<value_type>*	z(position.node());
-		mapNode<value_type>*	y(z);
-		mapNode<value_type>*	x(0);
+		treeNode<value_type>*	z(position.node());
+		treeNode<value_type>*	y(z);
+		treeNode<value_type>*	x(0);
 		enum Colour				origYColour(y->colour);
 
 		if (!this->validNode(z->left)) // z has only right child or no children
@@ -439,8 +452,11 @@ private:
 
 			origYColour = y->colour;
 			x = y->right;
-			if (y->parent == z && x) // y is direct child of z
-				x->parent = y;
+
+			if (y->parent == z) // y is direct child of z
+			{
+				if (x) x->parent = y;
+			}
 			else
 			{
 				this->transplant(y, y->right);
@@ -455,7 +471,7 @@ private:
 		return std::make_pair(x, origYColour == BLACK);
 	}
 
-	void	transplant(mapNode<value_type>* u, mapNode<value_type>* v)
+	void	transplant(treeNode<value_type>* u, treeNode<value_type>* v)
 	{
 		if (u == this->root())
 			this->m_root = v;
@@ -481,9 +497,9 @@ private:
 **
 */
 
-	void rotateLeft(mapNode<value_type>*& x)
+	void rotateLeft(treeNode<value_type>* x)
 	{
-		mapNode<value_type>*	y(x->right);
+		treeNode<value_type>*	y(x->right);
 
 		x->right = y->left;
 		if (y->left)
@@ -499,9 +515,9 @@ private:
 		x->parent = y;
 	}
 
-	void rotateRight(mapNode<value_type>*& x)
+	void rotateRight(treeNode<value_type>* x)
 	{
-		mapNode<value_type>*	y(x->left);
+		treeNode<value_type>*	y(x->left);
 
 		x->left = y->right;
 		if (y->right)
@@ -517,17 +533,17 @@ private:
 		x->parent = y;
 	}
 
-	void recolour(mapNode<value_type>* node)
+	void recolour(treeNode<value_type>* node)
 	{
 		if (node->colour == BLACK) node->colour = RED;
 		else if (node->colour == RED) node->colour = BLACK;
 	}
 
-	void fixInsertViolation(mapNode<value_type> *& node)
+	void fixInsertViolation(treeNode<value_type> *& node)
 	{
-		mapNode<value_type>*	parent(0);
-		mapNode<value_type>*	grandParent(0);
-		mapNode<value_type>*	uncle(0);
+		treeNode<value_type>*	parent(0);
+		treeNode<value_type>*	grandParent(0);
+		treeNode<value_type>*	uncle(0);
 
 		while (node != this->root() && node->colour != BLACK && node->parent->colour == RED)
 		{
@@ -587,13 +603,23 @@ private:
 		this->root()->colour = BLACK;
 	}
 
-	void	fixEraseViolation(mapNode<value_type> *& x)
+	void	fixEraseViolation(treeNode<value_type> *& x)
 	{
-		while (x != this->root() && x->colour == BLACK)
+		std::cout << "fixEraseViolation" << std::endl;
+		if (x == 0)
+		{
+			std::cout << "x: " << x << std::endl;
+			return ;
+		}
+		std::cout << "pre" << std::endl;
+		std::cout << "x: " << x->value->first << std::endl;
+		std::cout << "post" << std::endl;
+
+		while (x != this->root() && (x == 0 || x->colour == BLACK))
 		{
 			if (x == x->parent->left)
 			{
-				mapNode<value_type>*	w(x->parent->right);
+				treeNode<value_type>*	w(x->parent->right);
 				if (w->colour == RED)
 				{
 					w->colour = BLACK;
@@ -624,7 +650,7 @@ private:
 			}
 			else if (x == x->parent->right)
 			{
-				mapNode<value_type>*	w(x->parent->left);
+				treeNode<value_type>*	w(x->parent->left);
 				if (w->colour == RED)
 				{
 					w->colour = BLACK;
@@ -663,39 +689,50 @@ private:
 	bool	equal(key_type const & x, key_type const & y) const {
 		return (!this->key_comp()(x, y) && !this->key_comp()(y, x));
 	}
-	bool	validNode(mapNode<value_type>* node) const {
+	bool	validNode(treeNode<value_type>* node) const {
 		return (node != 0 && node != this->firstNode() && node != this->lastNode());
 	}
 
-	mapNode<value_type>*	root() const { return this->m_root; }
-	mapNode<value_type>*	firstNode() const { return this->m_first; }
-	mapNode<value_type>*	lastNode() const { return this->m_last; }
+	treeNode<value_type>*	root() const { return this->m_root; }
+	treeNode<value_type>*	firstNode() const { return this->m_first; }
+	treeNode<value_type>*	lastNode() const { return this->m_last; }
 
 };
 
 template <class Key, class T, class Compare, class Alloc>
-bool operator==(map<Key, T, Compare, Alloc> const & lhs, map<Key, T, Compare, Alloc> const & rhs)
-{ return lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin()); }
+bool operator==(map<Key, T, Compare, Alloc> const & lhs, map<Key, T, Compare, Alloc> const & rhs) {
+	return lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin());
+}
 
 template <class Key, class T, class Compare, class Alloc>
-bool operator!=(map<Key, T, Compare, Alloc> const & lhs, map<Key, T, Compare, Alloc> const & rhs) { return !(lhs == rhs); }
+bool operator!=(map<Key, T, Compare, Alloc> const & lhs, map<Key, T, Compare, Alloc> const & rhs) {
+	return !(lhs == rhs);
+}
 
 template <class Key, class T, class Compare, class Alloc>
-bool operator<(map<Key, T, Compare, Alloc> const & lhs, map<Key, T, Compare, Alloc> const & rhs)
-{ return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()); }
+bool operator<(map<Key, T, Compare, Alloc> const & lhs, map<Key, T, Compare, Alloc> const & rhs) {
+	return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+}
 
 template <class Key, class T, class Compare, class Alloc>
-bool operator<=(map<Key, T, Compare, Alloc> const & lhs, map<Key, T, Compare, Alloc> const & rhs) { return !(rhs < lhs); }
+bool operator<=(map<Key, T, Compare, Alloc> const & lhs, map<Key, T, Compare, Alloc> const & rhs) {
+	return !(rhs < lhs);
+}
 
 template <class Key, class T, class Compare, class Alloc>
-bool operator>(map<Key, T, Compare, Alloc> const & lhs, map<Key, T, Compare, Alloc> const & rhs) { return rhs < lhs; }
+bool operator>(map<Key, T, Compare, Alloc> const & lhs, map<Key, T, Compare, Alloc> const & rhs) {
+	return rhs < lhs;
+}
 
 template <class Key, class T, class Compare, class Alloc>
-bool operator>=(map<Key, T, Compare, Alloc> const & lhs, map<Key, T, Compare, Alloc> const & rhs) { return !(lhs < rhs); }
-
+bool operator>=(map<Key, T, Compare, Alloc> const & lhs, map<Key, T, Compare, Alloc> const & rhs) {
+	return !(lhs < rhs);
+}
 
 template <class Key, class T, class Compare, class Alloc>
-void swap(map<Key, T, Compare, Alloc> const & x, map<Key, T, Compare, Alloc> const & y) { x.swap(y); }
+void swap(map<Key, T, Compare, Alloc> const & x, map<Key, T, Compare, Alloc> const & y) {
+	x.swap(y);
+}
 
 }; //end of namespace ft
 

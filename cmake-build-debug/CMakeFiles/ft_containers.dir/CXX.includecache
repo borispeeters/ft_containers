@@ -12,6 +12,8 @@ iterator.hpp
 type_traits.hpp
 /Users/bpeeters/Projects/ft_containers/type_traits.hpp
 
+/Users/bpeeters/Projects/ft_containers/colour.hpp
+
 /Users/bpeeters/Projects/ft_containers/iterator.hpp
 cstddef
 -
@@ -59,6 +61,8 @@ list.hpp
 /Users/bpeeters/Projects/ft_containers/list.hpp
 map.hpp
 /Users/bpeeters/Projects/ft_containers/map.hpp
+set
+-
 algorithm
 -
 iterator
@@ -75,24 +79,26 @@ algorithm.hpp
 /Users/bpeeters/Projects/ft_containers/algorithm.hpp
 iterator.hpp
 /Users/bpeeters/Projects/ft_containers/iterator.hpp
-mapIterator.hpp
-/Users/bpeeters/Projects/ft_containers/mapIterator.hpp
-mapNode.hpp
-/Users/bpeeters/Projects/ft_containers/mapNode.hpp
+treeIterator.hpp
+/Users/bpeeters/Projects/ft_containers/treeIterator.hpp
+treeNode.hpp
+/Users/bpeeters/Projects/ft_containers/treeNode.hpp
 type_traits.hpp
 /Users/bpeeters/Projects/ft_containers/type_traits.hpp
 iostream
 -
 
-/Users/bpeeters/Projects/ft_containers/mapIterator.hpp
+/Users/bpeeters/Projects/ft_containers/treeIterator.hpp
+cstddef
+-
 iterator.hpp
 /Users/bpeeters/Projects/ft_containers/iterator.hpp
-mapNode.hpp
-/Users/bpeeters/Projects/ft_containers/mapNode.hpp
+treeNode.hpp
+/Users/bpeeters/Projects/ft_containers/treeNode.hpp
 
-/Users/bpeeters/Projects/ft_containers/mapNode.hpp
-utility
--
+/Users/bpeeters/Projects/ft_containers/treeNode.hpp
+colour.hpp
+/Users/bpeeters/Projects/ft_containers/colour.hpp
 
 /Users/bpeeters/Projects/ft_containers/type_traits.hpp
 

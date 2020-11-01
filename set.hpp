@@ -6,8 +6,8 @@
 # include <utility>
 # include "algorithm.hpp"
 # include "iterator.hpp"
-# include "setIterator.hpp"
-# include "setNode.hpp"
+# include "treeIterator.hpp"
+# include "treeNode.hpp"
 # include "type_traits.hpp"
 
 namespace ft
@@ -29,17 +29,17 @@ public:
 	typedef typename allocator_type::const_reference				const_reference;
 	typedef typename allocator_type::pointer						pointer;
 	typedef typename allocator_type::const_pointer					const_pointer;
-	typedef ft::setIterator<value_type>								iterator;
-	typedef ft::constSetIterator<value_type>						const_iterator;
+	typedef ft::treeIterator<value_type>							iterator;
+	typedef ft::constTreeIterator<value_type>						const_iterator;
 	typedef typename ft::reverse_iterator<iterator>					reverse_iterator;
 	typedef typename ft::reverse_iterator<const_iterator>			const_reverse_iterator;
 	typedef typename ft::iterator_traits<iterator>::difference_type	difference_type;
 	typedef typename allocator_type::size_type						size_type;
 
 private:
-	setNode<value_type>*	m_root;
-	setNode<value_type>*	m_first;
-	setNode<value_type>*	m_last;
+	treeNode<value_type>*	m_root;
+	treeNode<value_type>*	m_first;
+	treeNode<value_type>*	m_last;
 	size_type				m_size;
 	key_compare				m_comp;
 	allocator_type			m_alloc;
@@ -121,7 +121,7 @@ public:
 	// 1. single element insertion
 	std::pair<iterator, bool>	insert(value_type const & val)
 	{
-		std::pair<setNode<value_type>*, bool>	ret(this->BSTInsert(this->root(), val));
+		std::pair<treeNode<value_type>*, bool>	ret(this->BSTInsert(this->root(), val));
 
 		if (ret.second)
 		{
@@ -134,7 +134,44 @@ public:
 	// 2. insertion with hint
 	iterator	insert(iterator position, value_type const & val)
 	{
-		asd;
+		if (position != this->end() && this->equal(*position, val)) return position;
+
+		std::pair<treeNode<value_type>*, bool>	ret;
+
+		if (this->empty())
+			ret = this->BSTinsert(this->root(), val);
+		else if (position == this->end())
+		{
+			--position;
+			if (*position < val)
+				ret = this->BSTinsert(position.node(), val);
+			else
+				ret = this->BSTinsert(this->root(), val);
+		}
+		else if (*position < val)
+		{
+			iterator	tmp(position);
+			++tmp;
+			if (tmp == this->end() || *tmp > val)
+				ret = this->BSTinsert(position.node(), val);
+			else
+				ret = this->BSTinsert(this->root(), val);
+		}
+		else if (*position > val)
+		{
+			iterator	tmp(position);
+			--tmp;
+			if (position == this->begin() || *tmp < val)
+				ret = this->BSTinsert(position.node(), val);
+			else
+				ret = this->BSTinsert(this->root(), val);
+		}
+		if (ret.second)
+		{
+			fixInsertViolation(ret.first);
+			++this->m_size;
+		}
+		return ret.first;
 	}
 
 	// 3. range insertion
@@ -172,7 +209,7 @@ public:
 
 	iterator		find(value_type const & val)
 	{
-		setNode<value_type>*	node(this->root())
+		treeNode<value_type>*	node(this->root());
 		while (this->validNode(node))
 		{
 			if (this->equal(node->value, val)) return iterator(node);
@@ -184,7 +221,7 @@ public:
 
 	const_iterator	find(value_type const & val) const
 	{
-		setNode<value_type>*	node(this->root())
+		treeNode<value_type>*	node(this->root());
 		while (this->validNode(node))
 		{
 			if (this->equal(node->value, val)) return const_iterator(node);
@@ -194,18 +231,149 @@ public:
 		return this->end();
 	}
 
-	size_type	count(value_type const & val) const { return this->find(val) != this->end(); }
+	size_type		count(value_type const & val) const { return this->find(val) != this->end(); }
 
-	iterator	lower_bound()
+	iterator		lower_bound(value_type const & val)
+	{
+		for (iterator it(this->begin()); it != this->end(); ++it)
+		{
+			if (!this->key_comp()(it->first, val)) return it;
+		}
+		return this->end();
+	}
+
+	const_iterator	lower_bound(value_type const & val) const
+	{
+		for (const_iterator it(this->begin()); it != this->end(); ++it)
+		{
+			if (!this->key_comp()(it->first, val)) return it;
+		}
+		return this->end();
+	}
+
+	iterator		upper_bound(value_type const & val)
+	{
+		for (iterator it(this->begin()); it != this->end(); ++it)
+		{
+			if (this->key_comp()(val, it->first)) return it;
+		}
+		return this->end();
+	}
+
+	const_iterator	upper_bound(value_type const & val) const
+	{
+		for (const_iterator it(this->begin()); it != this->end(); ++it)
+		{
+			if (this->key_comp()(val, it->first)) return it;
+		}
+		return this->end();
+	}
+
+	std::pair<iterator, iterator>				equal_range(value_type const & val) {
+		return std::make_pair(this->lower_bound(val), this->upper_bound(val));
+	}
+	std::pair<const_iterator, const_iterator>	equal_range(value_type const & val) const {
+		return std::make_pair(this->lower_bound(val), this->upper_bound(val));
+	}
+
+	allocator_type	get_allocator() const { return this->m_alloc; }
+
+	void printBT() const
+	{
+		this->printBT("", this->root(), false);
+		std::cout << std::endl;
+	}
 
 private:
+//	void printBT(std::str)
+
+private:
+	void printBT(std::string const & prefix, treeNode<value_type>* trav, bool isLeft) const
+	{
+		if (this->validNode(trav))
+		{
+			std::cout << prefix;
+			std::cout << (isLeft ? "├──" : "└──" );
+			// print the value of the node
+			if (trav->colour == RED)
+				std::cout << "\033[1;31m";
+			std::cout << trav->value->first << std::endl;
+			std::cout << "\033[0m";
+			// enter the next tree level - left and right branch
+			printBT( prefix + (isLeft ? "│   " : "    "), trav->left, true);
+			printBT( prefix + (isLeft ? "│   " : "    "), trav->right, false);
+		}
+	}
+
 	void setInit()
 	{
-		this->m_first = new setNode<value_type>(BLACK);
-		this->m_last = new setNode<value_type>(BLACK);
+		this->m_first = new treeNode<value_type>(BLACK);
+		this->m_last = new treeNode<value_type>(BLACK);
 		this->m_firstNode()->parent = this->lastNode();
 	}
+
+	std::pair<treeNode<value_type>*, bool>	BSTinsert(treeNode<value_type>* curr, value_type const & val);
+
+	std::pair<treeNode<value_type>*, bool>	BSTerase(iterator position);
+
+	void transplant(treeNode<value_type>* u, treeNode<value_type>* v);
+
+	void rotateLeft(treeNode<value_type>* x);
+
+	void rotateRight(treeNode<value_type>* x);
+
+	void recolour(treeNode<value_type>* node)
+	{
+		if (node->colour == BLACK) node->colour = RED;
+		else if (node->colour == RED) node->colour = BLACK;
+	}
+
+	void fixInsertViolation(treeNode<value_type> *& node);
+
+	void fixEraseViolation(treeNode<value_type> *& x);
+
+	bool equal(value_type const & x, value_type const & y) const {
+		return (!this->value_comp()(x, y) && !this->value_comp()(y, x));
+	}
+	bool validNode(treeNode<value_type>* node) const {
+		return (node != 0 && node != this->firstNode() && node != this->lastNode());
+	}
 };
+
+template <class Key, class Compare, class Alloc>
+bool operator==(set<Key, Compare, Alloc> const & lhs, set<Key, Compare, Alloc> const & rhs) {
+	return lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin());
+}
+
+template <class Key, class Compare, class Alloc>
+bool operator!=(set<Key, Compare, Alloc> const & lhs, set<Key, Compare, Alloc> const & rhs) {
+	return !(lhs == rhs);
+}
+
+template <class Key, class Compare, class Alloc>
+bool operator<(set<Key, Compare, Alloc> const & lhs, set<Key, Compare, Alloc> const & rhs) {
+	return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+}
+
+template <class Key, class Compare, class Alloc>
+bool operator<=(set<Key, Compare, Alloc> const & lhs, set<Key, Compare, Alloc> const & rhs) {
+	return !(rhs < lhs);
+}
+
+template <class Key, class Compare, class Alloc>
+bool operator>(set<Key, Compare, Alloc> const & lhs, set<Key, Compare, Alloc> const & rhs) {
+	return rhs < lhs;
+}
+
+template <class Key, class Compare, class Alloc>
+bool operator >=(set<Key, Compare, Alloc> const & lhs, set<Key, Compare, Alloc> const & rhs) {
+	return !(lhs < rhs);
+}
+
+template <class Key, class Compare, class Alloc>
+void swap(set<Key, Compare, Alloc> const & x, set<Key, Compare, Alloc> const & y) {
+	x.swap(y);
+}
 
 }; //end of namespace ft
 

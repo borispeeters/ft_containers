@@ -22,7 +22,7 @@ struct mapNode
 	~mapNode() { delete this->value; }
 	mapNode&	operator=(mapNode const & rhs)
 	{
-		if (&rhs!= this)
+		if (&rhs != this)
 		{
 			delete this->value;
 			this->value = new Pair(rhs.value);

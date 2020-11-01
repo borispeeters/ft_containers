@@ -8,6 +8,8 @@
 #include "list.hpp"
 #include "map.hpp"
 
+#include <set>
+
 #include <algorithm>
 #include <iterator>
 
@@ -210,7 +212,9 @@ int main ()
 	mp.insert(std::make_pair('g', "lol"));
 	mp.insert(std::make_pair('h', "lol"));
 
-	mp.erase(mp.find('f'));
+	mp.erase(mp.find('b'));
+	mp.erase(mp.find('c'));
+	mp.erase(mp.find('a'));
 
 	mp.printBT();
 
