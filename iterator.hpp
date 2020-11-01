@@ -91,10 +91,6 @@ struct iterator_traits<const T*>
 	typedef ft::random_access_iterator_tag	iterator_category;
 };
 
-
-template <class Iter>
-struct is_iterator : public _has_iterator_category<Iter> {};
-
 template <class Iterator>
 class reverse_iterator : public ft::iterator<typename ft::iterator_traits<Iterator>::iterator_category,
 											typename ft::iterator_traits<Iterator>::value_type,
@@ -261,15 +257,13 @@ template <class BiDirIter>
 void _advance(BiDirIter & it,
 			  typename ft::iterator_traits<BiDirIter>::difference_type n, ft::bidirectional_iterator_tag)
 {
-	if (n >= 0)
-		for (; n > 0; --n) ++it;
-	else
-		for (; n < 0; ++n) --it;
+	if (n >= 0) for (; n > 0; --n) ++it;
+	else for (; n < 0; ++n) --it;
 }
 
 template <class RandIter>
 void _advance(RandIter & it,
-			  typename ft::iterator_traits<RandIter>::difference_type n, ft::random_access_iterator_tag){
+			  typename ft::iterator_traits<RandIter>::difference_type n, ft::random_access_iterator_tag) {
 	it += n;
 }
 

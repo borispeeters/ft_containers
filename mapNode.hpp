@@ -1,12 +1,10 @@
 #ifndef MAPNODE_HPP
 # define MAPNODE_HPP
 
-# include <utility>
+# include "colour.hpp"
 
 namespace ft
 {
-
-enum Colour { RED, BLACK, DOUBLE_BLACK };
 
 template <class Pair>
 struct mapNode
@@ -22,16 +20,16 @@ struct mapNode
 	mapNode(mapNode const & other): value(0) { *this = other; }
 	mapNode(enum Colour col): value(new Pair()), left(0), right(0), parent(0), colour(col) {}
 	~mapNode() { delete this->value; }
-	mapNode&	operator=(mapNode const & other)
+	mapNode&	operator=(mapNode const & rhs)
 	{
-		if (&other != this)
+		if (&rhs!= this)
 		{
-			delete value;
-			this->value = new Pair(other.value);
-			this->left = other.left;
-			this->right = other.right;
-			this->parent = other.parent;
-			this->colour = other.colour;
+			delete this->value;
+			this->value = new Pair(rhs.value);
+			this->left = rhs.left;
+			this->right = rhs.right;
+			this->parent = rhs.parent;
+			this->colour = rhs.colour;
 		}
 		return *this;
 	}

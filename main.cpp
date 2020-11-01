@@ -193,19 +193,6 @@ int main ()
 //	list_splice();
 //	lol();
 
-	std::vector<int>	ve;
-	ve.push_back(1);
-	ve.push_back(2);
-	ve.push_back(3);
-
-	ft::list<int>	li(ve.begin(), ve.end());
-
-	ft::list<int>::const_iterator it;
-
-//	for (it = li.begin(); it != li.end(); ++it)
-//		std::cout << *it << std::endl;
-
-
 /*																		*\
 **	------------------------------------------------------------------	**
 \*																		*/
@@ -214,46 +201,24 @@ int main ()
 	ft::map<char, std::string>	mp;
 	ft::map<char, std::string>::iterator mit;
 
-//	mp.insert(std::make_pair('A', "test lol"));
-//	mp.insert(std::make_pair('B', "another test lol"));
-//	mp.insert(std::make_pair('C', "final test lol"));
-
-
-//	mp['a'] = "first element";
-//	mp['b'] = "second element";
-//	mp['c'] = "third element";
-//	mp['d'] = "last element";
-
-	mp.insert(std::make_pair('d', "lol"));
-	mp.insert(std::make_pair('b', "lol"));
 	mp.insert(std::make_pair('a', "lol"));
+	mp.insert(std::make_pair('b', "lol"));
 	mp.insert(std::make_pair('c', "lol"));
-	mp.insert(std::make_pair('f', "lol"));
+	mp.insert(std::make_pair('d', "lol"));
 	mp.insert(std::make_pair('e', "lol"));
+	mp.insert(std::make_pair('f', "lol"));
 	mp.insert(std::make_pair('g', "lol"));
+	mp.insert(std::make_pair('h', "lol"));
 
-	mp.erase(mp.find('b'));
+	mp.erase(mp.find('f'));
 
 	mp.printBT();
 
-//	mp.insert(mit, std::make_pair('c', "second element"));
-//	mp.insert(mit, std::make_pair('e', "third element"));
-//	mp.insert(mit, std::make_pair('a', "first element"));
-//	mp.insert(mit, std::make_pair('g', "last element"));
-
-//	std::cout << std::endl << "After insertions the map has a size of " << mp.size();
-//
-//	mp.erase(mp.begin());
-//	mit = mp.begin();
-//	++mit;
-//
-//	std::cout << std::endl << "After erase the map has a size of " << mp.size();
-//	std::cout << std::endl << std::endl;
-
-
-
-//	for (mit = mp.begin(); mit != mp.end(); ++mit)
-//		std::cout << mit->first << " => " << mit->second << std::endl;
+	std::cout << "map has a size of: " << mp.size() << std::endl;
+	std::cout << "map contains:";
+	for (mit = mp.begin(); mit != mp.end(); ++mit)
+		std::cout << ' ' << mit->first;
+	std::cout << std::endl;
 
 
 

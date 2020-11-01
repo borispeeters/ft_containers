@@ -82,6 +82,7 @@ public:
 	// destructor
 	~list()
 	{
+		this->clear();
 		delete this->m_head;
 		delete this->m_tail;
 	}
@@ -374,7 +375,7 @@ public:
 		}
 	}
 
-	void sort() { mergeSort(*this); }
+	void sort() { this->mergeSort(*this); }
 
 	template <class Compare>
 	void sort(Compare comp) { this->mergeSort(*this, comp); }
@@ -406,10 +407,10 @@ private:
 		if (first.size() > 1)
 		{
 			list	second;
-			split(first, second);
+			this->split(first, second);
 
-			mergeSort(first);
-			mergeSort(second);
+			this->mergeSort(first);
+			this->mergeSort(second);
 
 			first.merge(second);
 		}
@@ -421,10 +422,10 @@ private:
 		if (first.size() > 1)
 		{
 			list	second;
-			split(first, second);
+			this->split(first, second);
 
-			mergeSort(first);
-			mergeSort(second);
+			this->mergeSort(first);
+			this->mergeSort(second);
 
 			first.merge(second, comp);
 		}

@@ -10,9 +10,6 @@
 # include "mapNode.hpp"
 # include "type_traits.hpp"
 
-
-# include <iostream>
-
 namespace ft
 {
 
@@ -112,12 +109,12 @@ public:
 	}
 
 	// assignment operator overload
-	map&	operator=(map const & other)
+	map&	operator=(map const & rhs)
 	{
-		if (&other != this)
+		if (&rhs != this)
 		{
-			this->erase(this->begin(), this->end());
-			this->insert(other.begin(), other.end());
+			this->clear();
+			this->insert(rhs.begin(), rhs.end());
 		}
 		return *this;
 	}
@@ -139,13 +136,13 @@ public:
 	mapped_type&	operator[](key_type const & k) { return this->insert(std::make_pair(k, mapped_type())).first->second; }
 
 	// 1. single element insertion
-	std::pair<iterator, bool> insert(value_type const & val)
+	std::pair<iterator, bool>	insert(value_type const & val)
 	{
-		std::pair<mapNode<value_type>*, bool>	ret = this->BSTInsert(this->root(), val);
+		std::pair<mapNode<value_type>*, bool>	ret(this->BSTinsert(this->root(), val));
 
 		if (ret.second)
 		{
-//			fixViolation(this->m_root, ret.first);
+			fixInsertViolation(ret.first);
 			++this->m_size;
 		}
 		return ret;
@@ -160,37 +157,37 @@ public:
 
 		if (this->empty())
 		{
-			ret = this->BSTInsert(this->root(), val);
+			ret = this->BSTinsert(this->root(), val);
 		}
 		else if (position == this->end())
 		{
 			--position;
 			if (val.first >= position->first)
-				ret = this->BSTInsert(position.node(), val);
+				ret = this->BSTinsert(position.node(), val);
 			else
-				ret = this->BSTInsert(this->root(), val);
+				ret = this->BSTinsert(this->root(), val);
 		}
 		else if (position->first < val.first)
 		{
 			iterator	tmp(position);
 			++tmp;
 			if (tmp == this->end() || tmp->first > val.first)
-				ret = this->BSTInsert(position.node(), val);
+				ret = this->BSTinsert(position.node(), val);
 			else
-				ret = this->BSTInsert(this->root(), val);
+				ret = this->BSTinsert(this->root(), val);
 		}
 		else if (position->first > val.first)
 		{
 			iterator	tmp(position);
 			--tmp;
 			if (tmp->first < val.first)
-				ret = this->BSTInsert(position.node(), val);
+				ret = this->BSTinsert(position.node(), val);
 			else
-				ret = this->BSTInsert(this->root(), val);
+				ret = this->BSTinsert(this->root(), val);
 		}
 		if (ret.second)
 		{
-//			fixViolation(this->m_root, ret.first);
+			fixInsertViolation(ret.first);
 			++this->m_size;
 		}
 		return ret.first;
@@ -198,8 +195,8 @@ public:
 
 	// 3. range insertion
 	template <class Iterator>
-	void		insert(Iterator first, Iterator last,
-					   typename ft::_void_t<typename ft::iterator_traits<Iterator>::iterator_category>::type * = 0)
+	void	insert(Iterator first, Iterator last,
+			 		typename ft::_void_t<typename ft::iterator_traits<Iterator>::iterator_category>::type * = 0)
 	{
 		while (first != last)
 		{
@@ -211,26 +208,10 @@ public:
 	// 1. erase iterator
 	void erase(iterator position)
 	{
-		mapNode<value_type>*	node(position.node());
+		std::pair<mapNode<value_type>*, bool>	ret(this->BSTerase(position));
 
-		if (!this->validNode(node->left) && !this->validNode(node->right)) this->erase_no_children(node);
-		else if (this->validNode(node->left) && this->validNode(node->right))
-		{
-			mapNode<value_type>*	successor((++position).node());
-			std::cout << "BEFORE" << std::endl;
-			std::cout << "node: " << node->value->first << ", successor: " << successor->value->first << std::endl;
-
-			ft::swap(node->value, successor->value);
-			std::cout << std::endl;
-
-			std::cout << "AFTER" << std::endl;
-			std::cout << "node: " << node->value->first << ", successor: " << successor->value->first << std::endl;
-			if ((successor->left == 0 || successor->left == this->firstNode()) &&
-				(successor->right == 0 || successor->right == this->lastNode()))
-				this->erase_no_children(successor);
-			else this->erase_one_child(node);
-		}
-		else this->erase_one_child(node);
+		if (ret.second)
+			this->fixEraseViolation(ret.first);
 
 		--this->m_size;
 		if (this->empty())
@@ -291,7 +272,7 @@ public:
 	const_iterator	find(key_type const & k) const
 	{
 		mapNode<value_type>*	node(this->root());
-		while (node && node != this->firstNode() && node != this->lastNode())
+		while (this->validNode(node))
 		{
 			if (this->equal(node->value->first, k)) return const_iterator(node);
 			else if (this->key_comp()(node->value->first, k)) node = node->right;
@@ -343,13 +324,17 @@ public:
 
 	allocator_type	get_allocator() const { return this->m_alloc; }
 
-	void printBT() const {
+	void printBT() const
+	{
 		this->printBT("", this->root(), false);
 		std::cout << std::endl;
 	}
+
 private:
-	void printBT(const std::string& prefix, mapNode<value_type>* trav, bool isLeft) const {
-		if (trav && trav != this->firstNode() && trav != this->lastNode()) {
+	void printBT(std::string const & prefix, mapNode<value_type>* trav, bool isLeft) const
+	{
+		if (this->validNode(trav))
+		{
 			std::cout << prefix;
 			std::cout << (isLeft ? "├──" : "└──" );
 			// print the value of the node
@@ -369,7 +354,7 @@ private:
 		this->firstNode()->parent = this->lastNode();
 	}
 
-	std::pair<mapNode<value_type>*, bool>	BSTInsert(mapNode<value_type>* curr, value_type const & val)
+	std::pair<mapNode<value_type>*, bool>	BSTinsert(mapNode<value_type>* curr, value_type const & val)
 	{
 		mapNode<value_type>*	newNode = new mapNode<value_type>(val);
 
@@ -430,201 +415,257 @@ private:
 		return std::make_pair(curr, false);
 	}
 
-	void erase_no_children(mapNode<value_type> *& node)
+	bool 	BSTerase(iterator position)
 	{
-		if (node != this->root())
-		{
-			if (node == node->parent->right)
-			{
-				if (node == this->lastNode()->parent)
-				{
-					node->parent->right = this->lastNode();
-					this->lastNode()->parent = node->parent;
-				}
-				else node->parent->right = 0;
-			}
-			else if (node == node->parent->left)
-			{
-				if (node == this->firstNode()->parent)
-				{
-					node->parent->left = this->firstNode();
-					this->firstNode()->parent = node->parent;
-				}
-				else node->parent->left = 0;
-			}
-		}
-		else this->firstNode()->parent = this->lastNode();
+		mapNode<value_type>*	z(position.node());
+		mapNode<value_type>*	y(z);
+		mapNode<value_type>*	x(0);
+		enum Colour				origYColour(y->colour);
 
-		delete node;
-		node = 0;
+		if (!this->validNode(z->left)) // z has only right child or no children
+		{
+			x = z->right;
+			this->transplant(z, z->right);
+		}
+		else if (!this->validNode(z->right)) // z has only left child
+		{
+			x = z->left;
+			this->transplant(z, z->left);
+		}
+		else // z has two children
+		{
+			++position;
+			y = position.node();
+
+			origYColour = y->colour;
+			x = y->right;
+			if (y->parent == z && x) // y is direct child of z
+				x->parent = y;
+			else
+			{
+				this->transplant(y, y->right);
+				y->right = z->right;
+				y->right->parent = y;
+			}
+			this->transplant(z, y);
+			y->left = z->left;
+			y->left->parent = y;
+			y->colour = z->colour;
+		}
+		return std::make_pair(x, origYColour == BLACK);
 	}
 
-	void erase_one_child(mapNode<value_type> *& node)
+	void	transplant(mapNode<value_type>* u, mapNode<value_type>* v)
 	{
-		mapNode<value_type>*	child;
-		if (node->left && node->left != this->firstNode())
-			child = node->left;
-		else if (node->right && node->right != this->lastNode())
-			child = node->right;
-		if (node == this->root())
-		{
-			this->m_root = child;
-			if (child == node->left)
-			{
-				this->lastNode()->parent = this->root();
-				this->root()->right = this->lastNode();
-			}
-			else if (child == node->right)
-			{
-				this->root()->left = this->firstNode();
-				this->firstNode()->parent = this->root();
-			}
-		}
-		else if (node == node->parent->left)
-		{
-			if (node->left == this->firstNode())
-			{
-				child->left = this->firstNode();
-				this->firstNode()->parent = child;
-			}
-			node->parent->left = child;
-		}
-		else if (node == node->parent->right)
-		{
-			if (node->right == this->lastNode())
-			{
-				child->right = this->lastNode();
-				this->lastNode()->parent = child;
-			}
-			node->parent->right = child;
-		}
-		child->parent = node->parent;
-		delete node;
-		node = 0;
+		if (u == this->root())
+			this->m_root = v;
+		else if (u == u->parent->left)
+			u->parent->left = v;
+		else if (u == u->parent->right)
+			u->parent->right = v;
+		if (v) v->parent = u->parent;
 	}
 
-	void rotateLeft(mapNode<value_type>*& root, mapNode<value_type>*& node)
-	{
-		mapNode<value_type>*	tmp(node->right);
+/*
+**
+**           4              4              4                 4
+**          / \            / \            / \               / \
+**         /   \          /   \          /   \             /   \
+**        /     \        /     \        /     \           /     \
+**       X       5      X       5      Y       5         Y       5
+**      / \            / \              \               / \
+**     /   \          /   \              3     X       X   3
+**    1     Y        1     2    Y             / \     / \
+**         / \                   \           1   2   1   2
+**        2   3                   3
+**
+*/
 
-		node->right = tmp->left;
-		if (node->right)
-			node->right->parent = node;
-		tmp->parent = node->parent;
-		if (!node->parent)
-			root = tmp;
-		else if (node == node->parent->left)
-			node->parent->left = tmp;
-		else
-			node->parent->right = tmp;
-		tmp->left = node;
-		node->parent = tmp;
+	void rotateLeft(mapNode<value_type>*& x)
+	{
+		mapNode<value_type>*	y(x->right);
+
+		x->right = y->left;
+		if (y->left)
+			y->left->parent = x;
+		y->parent = x->parent;
+		if (x == this->root())
+			this->m_root = y;
+		else if (x == x->parent->left)
+			x->parent->left = y;
+		else if (x == x->parent->right)
+			x->parent->right = y;
+		y->left = x;
+		x->parent = y;
 	}
 
-	void rotateRight(mapNode<value_type>*& root, mapNode<value_type>*& node)
+	void rotateRight(mapNode<value_type>*& x)
 	{
-		mapNode<value_type>*	tmp(node->left);
+		mapNode<value_type>*	y(x->left);
 
-		node->left = tmp->right;
-		if (node->left)
-			node->left->parent = node;
-		tmp->parent = node->parent;
-		if (!node->parent)
-			root = tmp;
-		else if (node == node->parent->right)
-			node->parent->right = tmp;
-		else
-			node->parent->left = tmp;
-		tmp->right = node;
-		node->parent = tmp;
+		x->left = y->right;
+		if (y->right)
+			y->right->parent = x;
+		y->parent = x->parent;
+		if (x == this->root())
+			this->m_root = y;
+		else if (x == x->parent->right)
+			x->parent->right = y;
+		else if (x == x->parent->left)
+			x->parent->left = y;
+		y->right = x;
+		x->parent = y;
 	}
 
-	void fixViolation(mapNode<value_type>*& root, mapNode<value_type>*& node)
+	void recolour(mapNode<value_type>* node)
+	{
+		if (node->colour == BLACK) node->colour = RED;
+		else if (node->colour == RED) node->colour = BLACK;
+	}
+
+	void fixInsertViolation(mapNode<value_type> *& node)
 	{
 		mapNode<value_type>*	parent(0);
 		mapNode<value_type>*	grandParent(0);
 		mapNode<value_type>*	uncle(0);
 
-		while (node != root && node->colour != BLACK && node->parent->colour == RED)
+		while (node != this->root() && node->colour != BLACK && node->parent->colour == RED)
 		{
 			parent = node->parent;
 			grandParent = parent->parent;
-
-			// Case A
-			// Parent is left child of GrandParent
+			// parent is left child of grandparent
 			if (parent == grandParent->left)
 			{
 				uncle = grandParent->right;
-				// Case 1: uncle is red, recolour
 				if (uncle && uncle->colour == RED)
 				{
-					grandParent->colour = RED;
-					parent->colour = BLACK;
-					uncle->colour = BLACK;
+					this->recolour(grandParent);
+					this->recolour(parent);
+					this->recolour(uncle);
 					node = grandParent;
 				}
 				else
 				{
-					// Case 2: node is right child of Parent, left-rotation required
+					// node is right child of parent, rotate left
 					if (node == parent->right)
 					{
-						rotateLeft(root, parent);
 						node = parent;
-						parent = node->parent;
+						parent = node;
+						rotateLeft(node);
 					}
-					// Case 3: node is left child of Parent, right-rotation required
-					rotateRight(root, grandParent);
+					// node is left child of parent, swap parent and grandparent colour and rotate right
 					ft::swap(parent->colour, grandParent->colour);
-					node = parent;
+					rotateRight(grandParent);
 				}
 			}
-			// Case B
-			// Parent is right child of grandParent
+			// parent is right child of grandparent
 			else if (parent == grandParent->right)
 			{
 				uncle = grandParent->left;
-				// Case 1: uncle is red, recolour
 				if (uncle && uncle->colour == RED)
 				{
-					grandParent->colour = RED;
-					parent->colour = BLACK;
-					uncle->colour = BLACK;
+					this->recolour(grandParent);
+					this->recolour(parent);
+					this->recolour(uncle);
 					node = grandParent;
 				}
 				else
 				{
-					// Case 2: node is left child of Parent, right-rotation required
+					// node is left child of parent, rotate right
 					if (node == parent->left)
 					{
-						rotateRight(root, parent);
 						node = parent;
-						parent = node->parent;
+						parent = node;
+						rotateRight(node);
 					}
-					// Case 3: node is right child of Parent, left-rotation required
-					rotateLeft(root, grandParent);
+					// node is right child of parent, swap parent and grandparent colour and rotate left
+					rotateLeft(grandParent);
 					ft::swap(parent->colour, grandParent->colour);
-					node = parent;
 				}
 			}
 		}
-		root->colour = BLACK;
+		this->root()->colour = BLACK;
 	}
 
-	mapNode<value_type>*	findNode(iterator position)
+	void	fixEraseViolation(mapNode<value_type> *& x)
 	{
-		mapNode<value_type>*	node(this->root());
-		while (node && node != this->firstNode() && node != this->lastNode())
+		while (x != this->root() && x->colour == BLACK)
 		{
-			if (this->key_comp()(position->first, node->value->first)) node = node->left;
-			else if (this->key_comp()(node->value->first, position->first)) node = node->right;
-			else return (node);
+			if (x == x->parent->left)
+			{
+				mapNode<value_type>*	w(x->parent->right);
+				if (w->colour == RED)
+				{
+					w->colour = BLACK;
+					x->parent->colour = RED;
+					this->rotateLeft(x->parent);
+					w = x->parent->right;
+				}
+				if (w->left->colour == BLACK && w->right->colour == BLACK)
+				{
+					w->colour = RED;
+					x = x->parent;
+				}
+				else
+				{
+					if (w->right->colour == BLACK)
+					{
+						w->left->colour = BLACK;
+						w->colour = RED;
+						this->rotateRight(w);
+						w = x->parent->right;
+					}
+					w->colour = x->parent->colour;
+					x->parent->colour = BLACK;
+					w->right->colour = BLACK;
+					this->rotateLeft(x->parent);
+					x = this->root();
+				}
+			}
+			else if (x == x->parent->right)
+			{
+				mapNode<value_type>*	w(x->parent->left);
+				if (w->colour == RED)
+				{
+					w->colour = BLACK;
+					x->parent->colour = RED;
+					this->rotateRight(x->parent);
+					w = x->parent->left;
+				}
+				if (w->right->colour == BLACK && w->left->colour == BLACK)
+				{
+					w->colour = RED;
+					x = x->parent;
+				}
+				else
+				{
+					if (w->left->colour == BLACK)
+					{
+						w->right->colour = BLACK;
+						w->colour = RED;
+						this->rotateLeft(w);
+						w = x->parent->left;
+					}
+					w->colour = x->parent->colour;
+					x->parent->colour = BLACK;
+					w->left->colour = BLACK;
+					this->rotateRight(x->parent);
+					x = this->root();
+				}
+			}
 		}
-		return this->lastNode();
+		x->colour = BLACK;
 	}
 
-	bool	equal(value_type const & x, value_type const & y) const { return (!this->value_comp()(x, y) && !this->value_comp()(y, x)); }
-	bool	equal(key_type const & x, key_type const & y) const { return (!this->key_comp()(x, y) && !this->key_comp()(y, x)); }
-	bool	validNode(mapNode<value_type>* node) { return (node != 0 && node != this->firstNode() && node != this->lastNode()); }
+	bool	equal(value_type const & x, value_type const & y) const {
+		return (!this->value_comp()(x, y) && !this->value_comp()(y, x));
+	}
+	bool	equal(key_type const & x, key_type const & y) const {
+		return (!this->key_comp()(x, y) && !this->key_comp()(y, x));
+	}
+	bool	validNode(mapNode<value_type>* node) const {
+		return (node != 0 && node != this->firstNode() && node != this->lastNode());
+	}
 
 	mapNode<value_type>*	root() const { return this->m_root; }
 	mapNode<value_type>*	firstNode() const { return this->m_first; }
