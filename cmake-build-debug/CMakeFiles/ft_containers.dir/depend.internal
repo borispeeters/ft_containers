@@ -3,15 +3,21 @@
 
 CMakeFiles/ft_containers.dir/main.cpp.o
  /Users/bpeeters/Projects/ft_containers/algorithm.hpp
- /Users/bpeeters/Projects/ft_containers/colour.hpp
+ /Users/bpeeters/Projects/ft_containers/deque.hpp
+ /Users/bpeeters/Projects/ft_containers/dequeIterator.hpp
+ /Users/bpeeters/Projects/ft_containers/functional.hpp
  /Users/bpeeters/Projects/ft_containers/iterator.hpp
  /Users/bpeeters/Projects/ft_containers/list.hpp
  /Users/bpeeters/Projects/ft_containers/listIterator.hpp
  /Users/bpeeters/Projects/ft_containers/listNode.hpp
  /Users/bpeeters/Projects/ft_containers/main.cpp
  /Users/bpeeters/Projects/ft_containers/map.hpp
+ /Users/bpeeters/Projects/ft_containers/queue.hpp
+ /Users/bpeeters/Projects/ft_containers/set.hpp
+ /Users/bpeeters/Projects/ft_containers/stack.hpp
  /Users/bpeeters/Projects/ft_containers/treeIterator.hpp
  /Users/bpeeters/Projects/ft_containers/treeNode.hpp
  /Users/bpeeters/Projects/ft_containers/type_traits.hpp
+ /Users/bpeeters/Projects/ft_containers/utility.hpp
  /Users/bpeeters/Projects/ft_containers/vector.hpp
  /Users/bpeeters/Projects/ft_containers/vectorIterator.hpp

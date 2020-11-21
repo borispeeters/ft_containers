@@ -16,7 +16,7 @@ T const &	min(T const & a, T const & b) { return !(b < a) ? a : b; }
 template <class T>
 void 		swap(T & a, T & b)
 {
-	T	c(a);
+	T	c = a;
 	a = b;
 	b = c;
 }
@@ -82,7 +82,9 @@ Iterator	max_element(Iterator first, Iterator last, Compare comp,
 }
 
 template <class Iterator1, class Iterator2>
-bool equal(Iterator1 first1, Iterator1 last1, Iterator2 first2)
+bool equal(Iterator1 first1, Iterator1 last1, Iterator2 first2,
+		   typename ft::_void_t<typename ft::iterator_traits<Iterator1>::iterator_category>::type * = 0,
+		   typename ft::_void_t<typename ft::iterator_traits<Iterator2>::iterator_category>::type * = 0)
 {
 	while (first1 != last1)
 	{
@@ -93,7 +95,9 @@ bool equal(Iterator1 first1, Iterator1 last1, Iterator2 first2)
 }
 
 template <class Iterator1, class Iterator2, class BinaryPredicate>
-bool equal(Iterator1 first1, Iterator1 last1, Iterator2 first2, BinaryPredicate pred)
+bool equal(Iterator1 first1, Iterator1 last1, Iterator2 first2, BinaryPredicate pred,
+		   typename ft::_void_t<typename ft::iterator_traits<Iterator1>::iterator_category>::type * = 0,
+		   typename ft::_void_t<typename ft::iterator_traits<Iterator2>::iterator_category>::type * = 0)
 {
 	while (first1 != last1)
 	{
@@ -104,7 +108,9 @@ bool equal(Iterator1 first1, Iterator1 last1, Iterator2 first2, BinaryPredicate 
 }
 
 template <class Iterator1, class Iterator2>
-bool lexicographical_compare(Iterator1 first1, Iterator1 last1, Iterator2 first2, Iterator2 last2)
+bool lexicographical_compare(Iterator1 first1, Iterator1 last1, Iterator2 first2, Iterator2 last2,
+							 typename ft::_void_t<typename ft::iterator_traits<Iterator1>::iterator_category>::type * = 0,
+							 typename ft::_void_t<typename ft::iterator_traits<Iterator2>::iterator_category>::type * = 0)
 {
 	while (first1 != last1)
 	{
@@ -116,7 +122,9 @@ bool lexicographical_compare(Iterator1 first1, Iterator1 last1, Iterator2 first2
 }
 
 template <class Iterator1, class Iterator2, class Compare>
-bool lexicographical_compare(Iterator1 first1, Iterator1 last1, Iterator2 first2, Iterator2 last2, Compare comp)
+bool lexicographical_compare(Iterator1 first1, Iterator1 last1, Iterator2 first2, Iterator2 last2, Compare comp,
+							 typename ft::_void_t<typename ft::iterator_traits<Iterator1>::iterator_category>::type * = 0,
+							 typename ft::_void_t<typename ft::iterator_traits<Iterator2>::iterator_category>::type * = 0)
 {
 	while (first1 != last1)
 	{
@@ -127,6 +135,18 @@ bool lexicographical_compare(Iterator1 first1, Iterator1 last1, Iterator2 first2
 	return first2 != last2;
 }
 
-};
+template <class Iterator, class Function>
+Function	for_each(Iterator first, Iterator last, Function fn,
+					 typename ft::_void_t<typename ft::iterator_traits<Iterator>::iterator_category>::type * = 0)
+{
+	while (first != last)
+	{
+		fn(*first);
+		++first;
+	}
+	return fn;
+}
+
+}; //end of namespace ft
 
 #endif

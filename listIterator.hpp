@@ -1,11 +1,12 @@
 #ifndef LISTITERATOR_HPP
 # define LISTITERATOR_HPP
 
+# include <memory>
+
 # include "iterator.hpp"
 # include "listNode.hpp"
 
 # include "list.hpp"
-# include <memory>
 
 namespace ft
 {
@@ -13,6 +14,9 @@ namespace ft
 template <class T>
 class listIterator : public ft::iterator<ft::bidirectional_iterator_tag, T>
 {
+
+	template <class, class> friend class list;
+
 public:
 	typedef	T								value_type;
 	typedef	std::ptrdiff_t					difference_type;
@@ -29,11 +33,13 @@ public:
 	listIterator(): m_node(0) {}
 	listIterator(listNode<value_type>* n): m_node(n) {}
 	listIterator(listIterator const & other): m_node(other.node()) {}
+
 	listIterator&	operator=(listIterator const & rhs)
 	{
 		if (&rhs != this) this->m_node = rhs.node();
 		return *this;
 	}
+
 	virtual ~listIterator() {}
 
 	listIterator& operator++()
@@ -41,22 +47,25 @@ public:
 		this->m_node = this->node()->next;
 		return *this;
 	}
+
 	listIterator  operator++(int)
 	{
-		listIterator  iterator(*this);
+		listIterator  tmp(*this);
 		++(*this);
-		return iterator;
+		return tmp;
 	}
+
 	listIterator& operator--()
 	{
 		this->m_node = this->node()->prev;
 		return *this;
 	}
+
 	listIterator  operator--(int)
 	{
-		listIterator  iterator(*this);
+		listIterator  tmp(*this);
 		--(*this);
-		return iterator;
+		return tmp;
 	}
 
 	pointer		operator->() const { return this->node()->data; }
@@ -64,6 +73,7 @@ public:
 	bool		operator==(listIterator const & rhs) const { return this->node() == rhs.node(); }
 	bool 		operator!=(listIterator const & rhs) const { return !(*this == rhs); }
 
+protected:
 	listNode<value_type>*	node() const { return this->m_node; }
 };
 
@@ -83,16 +93,19 @@ public:
 	constListIterator(listNode<value_type>* n): listIterator<value_type>(n) {}
 	constListIterator(listIterator<value_type> const & other): listIterator<value_type>(other) {}
 	constListIterator(constListIterator const & other): listIterator<value_type>(other.node()) {}
+
 	constListIterator&	operator=(listIterator<value_type> const & rhs)
 	{
 		if (&rhs != this) this->m_node = rhs.node();
 		return *this;
 	}
+
 	constListIterator&	operator=(constListIterator const & rhs)
 	{
 		if (&rhs != this) this->m_node = rhs.node();
 		return *this;
 	}
+
 	virtual ~constListIterator() {}
 
 	const_pointer	operator->() const { return this->node()->data; }

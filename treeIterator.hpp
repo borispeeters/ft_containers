@@ -11,6 +11,14 @@ namespace ft
 template <class T>
 class treeIterator : public ft::iterator<ft::bidirectional_iterator_tag, T>
 {
+
+	template <class, class, class, class> friend class mapBase;
+	template <class, class, class, class> friend class map;
+	template <class, class, class, class> friend class multimap;
+	template <class, class, class> friend class setBase;
+	template <class, class, class> friend class set;
+	template <class, class, class> friend class multiset;
+
 public:
 	typedef T								value_type;
 	typedef std::ptrdiff_t					difference_type;
@@ -21,24 +29,27 @@ public:
 	typedef ft::bidirectional_iterator_tag	iterator_category;
 
 protected:
+	RBTree<value_type>*		m_tree;
 	treeNode<value_type>*	m_node;
 
 public:
-	treeIterator(): m_node(0) {}
-	treeIterator(treeNode<value_type>* n): m_node(n) {}
-	treeIterator(treeIterator const & other): m_node(other.node()) {}
+	treeIterator(): m_tree(NULL), m_node(NULL) {}
+	treeIterator(RBTree<value_type>* t, treeNode<value_type>* n): m_tree(t), m_node(n) {}
+	treeIterator(treeIterator const & other): m_tree(other.tree()), m_node(other.node()) {}
 	treeIterator&	operator=(treeIterator const & rhs)
 	{
-		if (&rhs != this) this->m_node = rhs.node();
+		if (&rhs != this)
+		{
+			this->m_tree = rhs.tree();
+			this->m_node = rhs.node();
+		}
 		return *this;
 	}
-	~treeIterator() {}
+	virtual ~treeIterator() {}
 
 	treeIterator&	operator++()
 	{
-		if (this->node() == this->lastNode())
-			this->m_node = this->node()->right;
-		else if (this->node()->right)
+		if (this->node()->right != this->tree()->NIL)
 		{
 			this->m_node = this->node()->right;
 			this->m_node = this->leftEnd(this->node());
@@ -65,9 +76,7 @@ public:
 
 	treeIterator&	operator--()
 	{
-		if (this->node() == this->firstNode())
-			this->m_node = this->node()->left;
-		else if (this->node()->left)
+		if (this->node()->left != this->tree()->NIL)
 		{
 			this->m_node = this->node()->left;
 			this->m_node = this->rightEnd(this->node());
@@ -97,33 +106,44 @@ public:
 	bool 		operator==(treeIterator const & rhs) const { return this->node() == rhs.node(); }
 	bool 		operator!=(treeIterator const & rhs) const { return !(*this == rhs); }
 
+protected:
+	RBTree<value_type>*		tree() const { return this->m_tree; }
+
 	treeNode<value_type>*	node() const { return this->m_node; }
 
-private:
 	treeNode<value_type>*	leftEnd(treeNode<value_type>* node) const
 	{
-		while (node->left)
+		while (node->left != this->tree()->NIL)
 			node = node->left;
 		return node;
 	}
 
 	treeNode<value_type>*	rightEnd(treeNode<value_type>* node) const
 	{
-		while (node->right)
+		while (node->right != this->tree()->NIL)
 			node = node->right;
 		return node;
 	}
 
-	treeNode<value_type>*	findRoot() const
+	treeNode<value_type>*	root() const
 	{
-		treeNode<value_type>*	root(this->node());
-		while (root->parent)
-			root = root->parent;
-		return root;
+		if (this->tree())
+			return this->tree()->m_root;
+		return NULL;
 	}
 
-	treeNode<value_type>*	firstNode() const { return this->leftEnd(this->findRoot()); }
-	treeNode<value_type>*	lastNode() const { return this->rightEnd(this->findRoot()); }
+	treeNode<value_type>*	firstNode() const
+	{
+		if (this->tree())
+			return this->tree()->m_first;
+		return NULL;
+	}
+	treeNode<value_type>*	lastNode() const
+	{
+		if (this->tree())
+			return this->tree()->m_last;
+		return NULL;
+	}
 };
 
 template <class T>
@@ -139,19 +159,30 @@ public:
 	typedef ft::bidirectional_iterator_tag	iterator_category;
 
 	constTreeIterator(): treeIterator<value_type>() {}
-	constTreeIterator(treeNode<value_type>* n): treeIterator<value_type>(n) {}
+	constTreeIterator(RBTree<value_type>* t, treeNode<value_type>* n): treeIterator<value_type>(t, n) {}
 	constTreeIterator(treeIterator<value_type> const & other): treeIterator<value_type>(other) {}
-	constTreeIterator(constTreeIterator const & other): treeIterator<value_type>(other.node()) {}
+	constTreeIterator(constTreeIterator const & other): treeIterator<value_type>(other.tree(), other.node()) {}
+
 	constTreeIterator&	operator=(treeIterator<value_type> const & rhs)
 	{
-		if (&rhs != this) this->m_node = rhs.node();
+		if (&rhs != this)
+		{
+			this->m_tree = rhs.tree();
+			this->m_node = rhs.node();
+		}
 		return *this;
 	}
+
 	constTreeIterator&	operator=(constTreeIterator const & rhs)
 	{
-		if (&rhs != this) this->m_node = rhs.node();
+		if (&rhs != this)
+		{
+			this->m_tree = rhs.tree();
+			this->m_node = rhs.node();
+		}
 		return *this;
 	}
+
 	virtual ~constTreeIterator() {}
 
 	const_pointer	operator->() const { return this->node()->value; }

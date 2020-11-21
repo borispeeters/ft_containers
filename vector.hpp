@@ -119,7 +119,8 @@ public:
 
 	size_type	size() const { return this->m_size; }
 	size_type	max_size() const { return this->get_allocator().max_size(); }
-	void		resize(size_type n, value_type val = value_type()) 
+
+	void		resize(size_type n, value_type val = value_type())
 	{
 		while (this->capacity() < n)
 			this->realloc(this->capacity() * 2);
@@ -135,20 +136,24 @@ public:
 	void			reserve(size_type n) { if (n > this->capacity()) this->realloc(n); }
 	reference		operator[](size_type n) { return *(this->m_data + n); }
 	const_reference	operator[](size_type n) const { return *(this->m_data + n); }
+
 	reference		at (size_type n)
 	{
 		if (n >= this->size()) throw std::out_of_range("vector");
 		return *(this->m_data + n);
 	}
+
 	const_reference	at (size_type n) const
 	{
 		if (n >= this->size()) throw std::out_of_range("vector");
 		return *(this->m_data + n);
 	}
+
 	reference   	front() { return *(this->m_data); }
 	const_reference front() const { return *(this->m_data); }
 	reference		back() { return *(this->m_data + this->size() - 1); }
 	const_reference	back() const { return *(this->m_data + this->size() - 1); }
+
 	// 1. range assign
 	template <class Iterator>
 	void	assign(Iterator first, Iterator last,
@@ -161,6 +166,7 @@ public:
 			++first;
 		}
 	}
+
 	// 2. fill assign
 	void	assign(size_type n, value_type const & val)
 	{
@@ -171,6 +177,7 @@ public:
 		for (size_type i = 0; i < this->size(); ++i)
 			this->get_allocator().construct(this->m_data + i, val);
 	}
+
 	void		push_back(value_type const & val)
 	{
 		if (this->size() >= this->capacity())
@@ -178,11 +185,13 @@ public:
 		this->get_allocator().construct(this->m_data + this->size(), val);
 		++this->m_size;
 	}
+
 	void		pop_back()
 	{
 		--this->m_size;
 		this->get_allocator().destroy(this->m_data + this->size());
 	}
+
 	// 1. single element insertion
 	iterator    insert(iterator position, value_type const & val)
 	{
@@ -190,6 +199,7 @@ public:
 		this->insert(position, 1, val);
 		return iterator(this->m_data + pos);
 	}
+
 	// 2. fill insertion
 	void        insert(iterator position, size_type n, value_type const & val)
 	{
@@ -201,6 +211,7 @@ public:
 		for (iterator it = tmp.begin(); it != tmp.end(); ++it)
 			this->push_back(*it);
 	}
+
 	// 3. range insertion
 	template <class Iterator>
 	void        insert(iterator position, Iterator first, Iterator last,
@@ -217,6 +228,7 @@ public:
 		for (iterator it = tmp.begin(); it != tmp.end(); ++it)
 			this->push_back(*it);
 	}
+
 	// 1. erase single element
 	iterator    erase(iterator position)
 	{
@@ -227,6 +239,7 @@ public:
 			this->push_back(*it);
 		return position;
 	}
+
 	// 2. erase range of elements
 	iterator    erase(iterator first, iterator last)
 	{
@@ -237,6 +250,7 @@ public:
 			this->push_back(*it);
 		return first;
 	}
+
 	void        swap(vector & x)
 	{
 		ft::swap(this->m_data, x.m_data);
@@ -244,12 +258,14 @@ public:
 		ft::swap(this->m_capacity, x.m_capacity);
 		ft::swap(this->m_alloc, x.m_alloc);
 	}
+
 	void        clear()
 	{
 		iterator it = this->begin();
 		while (it != this->end())
 			this->pop_back();
 	}
+
 	allocator_type	get_allocator() const { return this->m_alloc; }
 
 private:
@@ -280,8 +296,7 @@ bool operator!=(vector<T, Alloc> const & lhs, vector<T, Alloc> const & rhs) {
 }
 
 template <class T, class Alloc>
-bool operator<(vector<T, Alloc> const & lhs, vector<T, Alloc> const & rhs)
-{
+bool operator<(vector<T, Alloc> const & lhs, vector<T, Alloc> const & rhs) {
 	return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 }
 

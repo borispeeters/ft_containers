@@ -35,8 +35,8 @@ private:
 public:
 	// 1. default constructor
 	explicit list(allocator_type const & alloc = allocator_type()):
-		m_head(0),
-		m_tail(0),
+		m_head(new listNode<value_type>()),
+		m_tail(new listNode<value_type>()),
 		m_size(0),
 		m_alloc(alloc)
 	{
@@ -46,8 +46,8 @@ public:
 	// 2. fill constructor
 	explicit list(size_type n, value_type const & val = value_type(),
 			   allocator_type const & alloc = allocator_type()):
-		m_head(0),
-		m_tail(0),
+		m_head(new listNode<value_type>()),
+		m_tail(new listNode<value_type>()),
 		m_size(0),
 		m_alloc(alloc)
 	{
@@ -59,8 +59,8 @@ public:
 	template <class Iterator>
 	list(Iterator first, Iterator last,
 	  allocator_type const & alloc = allocator_type()):
-	 	m_head(0),
-	 	m_tail(0),
+	 	m_head(new listNode<value_type>()),
+	 	m_tail(new listNode<value_type>()),
 	 	m_size(0),
 	 	m_alloc(alloc)
 	{
@@ -70,8 +70,8 @@ public:
 
 	// 4. copy constructor
 	list(list const & other):
-		m_head(0),
-		m_tail(0),
+		m_head(new listNode<value_type>()),
+		m_tail(new listNode<value_type>()),
 		m_size(0),
 		m_alloc(other.get_allocator())
 	{
@@ -98,10 +98,10 @@ public:
 		return *this;
 	}
 
-	iterator		begin() { return this->head()->next; }
-	const_iterator	begin() const { return this->head()->next; }
-	iterator		end() { return this->tail(); }
-	const_iterator	end() const { return this->tail(); }
+	iterator		begin() { return iterator(this->head()->next); }
+	const_iterator	begin() const { return const_iterator(this->head()->next); }
+	iterator		end() { return iterator(this->tail()); }
+	const_iterator	end() const { return const_iterator(this->tail()); }
 
 	reverse_iterator		rbegin() { return reverse_iterator(this->end()); }
 	const_reverse_iterator	rbegin() const { return const_reverse_iterator(this->end()); }
@@ -147,6 +147,7 @@ public:
 		this->head()->next = newNode;
 		++this->m_size;
 	}
+
 	void pop_front()
 	{
 		listNode<value_type>*	delNode = this->head()->next;
@@ -155,6 +156,7 @@ public:
 		delete delNode;
 		--this->m_size;
 	}
+
 	void push_back(value_type const & val)
 	{
 		listNode<value_type>*	newNode = new listNode<value_type>(val);
@@ -164,6 +166,7 @@ public:
 		this->tail()->prev = newNode;
 		++this->m_size;
 	}
+
 	void pop_back()
 	{
 		listNode<value_type>*	delNode = this->tail()->prev;
@@ -239,7 +242,7 @@ public:
 	{
 		while (this->size() > n)
 			this->pop_back();
-		while (this->size < n)
+		while (this->size() < n)
 			this->push_back(val);
 	}
 
@@ -250,12 +253,10 @@ public:
 	{
 		if (this != &x && !x.empty())
 		{
-			position.node()->prev->next = x.head()->next;
-			position.node()->prev = x.tail()->prev;
-			x.head()->next->prev = position.node()->prev;
-			x.tail()->prev->next = position.node();
-			x.head()->next = x.tail();
-			x.tail()->prev = x.head();
+			listNode<value_type>*	first = x.head()->next;
+			listNode<value_type>*	last = x.tail()->prev;
+			this->unlinkNodes(first, last);
+			this->linkNodes(position.node(), first, last);
 			this->m_size += x.size();
 			x.m_size = 0;
 		}
@@ -264,14 +265,11 @@ public:
 	// 2. splice single element
 	void splice(iterator position, list & x, iterator i)
 	{
-		if (!x.empty())
+		if (position.node() != i.node() && position.node() != i.node()->next)
 		{
-			i.node()->prev->next = i.node()->next;
-			i.node()->next->prev = i.node()->prev;
-			i.node()->prev = position.node()->prev;
-			i.node()->next = position.node();
-			position.node()->prev->next = i.node();
-			position.node()->prev = i.node();
+			listNode<value_type>*	first = i.node();
+			this->unlinkNodes(first, first);
+			this->linkNodes(position.node(), first, first);
 			++this->m_size;
 			--x.m_size;
 		}
@@ -280,11 +278,19 @@ public:
 	// 3. splice range of elements
 	void splice(iterator position, list & x, iterator first, iterator last)
 	{
-		while (first != last)
+		if (first != last)
 		{
-			iterator	tmp(first);
-			++first;
-			this->splice(position, x, tmp);
+			listNode<value_type>*	firstNode = first.node();
+			--last;
+			listNode<value_type>*	lastNode = last.node();
+			if (this != &x)
+			{
+				size_type	s = ft::distance(first, last) + 1;
+				x.m_size -= s;
+				this->m_size += s;
+			}
+			this->unlinkNodes(firstNode, lastNode);
+			this->linkNodes(position.node(), firstNode, lastNode);
 		}
 	}
 
@@ -384,7 +390,7 @@ public:
 	{
 		if (this->size() > 1)
 		{
-			for (iterator it(this->begin()); it != this->end(); --it)
+			for (iterator it = this->begin(); it != this->end(); --it)
 				ft::swap(it.node()->prev, it.node()->next);
 			ft::swap(this->m_head, this->m_tail);
 			ft::swap(this->head()->prev, this->head()->next);
@@ -393,13 +399,26 @@ public:
 	}
 
 	allocator_type	get_allocator() const { return this->m_alloc; }
+
 private:
 	void listInit()
 	{
-		this->m_head = new listNode<value_type>();
-		this->m_tail = new listNode<value_type>();
 		this->head()->next = this->tail();
 		this->tail()->prev = this->head();
+	}
+
+	void unlinkNodes(listNode<value_type>* first, listNode<value_type>* last)
+	{
+		first->prev->next = last->next;
+		last->next->prev = first->prev;
+	}
+
+	void linkNodes(listNode<value_type>* node, listNode<value_type>* first, listNode<value_type>* last)
+	{
+		node->prev->next = first;
+		first->prev = node->prev;
+		node->prev = last;
+		last->next = node;
 	}
 
 	void mergeSort(list & first)
@@ -434,7 +453,7 @@ private:
 	void split(list & first, list & second)
 	{
 		iterator	it(first.begin());
-		for (size_type i(0); i < first.size() / 2; ++i)
+		for (size_type i = 0; i < first.size() / 2; ++i)
 			++it;
 		second.splice(second.begin(), first, it, first.end());
 	}
@@ -444,27 +463,39 @@ private:
 };
 
 template <class T, class Alloc>
-bool operator==(list<T, Alloc> const & lhs, list<T, Alloc> const & rhs)
-{ return lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin()); }
+bool operator==(list<T, Alloc> const & lhs, list<T, Alloc> const & rhs) {
+	return lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin());
+}
 
 template <class T, class Alloc>
-bool operator!=(list<T, Alloc> const & lhs, list<T, Alloc> const & rhs) { return !(lhs == rhs); }
+bool operator!=(list<T, Alloc> const & lhs, list<T, Alloc> const & rhs) {
+	return !(lhs == rhs);
+}
 
 template <class T, class Alloc>
-bool operator<(list<T, Alloc> const & lhs, list<T, Alloc> const & rhs)
-{ return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()); }
+bool operator<(list<T, Alloc> const & lhs, list<T, Alloc> const & rhs) {
+	return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+}
 
 template <class T, class Alloc>
-bool operator<=(list<T, Alloc> const & lhs, list<T, Alloc> const & rhs) { return !(rhs < lhs); }
+bool operator<=(list<T, Alloc> const & lhs, list<T, Alloc> const & rhs) {
+	return !(rhs < lhs);
+}
 
 template <class T, class Alloc>
-bool operator>(list<T, Alloc> const & lhs, list<T, Alloc> const & rhs) { return rhs < lhs; }
+bool operator>(list<T, Alloc> const & lhs, list<T, Alloc> const & rhs) {
+	return rhs < lhs;
+}
 
 template <class T, class Alloc>
-bool operator>=(list<T, Alloc> const & lhs, list<T, Alloc> const & rhs) { return !(lhs < rhs); }
+bool operator>=(list<T, Alloc> const & lhs, list<T, Alloc> const & rhs) {
+	return !(lhs < rhs);
+}
 
 template <class T, class Alloc>
-void swap(list<T, Alloc> & x, list<T, Alloc> & y) { x.swap(y); }
+void swap(list<T, Alloc> & x, list<T, Alloc> & y) {
+	x.swap(y);
+}
 
 }; //end of namespace ft
 

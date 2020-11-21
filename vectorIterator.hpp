@@ -10,6 +10,9 @@ namespace ft
 template <class T>
 class vectorIterator : public ft::iterator<ft::random_access_iterator_tag, T>
 {
+
+	template <class, class> friend class vector;
+
 public:
 	typedef	T								value_type;
 	typedef	std::ptrdiff_t					difference_type;
@@ -38,60 +41,66 @@ public:
 		++this->m_ptr;
 		return *this;
 	}
+
 	vectorIterator  operator++(int)
 	{
-		vectorIterator  iterator = *this;
+		vectorIterator  tmp(*this);
 		++(*this);
-		return iterator;
+		return tmp;
 	}
+
 	vectorIterator& operator--()
 	{
 		--this->m_ptr;
 		return *this;
 	}
+
 	vectorIterator  operator--(int)
 	{
-		vectorIterator  iterator = *this;
+		vectorIterator  tmp(*this);
 		--(*this);
-		return iterator;
+		return tmp;
 	}
+
 	vectorIterator&	operator+=(difference_type rhs)
 	{
 		this->m_ptr += rhs;
 		return *this;
 	}
+
 	vectorIterator&	operator-=(difference_type rhs)
 	{
 		this->m_ptr -= rhs;
 		return *this;
 	}
+
 	vectorIterator&	operator+=(vectorIterator const & rhs)
 	{
 		this->m_ptr += rhs.data();
 		return *this;
 	}
+
 	vectorIterator&	operator-=(vectorIterator const & rhs)
 	{
 		this->m_ptr -= rhs.data();
 		return *this;
 	}
-	vectorIterator	operator+(vectorIterator const & rhs)
-	{ return vectorIterator(this->data() + rhs.m_ptr); }
 
-	vectorIterator	operator+(difference_type rhs)
-	{ return vectorIterator(this->data() + rhs); }
+	vectorIterator	operator+(difference_type rhs) const {
+		return vectorIterator(this->data() + rhs);
+	}
 
-	friend	vectorIterator	operator+(difference_type lhs, vectorIterator const & rhs)
-	{ return vectorIterator(lhs + rhs.m_ptr); }
+	friend	vectorIterator	operator+(difference_type lhs, vectorIterator const & rhs) {
+		return vectorIterator(lhs + rhs.m_ptr);
+	}
 
-	vectorIterator	operator-(vectorIterator const & rhs)
-	{ return vectorIterator(this->data() - rhs.m_ptr); }
+	difference_type	operator-(vectorIterator const & rhs) const {
+		return this->data() - rhs.m_ptr;
+	}
 
-	vectorIterator	operator-(difference_type rhs)
-	{ return vectorIterator(this->data() - rhs); }
-
-	friend	vectorIterator	operator-(difference_type lhs, vectorIterator const & rhs)
-	{ return vectorIterator(lhs - rhs.m_ptr); }
+	vectorIterator	operator-(difference_type rhs) const {
+		return vectorIterator(this->data() - rhs);
+	}
 
 	bool		operator==(vectorIterator const & rhs) const { return this->m_ptr == rhs.m_ptr; }
 	bool 		operator!=(vectorIterator const & rhs) const { return !(*this == rhs); }
@@ -99,9 +108,11 @@ public:
 	bool 		operator>(vectorIterator const & rhs) const { return rhs < *this; }
 	bool 		operator<=(vectorIterator const & rhs) const { return !(rhs < *this); }
 	bool 		operator>=(vectorIterator const & rhs) const { return !(*this < rhs); }
-	reference	operator[](difference_type index) { return *(this->m_ptr + index); }
+	reference	operator[](difference_type idx) { return *(this->m_ptr + idx); }
 	pointer		operator->() { return this->m_ptr; }
 	reference	operator*() { return *this->m_ptr; }
+
+protected:
 	pointer		data() const { return this->m_ptr; }
 };
 
@@ -116,7 +127,6 @@ public:
 	typedef value_type&						reference;
 	typedef const value_type&				const_reference;
 	typedef ft::random_access_iterator_tag	iterator_category;
-
 
 	constVectorIterator(): vectorIterator<value_type>() {}
 	constVectorIterator(pointer ptr): vectorIterator<value_type>(ptr) {}
@@ -134,7 +144,7 @@ public:
 	}
 	virtual ~constVectorIterator() {}
 
-	const_reference	operator[](int index) const { return *(this->m_ptr + index); }
+	const_reference	operator[](difference_type idx) const { return *(this->m_ptr + idx); }
 	const_pointer	operator->() const { return this->m_ptr; }
 	const_reference	operator*() const { return *this->m_ptr; }
 };

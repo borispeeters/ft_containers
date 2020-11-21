@@ -1,16 +1,30 @@
 #include <iostream>
-#include <deque>
-#include <map>
 #include <string>
-#include <vector>
-#include "vector.hpp"
+
+#include "utility.hpp"
+
+#include <deque>
+#include "deque.hpp"
+
 #include <list>
 #include "list.hpp"
+
+#include <map>
 #include "map.hpp"
 
-#include <set>
+#include <queue>
+#include "queue.hpp"
 
-#include <algorithm>
+#include <set>
+#include "set.hpp"
+
+#include <stack>
+#include "stack.hpp"
+
+#include <vector>
+#include "vector.hpp"
+
+
 #include <iterator>
 
 void lol()
@@ -187,61 +201,99 @@ void list_sort()
 //mylist contains: Three one two
 //mylist contains: one Three two
 
+#include <iterator>
+
+void printList(ft::list<int> li, std::string const & s)
+{
+	ft::list<int>::iterator it;
+	std::cout << s << " contains:";
+	for (it = li.begin(); it != li.end(); ++it)
+		std::cout << ' ' << *it;
+	std::cout << " $" << std::endl;
+}
+
+void revPrintList(ft::list<int> li, std::string const & s)
+{
+	ft::list<int>::reverse_iterator itr;
+	std::cout << s << " contains:";
+	for (itr = li.rbegin(); itr != li.rend(); ++itr)
+		std::cout << ' ' << *itr;
+	std::cout << " $ in reverse!" << std::endl;
+}
+
 int main ()
 {
+
 //	list_sort();
 //	list_reverse();
 //	list_merge();
 //	list_splice();
 //	lol();
 
-/*																		*\
-**	------------------------------------------------------------------	**
-\*																		*/
+	ft::multiset<int>	myset;
 
+	for (int i = 1; i <= 5; ++i)
+		myset.insert(i);
+	myset.insert(3);
 
-	ft::map<char, std::string>	mp;
-	ft::map<char, std::string>::iterator mit;
+//	std::cout << "BEFORE ERASE" << std::endl;
+//	system("leaks ft_containers");
+	myset.erase(3);
+//	std::cout << "AFTER ERASE" << std::endl;
+//	system("leaks ft_containers");
 
-	mp.insert(std::make_pair('a', "lol"));
-	mp.insert(std::make_pair('b', "lol"));
-	mp.insert(std::make_pair('c', "lol"));
-	mp.insert(std::make_pair('d', "lol"));
-	mp.insert(std::make_pair('e', "lol"));
-	mp.insert(std::make_pair('f', "lol"));
-	mp.insert(std::make_pair('g', "lol"));
-	mp.insert(std::make_pair('h', "lol"));
+	ft::multiset<int>::iterator	it;
 
-	mp.erase(mp.find('b'));
-	mp.erase(mp.find('c'));
-	mp.erase(mp.find('a'));
+	std::cout << "myset contains:";
+	for (it = myset.begin(); it != myset.end(); ++it)
+		std::cout << ' ' << *it;
+	std::cout << " $" << std::endl;
 
-	mp.printBT();
+//	system("leaks ft_containers");
 
-	std::cout << "map has a size of: " << mp.size() << std::endl;
-	std::cout << "map contains:";
-	for (mit = mp.begin(); mit != mp.end(); ++mit)
-		std::cout << ' ' << mit->first;
-	std::cout << std::endl;
-
-
+	return 0;
 
 /*																		*\
 **	------------------------------------------------------------------	**
 \*																		*/
 
-	std::deque<int>	de;
-	std::deque<int>::iterator itd;
 
-	de.push_back(42);
-	de.push_back(8);
-	de.push_back(19);
-	de.push_back(24);
+//	ft::map<char, std::string>	mp;
+//	ft::map<char, std::string>::iterator mit;
 
-	de.resize(7);
+//	mp.insert(ft::make_pair('a', "lol"));
+//	mp.insert(ft::make_pair('b', "lol"));
+//	mp.insert(ft::make_pair('c', "lol"));
+//	mp.insert(ft::make_pair('d', "lol"));
+//	mp.insert(ft::make_pair('e', "lol"));
+//	mp.insert(ft::make_pair('f', "lol"));
+//	mp.insert(ft::make_pair('g', "lol"));
+//	mp.insert(ft::make_pair('h', "lol"));
+//
+//
+//	mit = mp.begin();
+//
+//	std::cout << mit->first << std::endl;
+//	return 0;
+//	mp.erase('a');
+//	mp.erase('b');
+//	mp.erase('c');
+//	mp.erase('d');
+//	mp.erase('e');
+//	mp.erase('f');
+//	mp.erase('g');
+//	mp.erase('b');
+//	mp.erase('c');
+//	mp.erase('h');
 
-//for (int value : de)
-//	std::cout << value << std::endl;
+//	mp.printBT();
+//
+//	std::cout << "map has a size of: " << mp.size() << std::endl;
+//
+//	std::cout << "map contains:";
+//	for (mit = mp.begin(); mit != mp.end(); ++mit)
+//		std::cout << ' ' << mit->first;
+//	std::cout << std::endl;
 
 
 /*																		*\

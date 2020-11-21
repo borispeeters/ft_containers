@@ -1,6 +1,7 @@
 #ifndef STACK_HPP
 # define STACK_HPP
 
+# include <cstddef>
 # include "vector.hpp"
 
 namespace ft
@@ -18,7 +19,14 @@ protected:
 
 public:
 	explicit stack(container_type const & ctnr = container_type()) : c(ctnr) {}
+	stack(stack const & other): c(other.c) {}
 	~stack() {}
+
+	stack&	operator=(stack const & rhs)
+	{
+		if (&rhs != this) this->c = rhs.c;
+		return *this;
+	}
 
 	bool 		empty() const { return this->c.empty(); }
 	size_type	size() const { return this->c.size(); }

@@ -114,7 +114,8 @@ public:
 	reverse_iterator(): current() {}
 
 	// 2. initialization constructor
-	explicit reverse_iterator(iterator_type it): current(it) {}
+	explicit reverse_iterator(iterator_type it,
+							  typename ft::_void_t<typename ft::iterator_traits<iterator_type>::iterator_category>::type * = 0): current(it) {}
 
 	// 3. copy / type-cast constructor
 	template <class Iter>
@@ -139,27 +140,27 @@ public:
 
 	reverse_iterator&	operator++()
 	{
-		--current;
+		--this->current;
 		return *this;
 	}
 
 	reverse_iterator	operator++(int)
 	{
 		reverse_iterator	tmp(*this);
-		--current;
+		++(*this);
 		return tmp;
 	}
 
 	reverse_iterator&	operator--()
 	{
-		++current;
+		++this->current;
 		return *this;
 	}
 
 	reverse_iterator	operator--(int)
 	{
 		reverse_iterator	tmp(*this);
-		++current;
+		--(*this);
 		return tmp;
 	}
 
@@ -268,8 +269,39 @@ void _advance(RandIter & it,
 }
 
 template <class InputIter>
-void advance(InputIter & it, typename ft::iterator_traits<InputIter>::difference_type n) {
+void advance(InputIter & it, typename ft::iterator_traits<InputIter>::difference_type n,
+			 typename ft::_void_t<typename ft::iterator_traits<InputIter>::iterator_category>::type * = 0) {
 	ft::_advance(it, n, typename ft::iterator_traits<InputIter>::iterator_category());
+}
+
+template <class ForwardIter>
+void _next(ForwardIter & it, typename ft::iterator_traits<ForwardIter>::difference_type n, ft::forward_iterator_tag) {
+	if (n >= 0)
+		ft::advance(it, n);
+}
+
+template <class BiDirIter>
+void _next(BiDirIter & it, typename ft::iterator_traits<BiDirIter>::difference_type n, ft::bidirectional_iterator_tag) {
+	ft::advance(it, n);
+}
+
+template <class RandIter>
+void _next(RandIter & it, typename ft::iterator_traits<RandIter>::difference_type n, ft::random_access_iterator_tag) {
+	ft::advance(it, n);
+}
+
+template <class ForwardIterator>
+ForwardIterator	next(ForwardIterator it, typename ft::iterator_traits<ForwardIterator>::difference_type n = 1,
+					typename ft::_void_t<typename ft::iterator_traits<ForwardIterator>::iterator_category>::type * = 0) {
+	ft::_next(it, n, typename ft::iterator_traits<ForwardIterator>::iterator_category());
+	return it;
+}
+
+template <class BidirectionalIterator>
+BidirectionalIterator	prev(BidirectionalIterator it, typename ft::iterator_traits<BidirectionalIterator>::difference_type n = 1,
+							  typename ft::_void_t<typename ft::iterator_traits<BidirectionalIterator>::iterator_category>::type * = 0) {
+	ft::advance(it, -n);
+	return it;
 }
 
 }; //end of namespace ft
