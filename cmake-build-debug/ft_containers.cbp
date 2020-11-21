@@ -80,6 +80,18 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/Users/bpeeters/Projects/ft_containers/Example.cpp">
+			<Option target="ft_containers"/>
+		</Unit>
+		<Unit filename="/Users/bpeeters/Projects/ft_containers/Example.hpp">
+			<Option target="ft_containers"/>
+		</Unit>
+		<Unit filename="/Users/bpeeters/Projects/ft_containers/Timer.cpp">
+			<Option target="ft_containers"/>
+		</Unit>
+		<Unit filename="/Users/bpeeters/Projects/ft_containers/Timer.hpp">
+			<Option target="ft_containers"/>
+		</Unit>
 		<Unit filename="/Users/bpeeters/Projects/ft_containers/main.cpp">
 			<Option target="ft_containers"/>
 		</Unit>

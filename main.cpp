@@ -1,7 +1,8 @@
 #include <iostream>
 #include <string>
+#include "Timer.hpp"
 
-#include "utility.hpp"
+#include "utility.hpp" //for ft::pair
 
 #include <deque>
 #include "deque.hpp"
@@ -25,7 +26,6 @@
 #include "vector.hpp"
 
 
-#include <iterator>
 
 void lol()
 {
@@ -223,6 +223,32 @@ void revPrintList(ft::list<int> li, std::string const & s)
 
 int main ()
 {
+	{
+		std::cout << "STD" << std::endl;
+		Timer t;
+
+		std::vector<int>	v;
+		v.reserve(99999999);
+
+		for (int i = 0; i < 99999999; ++i)
+			v.push_back(i);
+	}
+	{
+		std::cout << "FT" << std::endl;
+		Timer t;
+
+		ft::vector<int>	v;
+		v.reserve(99999999);
+
+		for (int i = 0; i < 99999999; ++i)
+			v.push_back(i);
+	}
+	
+	return 0;
+
+/*																		*\
+**	------------------------------------------------------------------	**
+\*																		*/
 
 //	list_sort();
 //	list_reverse();
@@ -230,28 +256,28 @@ int main ()
 //	list_splice();
 //	lol();
 
-	ft::multiset<int>	myset;
+//	ft::multiset<int>	myset;
+//
+//	for (int i = 1; i <= 5; ++i)
+//		myset.insert(i);
+//	myset.insert(3);
+//
+////	std::cout << "BEFORE ERASE" << std::endl;
+////	system("leaks ft_containers");
+//	myset.erase(3);
+////	std::cout << "AFTER ERASE" << std::endl;
+////	system("leaks ft_containers");
+//
+//	ft::multiset<int>::iterator	it;
+//
+//	std::cout << "myset contains:";
+//	for (it = myset.begin(); it != myset.end(); ++it)
+//		std::cout << ' ' << *it;
+//	std::cout << " $" << std::endl;
 
-	for (int i = 1; i <= 5; ++i)
-		myset.insert(i);
-	myset.insert(3);
-
-//	std::cout << "BEFORE ERASE" << std::endl;
 //	system("leaks ft_containers");
-	myset.erase(3);
-//	std::cout << "AFTER ERASE" << std::endl;
-//	system("leaks ft_containers");
 
-	ft::multiset<int>::iterator	it;
-
-	std::cout << "myset contains:";
-	for (it = myset.begin(); it != myset.end(); ++it)
-		std::cout << ' ' << *it;
-	std::cout << " $" << std::endl;
-
-//	system("leaks ft_containers");
-
-	return 0;
+//	return 0;
 
 /*																		*\
 **	------------------------------------------------------------------	**

@@ -5,4 +5,4 @@ set(CMAKE_CXX_STANDARD 98)
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3 -fsanitize=address" )
 set(CMAKE_LINKER_FLAGS)
 
-add_executable(ft_containers main.cpp)
+add_executable(ft_containers main.cpp Timer.cpp Example.cpp)

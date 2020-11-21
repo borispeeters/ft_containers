@@ -40,8 +40,7 @@ public:
 		m_data(0),
 		m_size(0),
 		m_capacity(0),
-		m_alloc(alloc)
-	{}
+		m_alloc(alloc) {}
 
 	// 2. fill constructor
 	explicit vector(size_type n, value_type const & val = value_type(),
@@ -49,8 +48,7 @@ public:
 		m_data(0),
 		m_size(n),
 		m_capacity(n),
-		m_alloc(alloc)
-	{
+		m_alloc(alloc) {
 		this->m_data = this->get_allocator().allocate(n);
 		for (size_type i = 0; i < this->size(); ++i)
 			this->get_allocator().construct(this->m_data + i, val);
@@ -63,8 +61,7 @@ public:
 		m_data(0),
 		m_size(ft::distance(first, last)),
 		m_capacity(ft::distance(first, last)),
-		m_alloc(alloc)
-	{
+		m_alloc(alloc) {
 		this->m_data = this->get_allocator().allocate(this->capacity());
 		for (size_type i = 0; i < this->size(); ++i)
 		{
@@ -78,15 +75,13 @@ public:
 		m_data(0),
 		m_size(0),
 		m_capacity(0),
-		m_alloc(other.get_allocator())
-	{
+		m_alloc(other.get_allocator()) {
 		this->reserve(other.capacity());
 		this->assign(other.begin(), other.end());
 	}
 
 	// destructor
-	~vector()
-	{
+	~vector() {
 		for (size_type i = 0; i < this->size(); ++i)
 			this->get_allocator().destroy(this->m_data + i);
 		if (this->capacity()) this->get_allocator().deallocate(this->m_data, this->capacity());

@@ -6,6 +6,12 @@
 
 #IncludeRegexTransform: 
 
+/Users/bpeeters/Projects/ft_containers/Timer.hpp
+chrono
+-
+iostream
+-
+
 /Users/bpeeters/Projects/ft_containers/algorithm.hpp
 iterator.hpp
 /Users/bpeeters/Projects/ft_containers/iterator.hpp
@@ -99,6 +105,10 @@ iterator
 -
 iterator
 -
+chrono
+-
+Timer.hpp
+/Users/bpeeters/Projects/ft_containers/Timer.hpp
 
 /Users/bpeeters/Projects/ft_containers/map.hpp
 cstddef

@@ -132,16 +132,19 @@ public:
 	constVectorIterator(pointer ptr): vectorIterator<value_type>(ptr) {}
 	constVectorIterator(vectorIterator<value_type> const & other): vectorIterator<value_type>(other) {}
 	constVectorIterator(constVectorIterator const & other): vectorIterator<value_type>() { *this = other; }
+
 	constVectorIterator&	operator=(vectorIterator<value_type> const & rhs)
 	{
 		if (&rhs != this) this->m_ptr = rhs.data();
 		return *this;
 	}
+
 	constVectorIterator&	operator=(constVectorIterator const & rhs)
 	{
 		if (&rhs != this) this->m_ptr = rhs.data();
 		return *this;
 	}
+
 	virtual ~constVectorIterator() {}
 
 	const_reference	operator[](difference_type idx) const { return *(this->m_ptr + idx); }

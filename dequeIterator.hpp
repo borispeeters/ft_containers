@@ -35,10 +35,16 @@ public:
 	dequeIterator() {}
 	dequeIterator(pointer ptr) {}
 	dequeIterator(dequeIterator const & other) {}
+
 	dequeIterator&	operator=(dequeIterator const & rhs)
 	{
+		if (&rhs != this)
+		{
+			//lol
+		}
 		return *this;
 	}
+
 	virtual ~dequeIterator() {}
 
 	dequeIterator&	operator++()
@@ -54,7 +60,7 @@ public:
 
 	dequeIterator	operator++(int)
 	{
-		dequeIterator	tmp(*this);
+		dequeIterator	tmp = *this;
 		++(*this);
 		return tmp;
 	}
@@ -72,7 +78,7 @@ public:
 
 	dequeIterator	operator--(int)
 	{
-		dequeIterator	tmp(*this);
+		dequeIterator	tmp = *this;
 		--(*this);
 		return tmp;
 	}
@@ -139,14 +145,25 @@ public:
 	constDequeIterator(pointer ptr): dequeIterator<value_type>(ptr) {}
 	constDequeIterator(dequeIterator<value_type> const & other): dequeIterator<value_type>(other) {}
 	constDequeIterator(constDequeIterator const & other): dequeIterator<value_type>() { *this = other; }
+
 	constDequeIterator&	operator=(dequeIterator<value_type> const & rhs)
 	{
+		if (&rhs != this)
+		{
+			//lol
+		}
 		return *this;
 	}
+
 	constDequeIterator&	operator=(constDequeIterator const & rhs)
 	{
+		if (&rhs != this)
+		{
+			//lol
+		}
 		return *this;
 	}
+
 	virtual ~constDequeIterator() {}
 
 	const_reference	operator[](difference_type idx) const { return *(*this + idx); }

@@ -32,44 +32,47 @@ public:
 private:
 	typedef pointer*												map_pointer;
 
-private:
-	iterator		m_start;
-	iterator		m_finish;
-	map_pointer		m_map;
-	size_type		m_map_size;
-	size_type		m_chunk_size;
+	iterator		m_start;		// iterator to the first element
+	iterator		m_finish;		// iterator to one element past the end
 
-	size_type		m_size;
-	size_type		m_map_amount;
+	map_pointer		m_map;			// pointer to the array of chunks
+	size_type		m_map_size;		// size of the array of chunks
+	size_type		m_size;			// number of elements
+	size_type		m_chunks;		// amount of chunks allocated
+	size_type		m_chunk_size;	// size of the chunks
+
 	allocator_type	m_alloc;
+
 
 public:
 	// 1. default constructor
 	explicit deque(allocator_type const & alloc = allocator_type()):
 		m_map(0),
-		m_map_size((sizeof(value_type) < 512) ? size_type(512 / sizeof(value_type)) : size_type(1)),
+		m_map_size(0),
 		m_size(0),
-		m_map_amount(0),
+		m_chunks(0),
 		m_alloc(alloc) {
-		this->dequeInit(0);
+		this->dequeInit();
 	}
 
 	// 2. fill constructor
 	explicit deque(size_type n, value_type const & val = value_type(), allocator_type const & alloc = allocator_type()):
 		m_map(0),
-		m_map_size((sizeof(value_type) < 512) ? size_type(512 / sizeof(value_type)) : size_type(1)),
+		m_map_size(0),
 		m_size(n),
-		m_map_amount(this->size() / this->map_size()),
+		m_chunks(0),
 		m_alloc(alloc) {
-		this->dequeInit(n);
+		this->dequeInit();
 	}
 
 	// 3. range constructor
 	template <class Iterator>
-	deque(Iterator first, Iterator last, allocator_type const & alloc = allocator_type()):
+	deque(Iterator first, Iterator last, allocator_type const & alloc = allocator_type(),
+		  typename ft::_void_t<typename ft::iterator_traits<Iterator>::iterator_category>::type * = 0):
 		m_map(0),
-		m_map_size((sizeof(value_type) < 512) ? size_type(512 / sizeof(value_type)) : size_type(1)),
-		m_size(0),
+		m_map_size(0),
+		m_size(ft::distance(first, last)),
+		m_chunks(0),
 		m_alloc(alloc) {
 		this->dequeInit(ft::distance(first, last));
 	}
@@ -77,8 +80,9 @@ public:
 	// 4. copy constructor
 	deque(deque const & other):
 		m_map(0),
-		m_map_size((sizeof(value_type) < 512) ? size_type(512 / sizeof(value_type)) : size_type(1)),
-		m_size(0),
+		m_map_size(0),
+		m_size(other.size()),
+		m_chunks(0),
 		m_alloc(other.get_allocator()) {
 		this->dequeInit(other.size());
 	}
@@ -87,7 +91,14 @@ public:
 	~deque() {}
 
 	// assignment operator overload
-	deque&	operator=(deque const & rhs);
+	deque&	operator=(deque const & rhs)
+	{
+		if (&rhs != this)
+		{
+			//lol
+		}
+		return *this;
+	}
 
 	iterator		begin() { return iterator(this->m_first); }
 //	const_iterator	begin() const { return const_iterator(this->m_first); }
@@ -102,7 +113,10 @@ public:
 	size_type	size() const { return this->m_size; }
 	size_type	max_size() const { return this->get_allocator().max_size(); }
 
-	void resize(size_type n, value_type val = value_type());
+	void resize(size_type n, value_type val = value_type())
+	{
+		//lol
+	}
 
 	bool empty() const { return this->size() == 0; }
 
@@ -121,19 +135,19 @@ public:
 		return this->m_start[n];
 	}
 
-	reference 		front() { return *this->m_first; }
-	const_reference	front() const { return *this->m_first; }
+	reference 		front() { return *this->m_start; }
+	const_reference	front() const { return *this->m_start; }
 
 	reference 		back()
 	{
-		iterator	tmp(this->m_finish);
+		iterator	tmp = this->m_finish;
 		--tmp;
 		return *tmp;
 	}
 
 	const_reference	back() const
 	{
-		iterator	tmp(this->m_finish);
+		iterator	tmp = this->m_finish;
 		--tmp;
 		return *tmp;
 	}
@@ -141,18 +155,42 @@ public:
 	// 1. range assign
 	template <class Iterator>
 	void assign(Iterator first, Iterator last,
-				typename ft::_void_t<typename ft::iterator_traits<Iterator>::iterator_category>::type * = 0);
+				typename ft::_void_t<typename ft::iterator_traits<Iterator>::iterator_category>::type * = 0)
+	{
+		//lol
+	}
 
 	// 2. fill assign
-	void assign(size_type n, value_type const & val);
+	void assign(size_type n, value_type const & val)
+	{
+		//lol
+	}
 
-	void push_back(value_type const & val);
-	void push_front(value_type const & val);
-	void pop_back();
-	void pop_front();
+	void push_back(value_type const & val)
+	{
+		//lol
+	}
+
+	void push_front(value_type const & val)
+	{
+		//lol
+	}
+
+	void pop_back()
+	{
+		//lol
+	}
+
+	void pop_front()
+	{
+		//lol
+	}
 
 	// 1. single element insertion
-	iterator	insert(iterator position, value_type const & val);
+	iterator	insert(iterator position, value_type const & val)
+	{
+		//lol
+	}
 
 	// 2. fill insertion
 	void insert(iterator position, size_type n, value_type const & val)
@@ -173,28 +211,39 @@ public:
 		}
 	}
 
-	iterator	erase(iterator position);
-	iterator	erase(iterator first, iterator last);
+	iterator	erase(iterator position)
+	{
+		//lol
+	}
+
+	iterator	erase(iterator first, iterator last)
+	{
+		//lol
+	}
 
 	void swap(deque & x)
 	{
+		//lol
 	}
 
-	void clear();
+	void clear() {
+		this->erase(this->begin(), this->end());
+	}
 
-	allocator_type	get_allocator() const { return this->m_alloc; }
+	allocator_type	get_allocator() const {
+		return this->m_alloc;
+	}
 
 private:
-	void dequeInit(size_type num_elements)
+	void dequeInit()
 	{
 		this->m_chunk_size = (sizeof(T) <= 4) ? 64 : (sizeof(T) <= 8) ? 32 : (sizeof(T) <= 16) ? 16 : (sizeof(T) <= 32) ? 8 : 4;
 
-		std::cout << "chunk size: " << this->chunk_size() << std::endl;
-		size_type	num_nodes = (num_elements / this->chunk_size()) + 1;
-		this->m_map_size = ft::max<int>(8, num_nodes + 2);
+		this->m_chunks = (this->size() / this->chunk_size()) + 1;
+		this->m_map_size = ft::max(8, this->m_chunks + 2);
 		this->m_map = new pointer[this->m_map_size];
-		map_pointer	tmp_start = this->m_map + ((this->m_map_size - num_nodes) / 2);
-		map_pointer	tmp_finish = tmp_start + num_nodes - 1;
+		map_pointer	tmp_start = this->m_map + ((this->m_map_size - this->m_chunks) / 2);
+		map_pointer	tmp_finish = tmp_start + this->m_chunks - 1;
 
 		for (map_pointer cur = tmp_start; cur <= tmp_finish; ++cur)
 			*cur = new value_type[this->chunk_size()];
@@ -203,11 +252,16 @@ private:
 		this->m_start.m_cur = this->m_start.m_first;
 
 		this->m_finish.setNode(tmp_finish);
-		this->m_finish.m_cur = this->m_finish.m_first + (num_elements % this->chunk_size());
+		this->m_finish.m_cur = this->m_finish.m_first + (this->size() % this->chunk_size());
 	}
 
-	size_type	map_size() const { return this->m_map_size; }
-	size_type	chunk_size() const { return this->m_chunk_size; }
+	size_type	map_size() const {
+		return this->m_map_size;
+	}
+
+	size_type	chunk_size() const {
+		return this->m_chunk_size;
+	}
 
 };
 

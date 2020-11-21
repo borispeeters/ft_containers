@@ -143,6 +143,60 @@ ft_containers/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/ft_containers.dir/build.make CMakeFiles/ft_containers.dir/build
 .PHONY : ft_containers/fast
 
+Example.o: Example.cpp.o
+
+.PHONY : Example.o
+
+# target to build an object file
+Example.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ft_containers.dir/build.make CMakeFiles/ft_containers.dir/Example.cpp.o
+.PHONY : Example.cpp.o
+
+Example.i: Example.cpp.i
+
+.PHONY : Example.i
+
+# target to preprocess a source file
+Example.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ft_containers.dir/build.make CMakeFiles/ft_containers.dir/Example.cpp.i
+.PHONY : Example.cpp.i
+
+Example.s: Example.cpp.s
+
+.PHONY : Example.s
+
+# target to generate assembly for a file
+Example.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ft_containers.dir/build.make CMakeFiles/ft_containers.dir/Example.cpp.s
+.PHONY : Example.cpp.s
+
+Timer.o: Timer.cpp.o
+
+.PHONY : Timer.o
+
+# target to build an object file
+Timer.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ft_containers.dir/build.make CMakeFiles/ft_containers.dir/Timer.cpp.o
+.PHONY : Timer.cpp.o
+
+Timer.i: Timer.cpp.i
+
+.PHONY : Timer.i
+
+# target to preprocess a source file
+Timer.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ft_containers.dir/build.make CMakeFiles/ft_containers.dir/Timer.cpp.i
+.PHONY : Timer.cpp.i
+
+Timer.s: Timer.cpp.s
+
+.PHONY : Timer.s
+
+# target to generate assembly for a file
+Timer.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ft_containers.dir/build.make CMakeFiles/ft_containers.dir/Timer.cpp.s
+.PHONY : Timer.cpp.s
+
 main.o: main.cpp.o
 
 .PHONY : main.o
@@ -179,6 +233,12 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... ft_containers"
+	@echo "... Example.o"
+	@echo "... Example.i"
+	@echo "... Example.s"
+	@echo "... Timer.o"
+	@echo "... Timer.i"
+	@echo "... Timer.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
