@@ -3,10 +3,14 @@
 
 # include <iostream>
 
-struct Example
+class Example
 {
+	int x;
+
+public:
 	Example();
-	Example (Example const & other);
+	Example(Example const & x);
+	Example(Example && x);
 	~Example();
 
 	Example&	operator=(Example const & rhs);

@@ -5,8 +5,13 @@ Example::Example() {
 }
 
 Example::Example (Example const & other) {
-std::cout << "Copy Constructor" << std::endl;
+	std::cout << "Copy Constructor" << std::endl;
 }
+
+Example::Example(Example && x) {
+	std::cout << "Move Constructor" << std::endl;
+}
+
 
 Example::~Example() {
 	std::cout << "Destructor" << std::endl;

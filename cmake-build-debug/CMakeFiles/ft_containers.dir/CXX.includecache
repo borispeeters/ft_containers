@@ -107,10 +107,6 @@ vector.hpp
 /Users/bpeeters/Projects/ft_containers/vector.hpp
 iterator
 -
-new
--
-treeIterator.hpp
-/Users/bpeeters/Projects/ft_containers/treeIterator.hpp
 
 /Users/bpeeters/Projects/ft_containers/map.hpp
 cstddef
@@ -125,8 +121,8 @@ iterator.hpp
 /Users/bpeeters/Projects/ft_containers/iterator.hpp
 treeIterator.hpp
 /Users/bpeeters/Projects/ft_containers/treeIterator.hpp
-treeNode.hpp
-/Users/bpeeters/Projects/ft_containers/treeNode.hpp
+tree.hpp
+/Users/bpeeters/Projects/ft_containers/tree.hpp
 type_traits.hpp
 /Users/bpeeters/Projects/ft_containers/type_traits.hpp
 utility.hpp
@@ -159,8 +155,8 @@ iterator.hpp
 /Users/bpeeters/Projects/ft_containers/iterator.hpp
 treeIterator.hpp
 /Users/bpeeters/Projects/ft_containers/treeIterator.hpp
-treeNode.hpp
-/Users/bpeeters/Projects/ft_containers/treeNode.hpp
+tree.hpp
+/Users/bpeeters/Projects/ft_containers/tree.hpp
 type_traits.hpp
 /Users/bpeeters/Projects/ft_containers/type_traits.hpp
 utility.hpp
@@ -172,17 +168,17 @@ cstddef
 vector.hpp
 /Users/bpeeters/Projects/ft_containers/vector.hpp
 
+/Users/bpeeters/Projects/ft_containers/tree.hpp
+cstddef
+-
+
 /Users/bpeeters/Projects/ft_containers/treeIterator.hpp
 cstddef
 -
 iterator.hpp
 /Users/bpeeters/Projects/ft_containers/iterator.hpp
-treeNode.hpp
-/Users/bpeeters/Projects/ft_containers/treeNode.hpp
-
-/Users/bpeeters/Projects/ft_containers/treeNode.hpp
-cstddef
--
+tree.hpp
+/Users/bpeeters/Projects/ft_containers/tree.hpp
 
 /Users/bpeeters/Projects/ft_containers/type_traits.hpp
 

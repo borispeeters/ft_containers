@@ -21,8 +21,8 @@ CMakeFiles/ft_containers.dir/main.cpp.o: ../map.hpp
 CMakeFiles/ft_containers.dir/main.cpp.o: ../queue.hpp
 CMakeFiles/ft_containers.dir/main.cpp.o: ../set.hpp
 CMakeFiles/ft_containers.dir/main.cpp.o: ../stack.hpp
+CMakeFiles/ft_containers.dir/main.cpp.o: ../tree.hpp
 CMakeFiles/ft_containers.dir/main.cpp.o: ../treeIterator.hpp
-CMakeFiles/ft_containers.dir/main.cpp.o: ../treeNode.hpp
 CMakeFiles/ft_containers.dir/main.cpp.o: ../type_traits.hpp
 CMakeFiles/ft_containers.dir/main.cpp.o: ../utility.hpp
 CMakeFiles/ft_containers.dir/main.cpp.o: ../vector.hpp
