@@ -223,27 +223,10 @@ void revPrintList(ft::list<int> li, std::string const & s)
 
 int main ()
 {
-	{
-		std::cout << "STD" << std::endl;
-		Timer t;
+	ft::deque<int>	d;
 
-		std::vector<int>	v;
-		v.reserve(99999999);
+//	system("leaks ft_containers");
 
-		for (int i = 0; i < 99999999; ++i)
-			v.push_back(i);
-	}
-	{
-		std::cout << "FT" << std::endl;
-		Timer t;
-
-		ft::vector<int>	v;
-		v.reserve(99999999);
-
-		for (int i = 0; i < 99999999; ++i)
-			v.push_back(i);
-	}
-	
 	return 0;
 
 /*																		*\

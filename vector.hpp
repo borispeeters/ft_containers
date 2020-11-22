@@ -1,6 +1,7 @@
 #ifndef VECTOR_HPP
 # define VECTOR_HPP
 
+# include <cstddef>
 # include <memory>
 # include <stdexcept>
 # include "algorithm.hpp"
@@ -37,7 +38,7 @@ private:
 public:
 	// 1. default constructor
 	explicit vector(allocator_type const & alloc = allocator_type()):
-		m_data(0),
+		m_data(NULL),
 		m_size(0),
 		m_capacity(0),
 		m_alloc(alloc) {}
@@ -45,7 +46,7 @@ public:
 	// 2. fill constructor
 	explicit vector(size_type n, value_type const & val = value_type(),
 				 allocator_type const & alloc = allocator_type()):
-		m_data(0),
+		m_data(NULL),
 		m_size(n),
 		m_capacity(n),
 		m_alloc(alloc) {
@@ -58,7 +59,7 @@ public:
 	template <class Iterator>
 	vector(Iterator first, Iterator last, allocator_type const & alloc = allocator_type(),
 		   typename ft::_void_t<typename ft::iterator_traits<Iterator>::iterator_category>::type * = 0):
-		m_data(0),
+		m_data(NULL),
 		m_size(ft::distance(first, last)),
 		m_capacity(ft::distance(first, last)),
 		m_alloc(alloc) {
@@ -72,7 +73,7 @@ public:
 
 	// 4. copy constructor
 	vector(vector const & other):
-		m_data(0),
+		m_data(NULL),
 		m_size(0),
 		m_capacity(0),
 		m_alloc(other.get_allocator()) {
@@ -93,9 +94,6 @@ public:
 		if (&rhs != this)
 		{
 			this->clear();
-			if (this->capacity()) this->get_allocator().deallocate(this->m_data, this->capacity());
-			this->m_capacity = 0;
-			this->realloc(rhs.capacity());
 			this->m_alloc = rhs.get_allocator();
 			this->assign(rhs.begin(), rhs.end());
 		}
@@ -155,6 +153,7 @@ public:
 				   typename ft::_void_t<typename ft::iterator_traits<Iterator>::iterator_category>::type * = 0)
 	{
 		this->clear();
+		this->reserve(ft::distance(first, last));
 		while (first != last)
 		{
 			this->push_back(*first);
@@ -166,8 +165,7 @@ public:
 	void	assign(size_type n, value_type const & val)
 	{
 		this->clear();
-		while (this->capacity() < n)
-			this->realloc(this->capacity() * 2);
+		this->reserve(n);
 		this->m_size = n;
 		for (size_type i = 0; i < this->size(); ++i)
 			this->get_allocator().construct(this->m_data + i, val);

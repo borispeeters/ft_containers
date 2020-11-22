@@ -71,6 +71,8 @@ iostream
 -
 string
 -
+Timer.hpp
+/Users/bpeeters/Projects/ft_containers/Timer.hpp
 utility.hpp
 /Users/bpeeters/Projects/ft_containers/utility.hpp
 deque
@@ -103,12 +105,6 @@ vector.hpp
 /Users/bpeeters/Projects/ft_containers/vector.hpp
 iterator
 -
-iterator
--
-chrono
--
-Timer.hpp
-/Users/bpeeters/Projects/ft_containers/Timer.hpp
 
 /Users/bpeeters/Projects/ft_containers/map.hpp
 cstddef
@@ -187,6 +183,8 @@ cstddef
 /Users/bpeeters/Projects/ft_containers/utility.hpp
 
 /Users/bpeeters/Projects/ft_containers/vector.hpp
+cstddef
+-
 memory
 -
 stdexcept

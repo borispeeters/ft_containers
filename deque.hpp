@@ -1,6 +1,7 @@
 #ifndef DEQUE_HPP
 # define DEQUE_HPP
 
+# include <cstddef>
 # include <memory>
 # include <stdexcept>
 # include "algorithm.hpp"
@@ -37,9 +38,9 @@ private:
 
 	map_pointer		m_map;			// pointer to the array of chunks
 	size_type		m_map_size;		// size of the array of chunks
-	size_type		m_size;			// number of elements
 	size_type		m_chunks;		// amount of chunks allocated
 	size_type		m_chunk_size;	// size of the chunks
+	size_type		m_size;			// number of elements
 
 	allocator_type	m_alloc;
 
@@ -47,7 +48,7 @@ private:
 public:
 	// 1. default constructor
 	explicit deque(allocator_type const & alloc = allocator_type()):
-		m_map(0),
+		m_map(NULL),
 		m_map_size(0),
 		m_size(0),
 		m_chunks(0),
@@ -57,7 +58,7 @@ public:
 
 	// 2. fill constructor
 	explicit deque(size_type n, value_type const & val = value_type(), allocator_type const & alloc = allocator_type()):
-		m_map(0),
+		m_map(NULL),
 		m_map_size(0),
 		m_size(n),
 		m_chunks(0),
@@ -69,7 +70,7 @@ public:
 	template <class Iterator>
 	deque(Iterator first, Iterator last, allocator_type const & alloc = allocator_type(),
 		  typename ft::_void_t<typename ft::iterator_traits<Iterator>::iterator_category>::type * = 0):
-		m_map(0),
+		m_map(NULL),
 		m_map_size(0),
 		m_size(ft::distance(first, last)),
 		m_chunks(0),
@@ -79,7 +80,7 @@ public:
 
 	// 4. copy constructor
 	deque(deque const & other):
-		m_map(0),
+		m_map(NULL),
 		m_map_size(0),
 		m_size(other.size()),
 		m_chunks(0),
@@ -168,7 +169,7 @@ public:
 
 	void push_back(value_type const & val)
 	{
-		//lol
+		this->m_finish;
 	}
 
 	void push_front(value_type const & val)
@@ -240,7 +241,7 @@ private:
 		this->m_chunk_size = (sizeof(T) <= 4) ? 64 : (sizeof(T) <= 8) ? 32 : (sizeof(T) <= 16) ? 16 : (sizeof(T) <= 32) ? 8 : 4;
 
 		this->m_chunks = (this->size() / this->chunk_size()) + 1;
-		this->m_map_size = ft::max(8, this->m_chunks + 2);
+		this->m_map_size = ft::max<int>(8, this->m_chunks + 2);
 		this->m_map = new pointer[this->m_map_size];
 		map_pointer	tmp_start = this->m_map + ((this->m_map_size - this->m_chunks) / 2);
 		map_pointer	tmp_finish = tmp_start + this->m_chunks - 1;
