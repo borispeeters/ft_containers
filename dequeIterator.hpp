@@ -1,5 +1,7 @@
-#ifndef DEQUEITERATOR_HPP
-# define DEQUEITERATOR_HPP
+#ifdef _FT_DEQUE_HPP
+
+#ifndef _FT_DEQUEITERATOR_HPP
+# define _FT_DEQUEITERATOR_HPP
 
 # include <cstddef>
 # include "iterator.hpp"
@@ -30,6 +32,7 @@ protected:
 	pointer 	m_first;
 	pointer 	m_last;
 	map_pointer	m_node;
+	size_type	m_chunk_size;
 
 public:
 	dequeIterator() {}
@@ -102,7 +105,7 @@ public:
 
 	dequeIterator	operator+(difference_type rhs)
 	{
-		dequeIterator	tmp(*this);
+		dequeIterator	tmp = *this;
 		return tmp += rhs;
 	}
 
@@ -110,13 +113,22 @@ public:
 
 	dequeIterator	operator-(difference_type rhs) const
 	{
-		dequeIterator	tmp(*this);
+		dequeIterator	tmp = *this;
 		return tmp -= rhs;
 	}
 
 	reference	operator[](difference_type idx) { return *(*this + idx); }
 	pointer 	operator->() { return this->m_cur; }
 	reference	operator*() { return *this->m_cur; }
+
+	friend bool	operator==(dequeIterator const & lhs, dequeIterator const & rhs) { return lhs.m_cur == rhs.m_cur; }
+	friend bool	operator!=(dequeIterator const & lhs, dequeIterator const & rhs) { return !(lhs == rhs); }
+	friend bool	operator<(dequeIterator const & lhs, dequeIterator const & rhs) {
+		return lhs.m_node < rhs.m_node && lhs.m_cur < rhs.m_cur;
+	}
+	friend bool	operator>(dequeIterator const & lhs, dequeIterator const & rhs) { return rhs < lhs; }
+	friend bool	operator<=(dequeIterator const & lhs, dequeIterator const & rhs) { return !(rhs < lhs); }
+	friend bool	operator>=(dequeIterator const & lhs, dequeIterator const & rhs) { return !(lhs < rhs); }
 
 protected:
 	void	setNode(map_pointer new_node)
@@ -126,7 +138,7 @@ protected:
 		this->m_last = this->m_first + this->chunk_size();
 	}
 
-	size_type	chunk_size() const { return 8; }
+	size_type	chunk_size() const { return this->m_chunk_size; }
 };
 
 template <class T>
@@ -173,4 +185,8 @@ public:
 
 }; //end of namespace ft
 
+#endif
+
+#else
+# error "Please include deque.hpp to access its iterator."
 #endif

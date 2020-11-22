@@ -221,9 +221,30 @@ void revPrintList(ft::list<int> li, std::string const & s)
 	std::cout << " $ in reverse!" << std::endl;
 }
 
+#include <new>
+
+//void*	operator new(std::size_t s) throw (std::bad_alloc)
+//{
+//	std::cout << "allocating " << s << " bytes." << std::endl;
+//
+//	void	*ptr = malloc(s);
+//
+//	return ptr;
+//}
+
+//void 	operator delete(void *ptr) throw()
+//{
+//	std::cout << "deleting " << ptr << std::endl;
+//	ptr->~
+//}
+
 int main ()
 {
-	ft::deque<int>	d;
+
+
+	int *a = new int;
+
+	delete a;
 
 //	system("leaks ft_containers");
 

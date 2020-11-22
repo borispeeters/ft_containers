@@ -1,5 +1,7 @@
-#ifndef VECTORITERATOR_HPP
-# define VECTORITERATOR_HPP
+#ifdef _FT_VECTOR_HPP
+
+#ifndef _FT_VECTORITERATOR_HPP
+# define _FT_VECTORITERATOR_HPP
 
 # include <cstddef>
 # include "iterator.hpp"
@@ -102,15 +104,16 @@ public:
 		return vectorIterator(this->data() - rhs);
 	}
 
-	bool		operator==(vectorIterator const & rhs) const { return this->m_ptr == rhs.m_ptr; }
-	bool 		operator!=(vectorIterator const & rhs) const { return !(*this == rhs); }
-	bool 		operator<(vectorIterator const & rhs) const { return this->m_ptr < rhs.m_ptr; }
-	bool 		operator>(vectorIterator const & rhs) const { return rhs < *this; }
-	bool 		operator<=(vectorIterator const & rhs) const { return !(rhs < *this); }
-	bool 		operator>=(vectorIterator const & rhs) const { return !(*this < rhs); }
 	reference	operator[](difference_type idx) { return *(this->m_ptr + idx); }
 	pointer		operator->() { return this->m_ptr; }
 	reference	operator*() { return *this->m_ptr; }
+
+	friend bool	operator==(vectorIterator const & lhs, vectorIterator const & rhs) { return lhs.data() == rhs.data(); }
+	friend bool operator!=(vectorIterator const & lhs, vectorIterator const & rhs) { return !(lhs == rhs); }
+	friend bool operator<(vectorIterator const & lhs, vectorIterator const & rhs) { return lhs.data() < rhs.data(); }
+	friend bool operator>(vectorIterator const & lhs, vectorIterator const & rhs) { return rhs < lhs; }
+	friend bool operator<=(vectorIterator const & lhs, vectorIterator const & rhs) { return !(rhs < lhs); }
+	friend bool operator>=(vectorIterator const & lhs, vectorIterator const & rhs) { return !(lhs < rhs); }
 
 protected:
 	pointer		data() const { return this->m_ptr; }
@@ -154,4 +157,8 @@ public:
 
 }; //end of namespace ft
 
+#endif
+
+# else
+# error "Please include vector.hpp to access its iterator."
 #endif

@@ -1,5 +1,7 @@
-#ifndef LISTITERATOR_HPP
-# define LISTITERATOR_HPP
+#ifdef _FT_LIST_HPP
+
+#ifndef _FT_LISTITERATOR_HPP
+# define _FT_LISTITERATOR_HPP
 
 # include <memory>
 
@@ -70,8 +72,9 @@ public:
 
 	pointer		operator->() const { return this->node()->data; }
 	reference	operator*() const { return *this->node()->data; }
-	bool		operator==(listIterator const & rhs) const { return this->node() == rhs.node(); }
-	bool 		operator!=(listIterator const & rhs) const { return !(*this == rhs); }
+
+	friend bool	operator==(listIterator const & lhs, listIterator const & rhs) { return lhs.node() == rhs.node(); }
+	friend bool	operator!=(listIterator const & lhs, listIterator const & rhs) { return !(lhs == rhs); }
 
 protected:
 	listNode<value_type>*	node() const { return this->m_node; }
@@ -114,4 +117,8 @@ public:
 
 }; //end of namespace ft
 
+#endif
+
+# else
+# error "Please include list.hpp to access its iterator."
 #endif

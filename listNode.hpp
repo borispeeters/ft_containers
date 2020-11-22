@@ -1,5 +1,7 @@
-#ifndef LISTNODE_HPP
-# define LISTNODE_HPP
+#ifdef _FT_LIST_HPP
+
+#ifndef _FT_LISTNODE_HPP
+# define _FT_LISTNODE_HPP
 
 namespace ft
 {
@@ -32,4 +34,8 @@ struct listNode
 
 }; //end of namespace ft
 
+#endif
+
+# else
+# error "This is an internal node used by the ft::list class and is not intended to be included directly."
 #endif

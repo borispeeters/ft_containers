@@ -1,5 +1,7 @@
-#ifndef MAP_HPP
-# define MAP_HPP
+#ifndef _FT_MAP_HPP
+# define _FT_MAP_HPP
+
+# define _FT_TREE
 
 # include <cstddef>
 # include <memory>
@@ -7,7 +9,7 @@
 # include "functional.hpp"
 # include "iterator.hpp"
 # include "treeIterator.hpp"
-# include "treeNode.hpp"
+# include "tree.hpp"
 # include "type_traits.hpp"
 # include "utility.hpp"
 

@@ -1,9 +1,11 @@
-#ifndef TREEITERATOR_HPP
-# define TREEITERATOR_HPP
+#ifdef _FT_TREE
+
+#ifndef _FT_TREEITERATOR_HPP
+# define _FT_TREEITERATOR_HPP
 
 # include <cstddef>
 # include "iterator.hpp"
-# include "treeNode.hpp"
+# include "tree.hpp"
 
 namespace ft
 {
@@ -103,8 +105,9 @@ public:
 
 	pointer		operator->() const { return this->node()->value; }
 	reference	operator*() const { return *this->node()->value; }
-	bool 		operator==(treeIterator const & rhs) const { return this->node() == rhs.node(); }
-	bool 		operator!=(treeIterator const & rhs) const { return !(*this == rhs); }
+
+	friend bool operator==(treeIterator const & lhs, treeIterator const & rhs) { return lhs.node() == rhs.node(); }
+	friend bool operator!=(treeIterator const & lhs, treeIterator const & rhs) { return !(lhs == rhs); }
 
 protected:
 	RBTree<value_type>*		tree() const { return this->m_tree; }
@@ -191,4 +194,8 @@ public:
 
 }; //end of namespace ft
 
+#endif
+
+# else
+# error "Please include the appropriate associative container in the ft namespace to access its iterator."
 #endif

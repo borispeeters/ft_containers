@@ -1,5 +1,5 @@
-#ifndef VECTOR_HPP
-# define VECTOR_HPP
+#ifndef _FT_VECTOR_HPP
+# define _FT_VECTOR_HPP
 
 # include <cstddef>
 # include <memory>
@@ -124,6 +124,7 @@ public:
 		}
 		this->m_size = n;
 	}
+
 	size_type		capacity() const { return this->m_capacity; }
 	bool			empty() const { return (this->size() == 0); }
 	void			reserve(size_type n) { if (n > this->capacity()) this->realloc(n); }
@@ -259,7 +260,9 @@ public:
 			this->pop_back();
 	}
 
-	allocator_type	get_allocator() const { return this->m_alloc; }
+	allocator_type	get_allocator() const {
+		return this->m_alloc;
+	}
 
 private:
 	void		realloc(size_type newCapacity)

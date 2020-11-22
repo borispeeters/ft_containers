@@ -1,5 +1,5 @@
-#ifndef DEQUE_HPP
-# define DEQUE_HPP
+#ifndef _FT_DEQUE_HPP
+# define _FT_DEQUE_HPP
 
 # include <cstddef>
 # include <memory>

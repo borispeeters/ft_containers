@@ -1,5 +1,7 @@
-#ifndef TREENODE_HPP
-# define TREENODE_HPP
+#ifdef _FT_TREE
+
+#ifndef _FT_TREE_HPP
+# define _FT_TREE_HPP
 
 # include <cstddef>
 
@@ -99,4 +101,8 @@ private:
 
 }; //end of namespace ft
 
+#endif
+
+# else
+# error "This is an internal binary tree used by the associative containers in the ft namespace and is not intended to be included directly."
 #endif
