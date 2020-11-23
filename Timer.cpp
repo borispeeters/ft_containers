@@ -1,18 +1,17 @@
+#include <sys/time.h>
 #include "Timer.hpp"
 
 Timer::Timer() {
-	m_StartTime = std::chrono::system_clock::now();
+	gettimeofday(&tv, NULL);
+	start = tv.tv_usec / 1000;
 }
 
 Timer::~Timer() {
-	m_EndTime = std::chrono::system_clock::now();
-	std::cout << "Execution time: " << elapsedMilliseconds() << "ms" << std::endl;
-}
+	gettimeofday(&tv, NULL);
+	end = tv.tv_usec / 1000;
 
-double Timer::elapsedMilliseconds() {
-	return std::chrono::duration_cast<std::chrono::milliseconds>(m_EndTime - m_StartTime).count();
-}
+	std::cout << "start: " << start << std::endl;
+	std::cout << "end: " << end << std::endl;
 
-double Timer::elapsedSeconds() {
-	return elapsedMilliseconds() / 1000.0;
+	std::cout << "Execution time: " << end - start << "ms" << std::endl;
 }

@@ -1,21 +1,18 @@
 #ifndef TIMER_HPP
 # define TIMER_HPP
 
-# include <chrono>
+# include <ctime>
 # include <iostream>
 
 class Timer
 {
+	struct timeval	tv;
+	std::size_t		start;
+	std::size_t		end;
+
 public:
 	Timer();
 	~Timer();
-
-	double elapsedMilliseconds();
-	double elapsedSeconds();
-
-private:
-	std::chrono::time_point<std::chrono::system_clock> m_StartTime;
-	std::chrono::time_point<std::chrono::system_clock> m_EndTime;
 };
 
 #endif
