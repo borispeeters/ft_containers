@@ -1,65 +1,41 @@
 #include <cstddef>
 #include <iostream>
-//#include <new>
 #include "Example.hpp"
 
 #include <memory>
+#include "memory.hpp"
 
 void*	operator new(std::size_t s) throw (std::bad_alloc)
 {
-
 	void	*ptr = malloc(s);
-
-	std::cout << "allocated " << s << " bytes to " << ptr << std::endl;
 
 	if (!ptr)
 		throw std::bad_alloc();
 
+	std::cout << "allocated " << s << " bytes to " << ptr << std::endl;
+
 	return ptr;
 }
 
-//void* operator new (std::size_t size, void* ptr) throw()
-//{
-//
-//}
-
 void 	operator delete(void *ptr) throw()
 {
-	std::cout << "deleting " << ptr << std::endl;
+	std::cout << "deallocating " << ptr << std::endl;
 	free(ptr);
 }
 
 int main()
 {
-	std::allocator<Example>	alloc;
+	Example	*x;
 
-	Example	*x = alloc.allocate(1);
+	ft::allocator<Example>	alloc;
 
-	alloc.construct(x, std::move(Example()));
+	x = alloc.allocate(1);
 
-//	alloc.destroy(x);
+	alloc.construct(x, Example());
 
-	return 0;
+	alloc.destroy(x);
 
-
-	Example	*a = new Example;
-
-	Example *b;
-	b = (Example*) ::operator new(sizeof(Example) );
-	b = new (b) Example;
-
-	Example	*c = new Example(*a);
-
-	delete a;
-
-	::operator delete (b, b);
-//	::operator delete(b);
-
-	delete c;
-
-//	a = new Example;
-//	b = new Example;
-//	c = new Example;
+	alloc.deallocate(x, 1);
 
 	return 0;
 }

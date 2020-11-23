@@ -2,17 +2,17 @@
 # define _FT_VECTOR_HPP
 
 # include <cstddef>
-# include <memory>
 # include <stdexcept>
 # include "algorithm.hpp"
 # include "iterator.hpp"
+# include "memory.hpp"
 # include "type_traits.hpp"
 # include "vectorIterator.hpp"
 
 namespace ft
 {
 
-template <class T, class Alloc = std::allocator<T> >
+template <class T, class Alloc = ft::allocator<T> >
 class vector
 {
 public:
@@ -269,7 +269,7 @@ private:
 	{
 		if (newCapacity == 0)
 			newCapacity = 1;
-		pointer	newBlock = this->get_allocator().allocate(newCapacity, this->m_data);
+		pointer	newBlock = this->get_allocator().allocate(newCapacity);
 		for (size_type i = 0; i < this->size(); ++i)
 		{
 			this->get_allocator().construct(newBlock + i, this->m_data[i]);

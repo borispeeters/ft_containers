@@ -5,12 +5,11 @@
 
 class Example
 {
-	int x;
+	int *x;
 
 public:
 	Example();
-	Example(Example const & x);
-	Example(Example && x);
+	Example(Example const & other);
 	~Example();
 
 	Example&	operator=(Example const & rhs);

@@ -19,10 +19,10 @@ struct treeNode
 	treeNode	*parent;
 	enum Colour	colour;
 
-	treeNode(): value(new T()), left(NULL), right(NULL), parent(NULL), colour(RED) {}
+	treeNode(): value(new T), left(NULL), right(NULL), parent(NULL), colour(RED) {}
 	treeNode(T const & val): value(new T(val)), left(NULL), right(NULL), parent(NULL), colour (RED) {}
 	treeNode(treeNode const & other): value(NULL) { *this = other; }
-	treeNode(enum Colour col): value(new T()), left(NULL), right(NULL), parent(NULL), colour(col) {}
+	treeNode(enum Colour col): value(new T), left(NULL), right(NULL), parent(NULL), colour(col) {}
 	~treeNode() { delete this->value; }
 	treeNode&	operator=(treeNode const & rhs)
 	{

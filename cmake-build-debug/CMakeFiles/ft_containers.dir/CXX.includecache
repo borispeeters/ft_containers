@@ -6,6 +6,14 @@
 
 #IncludeRegexTransform: 
 
+/Users/bpeeters/Projects/ft_containers/Example.cpp
+Example.hpp
+/Users/bpeeters/Projects/ft_containers/Example.hpp
+
+/Users/bpeeters/Projects/ft_containers/Example.hpp
+iostream
+-
+
 /Users/bpeeters/Projects/ft_containers/Timer.hpp
 chrono
 -
