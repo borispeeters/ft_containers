@@ -27,32 +27,32 @@ public:
 	typedef	typename allocator_type::size_type							size_type;
 
 private:
-	listNode<value_type>	*m_head;
-	listNode<value_type>	*m_tail;
-	size_type				m_size;
-	allocator_type			m_alloc;
+	typedef listNode<value_type, allocator_type>						node;
+	typedef allocator_type::rebind<node>::other							node_allocator;
 
-	allocator_type::rebind<listNode<value_type> >::other	m_nodeAlloc;
+	node			*m_head;
+	node			*m_tail;
+	size_type		m_size;
+	allocator_type	m_alloc;
+	node_allocator	m_nodeAlloc;
 
 public:
 	// 1. default constructor
 	explicit list(allocator_type const & alloc = allocator_type()):
-		m_head(new listNode<value_type>()),
-		m_tail(new listNode<value_type>()),
+		m_head(NULL),
+		m_tail(NULL),
 		m_size(0),
-		m_alloc(alloc)
-	{
+		m_alloc(alloc) {
 		this->listInit();
 	}
 
 	// 2. fill constructor
 	explicit list(size_type n, value_type const & val = value_type(),
 			   allocator_type const & alloc = allocator_type()):
-		m_head(new listNode<value_type>()),
-		m_tail(new listNode<value_type>()),
+		m_head(NULL),
+		m_tail(NULL),
 		m_size(0),
-		m_alloc(alloc)
-	{
+		m_alloc(alloc) {
 		this->listInit();
 		this->assign(n, val);
 	}
@@ -61,32 +61,28 @@ public:
 	template <class Iterator>
 	list(Iterator first, Iterator last,
 	  allocator_type const & alloc = allocator_type()):
-	 	m_head(new listNode<value_type>()),
-	 	m_tail(new listNode<value_type>()),
+	 	m_head(NULL),
+	 	m_tail(NULL),
 	 	m_size(0),
-	 	m_alloc(alloc)
-	{
+	 	m_alloc(alloc) {
 		this->listInit();
 		this->assign(first, last);
 	}
 
 	// 4. copy constructor
 	list(list const & other):
-		m_head(new listNode<value_type>()),
-		m_tail(new listNode<value_type>()),
+		m_head(NULL),
+		m_tail(NULL),
 		m_size(0),
-		m_alloc(other.get_allocator())
-	{
+		m_alloc(other.get_allocator()) {
 		this->listInit();
 		this->assign(other.begin(), other.end());
 	}
 
 	// destructor
-	~list()
-	{
+	~list() {
 		this->clear();
-		delete this->m_head;
-		delete this->m_tail;
+		this->listTerminate();
 	}
 
 	// assignment operator overload
@@ -95,6 +91,7 @@ public:
 		if (&rhs != this)
 		{
 			this->m_alloc = rhs.get_allocator();
+			this->m_nodeAlloc = rhs.m_nodeAlloc;
 			this->assign(rhs.begin(), rhs.end());
 		}
 		return *this;
@@ -142,7 +139,8 @@ public:
 
 	void push_front(value_type const & val)
 	{
-		listNode<value_type>*	newNode = new listNode<value_type>(val);
+		node*	newNode = this->m_nodeAlloc.allocate(1);
+		this->m_nodeAlloc.construct(newNode, val);
 		newNode->next = this->head()->next;
 		newNode->next->prev = newNode;
 		newNode->prev = this->head();
@@ -152,16 +150,18 @@ public:
 
 	void pop_front()
 	{
-		listNode<value_type>*	delNode = this->head()->next;
+		node*	delNode = this->head()->next;
 		this->head()->next = delNode->next;
 		this->head()->next->prev = this->head();
-		delete delNode;
+		this->m_nodeAlloc.destroy(delNode);
+		this->m_nodeAlloc.deallocate(delNode, 1);
 		--this->m_size;
 	}
 
 	void push_back(value_type const & val)
 	{
-		listNode<value_type>*	newNode = new listNode<value_type>(val);
+		node*	newNode = this->m_nodeAlloc.allocate(1);
+		this->m_nodeAlloc.construct(newNode, val);
 		newNode->prev = this->tail()->prev;
 		newNode->prev->next = newNode;
 		newNode->next = this->tail();
@@ -171,17 +171,19 @@ public:
 
 	void pop_back()
 	{
-		listNode<value_type>*	delNode = this->tail()->prev;
+		node*	delNode = this->tail()->prev;
 		this->tail()->prev = delNode->prev;
 		this->tail()->prev->next = this->tail();
-		delete delNode;
+		this->m_nodeAlloc.destroy(delNode);
+		this->m_nodeAlloc.deallocate(delNode, 1);
 		--this->m_size;
 	}
 
 	// 1. single element insertion
 	iterator	insert(iterator position, value_type const & val)
 	{
-		listNode<value_type>*	newNode = new listNode<value_type>(val);
+		node*	newNode = this->m_nodeAlloc.allocate(1);
+		this->m_nodeAlloc.construct(newNode, val);
 		newNode->next = position.node();
 		newNode->prev = position.node()->prev;
 		newNode->prev->next = newNode;
@@ -212,11 +214,12 @@ public:
 	// 1. erase single element
 	iterator	erase(iterator position)
 	{
-		listNode<value_type>*	delNode = position.node();
+		node*	delNode = position.node();
 		position.node()->prev->next = position.node()->next;
 		position.node()->next->prev = position.node()->prev;
 		++position;
-		delete delNode;
+		this->m_nodeAlloc.destroy(delNode);
+		this->m_nodeAlloc.deallocate(delNode, 1);
 		--this->m_size;
 		return position;
 	}
@@ -255,8 +258,8 @@ public:
 	{
 		if (this != &x && !x.empty())
 		{
-			listNode<value_type>*	first = x.head()->next;
-			listNode<value_type>*	last = x.tail()->prev;
+			node*	first = x.head()->next;
+			node*	last = x.tail()->prev;
 			this->unlinkNodes(first, last);
 			this->linkNodes(position.node(), first, last);
 			this->m_size += x.size();
@@ -269,7 +272,7 @@ public:
 	{
 		if (position.node() != i.node() && position.node() != i.node()->next)
 		{
-			listNode<value_type>*	first = i.node();
+			node*	first = i.node();
 			this->unlinkNodes(first, first);
 			this->linkNodes(position.node(), first, first);
 			++this->m_size;
@@ -282,9 +285,9 @@ public:
 	{
 		if (first != last)
 		{
-			listNode<value_type>*	firstNode = first.node();
+			node*	firstNode = first.node();
 			--last;
-			listNode<value_type>*	lastNode = last.node();
+			node*	lastNode = last.node();
 			if (this != &x)
 			{
 				size_type	s = ft::distance(first, last) + 1;
@@ -405,17 +408,29 @@ public:
 private:
 	void listInit()
 	{
+		this->m_head = this->m_nodeAlloc.allocate(1);
+		this->m_tail = this->m_nodeAlloc.allocate(1);
+		this->m_nodeAlloc.construct(this->m_head);
+		this->m_nodeAlloc.construct(this->m_tail);
 		this->head()->next = this->tail();
 		this->tail()->prev = this->head();
 	}
 
-	void unlinkNodes(listNode<value_type>* first, listNode<value_type>* last)
+	void listTerminate()
+	{
+		this->m_nodeAlloc.destroy(this->m_head);
+		this->m_nodeAlloc.destroy(this->m_tail);
+		this->m_nodeAlloc.deallocate(this->m_head, 1);
+		this->m_nodeAlloc.deallocate(this->m_tail, 1);
+	}
+
+	void unlinkNodes(node* first, node* last)
 	{
 		first->prev->next = last->next;
 		last->next->prev = first->prev;
 	}
 
-	void linkNodes(listNode<value_type>* node, listNode<value_type>* first, listNode<value_type>* last)
+	void linkNodes(node* node, node* first, node* last)
 	{
 		node->prev->next = first;
 		first->prev = node->prev;
@@ -460,8 +475,8 @@ private:
 		second.splice(second.begin(), first, it, first.end());
 	}
 
-	listNode<value_type>*	head() const { return this->m_head; }
-	listNode<value_type>*	tail() const { return this->m_tail; }
+	node*	head() const { return this->m_head; }
+	node*	tail() const { return this->m_tail; }
 };
 
 template <class T, class Alloc>
