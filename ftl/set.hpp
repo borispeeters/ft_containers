@@ -20,7 +20,7 @@ template <class T,						// setBase::key_type/value_type
 		class Compare = ft::less<T>,	// setBase::key_compare/value_compare
 		class Alloc = ft::allocator<T>	// setBase::allocator_type
         >
-class setBase
+class setBase : public ft::treeBase<T, T, T, Compare, Alloc>
 {
 public:
 	typedef T														key_type;
@@ -40,68 +40,26 @@ public:
 	typedef typename allocator_type::size_type						size_type;
 
 protected:
-	RBTree<value_type>*	m_tree;
-	size_type			m_size;
-	key_compare			m_comp;
-	allocator_type		m_alloc;
+	typedef public ft::treeBase<T, T, T, Compare, Alloc>			base;
+	typedef typename base::node										node;
 
 public:
 	// default constructor
 	explicit setBase(key_compare const & comp = key_compare(), allocator_type const & alloc = allocator_type()):
-	m_tree(new RBTree<value_type>),
-	m_size(0),
-	m_comp(comp),
-	m_alloc(alloc) {
-		this->setInit();
-	}
+	base(comp, alloc) {}
 
 	// copy constructor
 	setBase(setBase const & other):
-	m_tree(new RBTree<value_type>(other.m_tree)),
-	m_size(0),
-	m_comp(other.key_comp()),
-	m_alloc(other.get_allocator()) {
-		this->setInit();
-	}
+	base(other) {}
 
 	// destructor
-	virtual ~setBase() {
-		delete this->m_tree;
-	}
+	virtual ~setBase() {}
 
 	// assignment operator overload
 	setBase&	operator=(setBase const & rhs)
 	{
-		if (&rhs != this)
-		{
-			this->clear();
-			this->m_alloc = rhs.get_allocator();
-			this->m_comp = rhs.key_comp();
-			this->insert(rhs.begin(), rhs.end());
-		}
+		base::operator=(rhs);
 		return *this;
-	}
-
-	iterator		begin() { return iterator(this->tree(), this->firstNode()->parent); }
-	const_iterator	begin() const { return const_iterator(this->tree(), this->firstNode()->parent); }
-	iterator		end() { return iterator(this->tree(), this->lastNode()); }
-	const_iterator	end() const { return const_iterator(this->tree(), this->lastNode()); }
-
-	reverse_iterator 		rbegin() { return reverse_iterator(this->end()); }
-	const_reverse_iterator	rbegin() const { return const_reverse_iterator(this->end()); }
-	reverse_iterator 		rend() { return reverse_iterator(this->begin()); }
-	const_reverse_iterator	rend() const { const_reverse_iterator(this->begin()); }
-
-	bool		empty() const { return this->size() == 0; }
-	size_type	size() const { return this->m_size; }
-	size_type	max_size() const { return this->get_allocator().max_size(); }
-
-	void	swap(setBase & x)
-	{
-		ft::swap(this->m_tree, x.m_tree);
-		ft::swap(this->m_size, x.m_size);
-		ft::swap(this->m_comp, x.m_comp);
-		ft::swap(this->m_alloc, x.m_alloc);
 	}
 
 	key_compare		key_comp() const { return this->m_comp; }
@@ -109,7 +67,7 @@ public:
 
 	iterator		find(key_type const & k)
 	{
-		treeNode<value_type>*	node(this->root());
+		node*	node(this->root());
 		while (this->validNode(node))
 		{
 			if (this->equal(*node->value, k)) return iterator(this->tree(), node);
@@ -121,7 +79,7 @@ public:
 
 	const_iterator		find(key_type const & k) const
 	{
-		treeNode<value_type>*	node(this->root());
+		node*	node(this->root());
 		while (this->validNode(node))
 		{
 			if (this->equal(*node->value, k)) return const_iterator(this->tree(), node);
@@ -130,8 +88,6 @@ public:
 		}
 		return this->end();
 	}
-
-	virtual size_type	count(key_type const & k) const = 0;
 
 	iterator		lower_bound(key_type const & k)
 	{
@@ -177,286 +133,9 @@ public:
 		return ft::make_pair(this->lower_bound(k), this->upper_bound(k));
 	}
 
-	allocator_type	get_allocator() const {
-		return this->m_alloc;
-	}
-
 protected:
-	void	setInit() {
-		this->firstNode()->parent = this->lastNode();
-	}
-
 	bool	equal(key_type const & x, key_type const & y) const {
 		return (!this->key_comp()(x, y) && !this->key_comp()(y, x));
-	}
-
-	bool	validNode(treeNode<value_type>* node) const {
-		return (node != NULL && node != this->NIL() && node != this->firstNode() && node != this->lastNode());
-	}
-
-	RBTree<value_type>*		tree() const { return this->m_tree; }
-
-	treeNode<value_type>*	root() const
-	{
-		if (this->tree())
-			return this->tree()->m_root;
-		return NULL;
-	}
-
-	treeNode<value_type>*	firstNode() const
-	{
-		if (this->tree())
-			return this->tree()->m_first;
-		return NULL;
-	}
-
-	treeNode<value_type>*	lastNode() const
-	{
-		if (this->tree())
-			return this->tree()->m_last;
-		return NULL;
-	}
-
-	treeNode<value_type>*	NIL() const
-	{
-		if (this->tree())
-			return this->tree()->NIL;
-		return NULL;
-	}
-
-	void	BSTerase(iterator position)
-	{
-		treeNode<value_type>*	z = position.node();
-		treeNode<value_type>*	y = z;
-		treeNode<value_type>*	x = NULL;
-		enum Colour				origYColour = y->colour;
-
-		if (z->left == this->NIL()) // z has only right child or no children
-		{
-			x = z->right;
-			this->transplant(z, z->right);
-		}
-		else if (z->right == this->NIL()) // z has only left child
-		{
-			x = z->left;
-			this->transplant(z, z->left);
-		}
-		else // z has two children
-		{
-			iterator temp = position;
-			++temp;
-			y = temp.node();
-
-			origYColour = y->colour;
-			x = y->right;
-			if (y->parent == z)
-				x->parent = y;
-			else {
-				this->transplant(y, y->right);
-				y->right = z->right;
-				y->right->parent = y;
-			}
-			this->transplant(z, y);
-			y->left = z->left;
-			y->left->parent = y;
-			y->colour = z->colour;
-		}
-
-		delete z;
-		z = NULL;
-
-		if (origYColour == BLACK)
-			this->fixEraseViolation(x);
-	}
-
-	void	transplant(treeNode<value_type>* u, treeNode<value_type>* v)
-	{
-		if (u == this->root())
-			this->tree()->m_root = v;
-		else if (u == u->parent->left)
-			u->parent->left = v;
-		else if (u == u->parent->right)
-			u->parent->right = v;
-		v->parent = u->parent;
-	}
-
-/*
-**
-**           4              4              4                 4
-**          / \            / \            / \               / \
-**         /   \          /   \          /   \             /   \
-**        /     \        /     \        /     \           /     \
-**       X       5      X       5      Y       5         Y       5
-**      / \            / \              \               / \
-**     /   \          /   \              3     X       X   3
-**    1     Y        1     2    Y             / \     / \
-**         / \                   \           1   2   1   2
-**        2   3                   3
-**
-*/
-
-	void rotateLeft(treeNode<value_type>* x)
-	{
-		treeNode<value_type>*	y = x->right;
-
-		x->right = y->left;
-		if (y->left)
-			y->left->parent = x;
-		y->parent = x->parent;
-		if (x == this->root())
-			this->tree()->m_root = y;
-		else if (x == x->parent->left)
-			x->parent->left = y;
-		else if (x == x->parent->right)
-			x->parent->right = y;
-		y->left = x;
-		x->parent = y;
-	}
-
-	void rotateRight(treeNode<value_type>* x)
-	{
-		treeNode<value_type>*	y = x->left;
-
-		x->left = y->right;
-		if (y->right)
-			y->right->parent = x;
-		y->parent = x->parent;
-		if (x == this->root())
-			this->tree()->m_root = y;
-		else if (x == x->parent->right)
-			x->parent->right = y;
-		else if (x == x->parent->left)
-			x->parent->left = y;
-		y->right = x;
-		x->parent = y;
-	}
-
-	void fixInsertViolation(treeNode<value_type> * z)
-	{
-		while (z != this->root() && z->colour != BLACK && z->parent->colour == RED)
-		{
-			// parent is left child of grandparent
-			if (z->parent == z->parent->parent->left)
-			{
-				treeNode<value_type>*	y = z->parent->parent->right;
-				if (y->colour == RED)
-				{
-					z->parent->colour = BLACK;
-					y->colour = BLACK;
-					z->parent->parent->colour = RED;
-					z = z->parent->parent;
-				}
-				else
-				{
-					// node is right child of parent, rotate left
-					if (z == z->parent->right)
-					{
-						z = z->parent;
-						rotateLeft(z);
-					}
-					// node is left child of parent, swap parent and grandparent colour and rotate right
-					z->parent->colour = BLACK;
-					z->parent->parent->colour = RED;
-					rotateRight(z->parent->parent);
-				}
-			}
-				// parent is right child of grandparent
-			else if (z->parent == z->parent->parent->right)
-			{
-				treeNode<value_type>*	y = z->parent->parent->left;
-				if (y->colour == RED)
-				{
-					z->parent->colour = BLACK;
-					y->colour = BLACK;
-					z->parent->parent->colour = RED;
-					z = z->parent->parent;
-				}
-				else
-				{
-					// node is left child of parent, rotate right
-					if (z == z->parent->left)
-					{
-						z = z->parent;
-						rotateRight(z);
-					}
-					// node is right child of parent, swap parent and grandparent colour and rotate left
-					z->parent->colour = BLACK;
-					z->parent->parent->colour = RED;
-					rotateLeft(z->parent->parent);
-				}
-			}
-		}
-		this->root()->colour = BLACK;
-	}
-
-	void	fixEraseViolation(treeNode<value_type>* x)
-	{
-		while (x != this->root() && x->colour == BLACK)
-		{
-			if (x == x->parent->left)
-			{
-				treeNode<value_type>*	w = x->parent->right;
-				if (w->colour == RED)
-				{
-					w->colour = BLACK;
-					x->parent->colour = RED;
-					this->rotateLeft(x->parent);
-					w = x->parent->right;
-				}
-				if (w->left->colour == BLACK && w->right->colour == BLACK)
-				{
-					w->colour = RED;
-					x = x->parent;
-				}
-				else
-				{
-					if (w->right->colour == BLACK)
-					{
-						w->left->colour = BLACK;
-						w->colour = RED;
-						this->rotateRight(w);
-						w = x->parent->right;
-					}
-					w->colour = x->parent->colour;
-					x->parent->colour = BLACK;
-					w->right->colour = BLACK;
-					this->rotateLeft(x->parent);
-					x = this->root();
-				}
-			}
-			else if (x == x->parent->right)
-			{
-				treeNode<value_type>*	w = x->parent->left;
-				if (w->colour == RED)
-				{
-					w->colour = BLACK;
-					x->parent->colour = RED;
-					this->rotateRight(x->parent);
-					w = x->parent->left;
-				}
-				if (w->right->colour == BLACK && w->left->colour == BLACK)
-				{
-					w->colour = RED;
-					x = x->parent;
-				}
-				else
-				{
-					if (w->left->colour == BLACK)
-					{
-						w->right->colour = BLACK;
-						w->colour = RED;
-						this->rotateLeft(w);
-						w = x->parent->left;
-					}
-					w->colour = x->parent->colour;
-					x->parent->colour = BLACK;
-					w->left->colour = BLACK;
-					this->rotateRight(x->parent);
-					x = this->root();
-				}
-			}
-		}
-		x->colour = BLACK;
 	}
 };
 
@@ -484,6 +163,7 @@ public:
 	typedef typename allocator_type::size_type						size_type;
 
 private:
+	typedef typename base::node										node;
 	typedef	ft::setBase<T, Compare, Alloc>							base;
 
 public:
@@ -514,14 +194,16 @@ public:
 	// assignment operator overload
 	set&	operator=(set const & rhs)
 	{
+		this->clear();
 		base::operator=(rhs);
+		this->insert(rhs.begin(), rhs.end());
 		return *this;
 	}
 
 	// 1. single element insertion
 	ft::pair<iterator, bool>	insert(value_type const & val)
 	{
-		ft::pair<treeNode<value_type>*, bool>	ret(this->BSTInsert(this->root(), val));
+		ft::pair<node*, bool>	ret(this->BSTInsert(this->root(), val));
 
 		if (ret.second)
 		{
@@ -536,7 +218,7 @@ public:
 	{
 		if (position != this->end() && this->equal(*position, val)) return position;
 
-		ft::pair<treeNode<value_type>*, bool>	ret;
+		ft::pair<node*, bool>	ret;
 
 		if (this->empty())
 			ret = this->BSTinsert(this->root(), val);
@@ -626,9 +308,9 @@ public:
 
 private:
 
-	ft::pair<treeNode<value_type>*, bool>	BSTinsert(treeNode<value_type>* curr, value_type const & val)
+	ft::pair<node*, bool>	BSTinsert(node* curr, value_type const & val)
 	{
-		treeNode<value_type>*	newNode = new treeNode<value_type>(val);
+		node*	newNode = new node(val);
 
 		if (this->root() == this->NIL())
 		{
@@ -717,6 +399,7 @@ public:
 	typedef typename allocator_type::size_type						size_type;
 
 private:
+	typedef typename base::node										node;
 	typedef ft::setBase<T, Compare, Alloc>							base;
 
 public:
@@ -747,14 +430,16 @@ public:
 	// assignment operator overload
 	multiset&	operator=(multiset const & rhs)
 	{
+		this->clear();
 		base::operator=(rhs);
+		this->insert(rhs.begin(), rhs.end());
 		return *this;
 	}
 
 	// 1. single element insertion
 	iterator	insert(value_type const & val)
 	{
-		treeNode<value_type>*	ret = this->BSTinsert(this->root(), val);
+		node*	ret = this->BSTinsert(this->root(), val);
 
 		this->fixInsertViolation(ret);
 		++this->m_size;
@@ -764,7 +449,7 @@ public:
 	// 2. insertion with hint
 	iterator	insert(iterator position, value_type const & val)
 	{
-		treeNode<value_type>*	ret;
+		node*	ret;
 
 		if (this->empty())
 			ret = this->BSTinsert(this->root(), val);
@@ -818,7 +503,7 @@ public:
 
 		--this->m_size;
 		if (this->empty())
-			this->setInit();
+			this->treeInit();
 	}
 
 	// 2. erase by key
@@ -837,11 +522,9 @@ public:
 	{
 		while (first != last)
 		{
-//			std::cout << "ERASING " << *first << std::endl;
 			iterator	tmp(first);
 			++first;
 			this->erase(tmp);
-//			system("leaks ft_containers");
 		}
 	}
 
@@ -854,9 +537,9 @@ public:
 	}
 
 private:
-	treeNode<value_type>*	BSTinsert(treeNode<value_type>* curr, value_type const & val)
+	node*	BSTinsert(node* curr, value_type const & val)
 	{
-		treeNode<value_type>*	newNode = new treeNode<value_type>(val);
+		node*	newNode = new node(val);
 
 		if (this->root() == this->NIL())
 		{

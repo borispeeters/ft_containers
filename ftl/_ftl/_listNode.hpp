@@ -21,7 +21,7 @@ struct listNode
 		this->data = this->alloc.allocate(1);
 		this->alloc.construct(this->data, val);
 	}
-	listNode(listNode const & other): data(NULL) { *this = other; }
+	listNode(listNode const & other): data(NULL), alloc(other.alloc) { *this = other; }
 	~listNode() {
 		this->alloc.destroy(this->data);
 		this->alloc.deallocate(this->data, 1);

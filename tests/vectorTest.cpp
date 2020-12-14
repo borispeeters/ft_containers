@@ -29,12 +29,6 @@ void 	printr(T const & t, char const * s)
 	std::cout << std::endl;
 }
 
-struct	Foo
-{
-	Foo() { std::cout << 'a'; }
-	Foo(Foo const &) {std::cout << 'b'; }
-};
-
 int		main()
 {
 	{
@@ -59,6 +53,13 @@ int		main()
 
 		PRINT(std);
 		PRINT(ft);
+	}
+
+	{
+		ft::vector<char>	x(3, '*');
+		ft::vector<char>	y(5, '.');
+
+		if (x != y) std::cout << "lol";
 	}
 
 	return 0;

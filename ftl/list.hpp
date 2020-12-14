@@ -13,22 +13,22 @@ template <class T, class Alloc = ft::allocator<T> >
 class list
 {
 public:
-	typedef	T															value_type;
-	typedef	Alloc														allocator_type;
-	typedef	typename allocator_type::reference							reference;
-	typedef	typename allocator_type::const_reference					const_reference;
-	typedef	typename allocator_type::pointer							pointer;
-	typedef	typename allocator_type::const_pointer						const_pointer;
-	typedef ft::listIterator<value_type>								iterator;
-	typedef ft::constListIterator<value_type>							const_iterator;
-	typedef ft::reverse_iterator<iterator>								reverse_iterator;
-	typedef ft::reverse_iterator<const_iterator>						const_reverse_iterator;
-	typedef typename ft::iterator_traits<iterator>::difference_type		difference_type;
-	typedef	typename allocator_type::size_type							size_type;
+	typedef	T														value_type;
+	typedef	Alloc													allocator_type;
+	typedef	typename allocator_type::reference						reference;
+	typedef	typename allocator_type::const_reference				const_reference;
+	typedef	typename allocator_type::pointer						pointer;
+	typedef	typename allocator_type::const_pointer					const_pointer;
+	typedef ft::listIterator<value_type>							iterator;
+	typedef ft::constListIterator<value_type>						const_iterator;
+	typedef ft::reverse_iterator<iterator>							reverse_iterator;
+	typedef ft::reverse_iterator<const_iterator>					const_reverse_iterator;
+	typedef typename ft::iterator_traits<iterator>::difference_type	difference_type;
+	typedef	typename allocator_type::size_type						size_type;
 
 private:
-	typedef listNode<value_type, allocator_type>						node;
-	typedef allocator_type::rebind<node>::other							node_allocator;
+	typedef listNode<value_type, allocator_type>					node;
+	typedef allocator_type::rebind<node>::other						node_allocator;
 
 	node			*m_head;
 	node			*m_tail;
@@ -42,7 +42,8 @@ public:
 		m_head(NULL),
 		m_tail(NULL),
 		m_size(0),
-		m_alloc(alloc) {
+		m_alloc(alloc),
+		m_nodeAlloc() {
 		this->listInit();
 	}
 
@@ -52,7 +53,8 @@ public:
 		m_head(NULL),
 		m_tail(NULL),
 		m_size(0),
-		m_alloc(alloc) {
+		m_alloc(alloc),
+		m_nodeAlloc() {
 		this->listInit();
 		this->assign(n, val);
 	}
@@ -64,7 +66,8 @@ public:
 	 	m_head(NULL),
 	 	m_tail(NULL),
 	 	m_size(0),
-	 	m_alloc(alloc) {
+	 	m_alloc(alloc),
+		m_nodeAlloc() {
 		this->listInit();
 		this->assign(first, last);
 	}
@@ -74,7 +77,8 @@ public:
 		m_head(NULL),
 		m_tail(NULL),
 		m_size(0),
-		m_alloc(other.get_allocator()) {
+		m_alloc(other.get_allocator()),
+		m_nodeAlloc(other.m_nodeAlloc) {
 		this->listInit();
 		this->assign(other.begin(), other.end());
 	}
