@@ -32,6 +32,8 @@ private:
 	size_type				m_size;
 	allocator_type			m_alloc;
 
+	allocator_type::rebind<listNode<value_type> >::other	m_nodeAlloc;
+
 public:
 	// 1. default constructor
 	explicit list(allocator_type const & alloc = allocator_type()):

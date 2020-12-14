@@ -98,6 +98,69 @@ private:
 	}
 };
 
+template <class Key,
+        class T,
+        class Val
+        class Compare = ft::less<Key>,
+        class Alloc = ft::allocator<T>
+        >
+class treeBase
+{
+public:
+	asd;
+
+protected:
+	RBTree<value_type>*	m_tree;
+	size_type			m_size;
+	key_comp			m_comp;
+	allocator_type		m_alloc;
+
+public:
+	// default constructor
+	explicit treeBase(key_compare const & comp = key_compare(), allocator_type const & alloc = allocator_type()):
+	m_tree(new RBTree<value_type>),
+	m_size(0),
+	m_comp(comp),
+	m_alloc(alloc) {
+		this->mapInit();
+	}
+
+	// copy constructor
+	treeBase(treeBase const & other):
+	m_tree(new RBTree<value_type>(other.m_tree)),
+	m_size(0),
+	m_comp(other.key_comp()),
+	m_alloc(other.get_allocator()) {
+		this->mapInit();
+	}
+
+	// destructor
+	virtual ~treeBase() {
+		delete this->m_tree;
+	}
+
+	// assignment operator overload
+	treeBase&	operator=(treeBase const & rhs)
+	{
+		if (&rhs != this)
+		{
+			//lol
+		}
+		return *this;
+	}
+
+
+	iterator		begin() { return iterator(this->tree(), this->firstNode()->parent); }
+	const_iterator	begin() const { return const_iterator(this->tree(), this->firstNode()->parent); }
+	iterator		end() { return iterator(this->tree(), this->lastNode()); }
+	const_iterator	end() const { return const_iterator(this->tree(), this->lastNode()); }
+
+	reverse_iterator 		rbegin() { return reverse_iterator(this->end()); }
+	const_reverse_iterator	rbegin() const { return const_reverse_iterator(this->end()); }
+	reverse_iterator 		rend() { return reverse_iterator(this->begin()); }
+	const_reverse_iterator	rend() const { const_reverse_iterator(this->begin()); }
+};
+
 } //end of namespace ft
 
 #endif

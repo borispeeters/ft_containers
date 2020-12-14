@@ -31,11 +31,13 @@ public:
 	vectorIterator(): m_ptr(0) {}
 	vectorIterator(pointer ptr): m_ptr(ptr) {}
 	vectorIterator(vectorIterator const & other): m_ptr(other.data()) {}
+
 	vectorIterator&	operator=(vectorIterator const & rhs)
 	{
 		if (&rhs != this) this->m_ptr = rhs.data();
 		return *this;
 	}
+
 	virtual ~vectorIterator() {}
 
 	vectorIterator& operator++()

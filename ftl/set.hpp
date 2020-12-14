@@ -18,7 +18,7 @@ namespace ft
 
 template <class T,						// setBase::key_type/value_type
 		class Compare = ft::less<T>,	// setBase::key_compare/value_compare
-		class Alloc = ft::allocator<T> // setBase::allocator_type
+		class Alloc = ft::allocator<T>	// setBase::allocator_type
         >
 class setBase
 {

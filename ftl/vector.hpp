@@ -85,7 +85,7 @@ public:
 	~vector() {
 		for (size_type i = 0; i < this->size(); ++i)
 			this->get_allocator().destroy(this->m_data + i);
-		if (this->capacity()) this->get_allocator().deallocate(this->m_data, this->capacity());
+		this->get_allocator().deallocate(this->m_data, this->capacity());
 	}
 
 	// assignment operator overload
@@ -115,14 +115,10 @@ public:
 
 	void		resize(size_type n, value_type val = value_type())
 	{
-		while (this->capacity() < n)
-			this->realloc(this->capacity() * 2);
-		if (n > this->size())
-		{
-			for (size_type i = this->size(); i < n; ++i)
-				this->get_allocator().construct(this->m_data + i, val);
-		}
-		this->m_size = n;
+		while (n < this->size())
+			this->pop_back();
+		while (n > this->size())
+			this->push_back(val);
 	}
 
 	size_type		capacity() const { return this->m_capacity; }
@@ -275,7 +271,7 @@ private:
 			this->get_allocator().construct(newBlock + i, this->m_data[i]);
 			this->get_allocator().destroy(this->m_data + i);
 		}
-		if (this->capacity()) this->get_allocator().deallocate(this->m_data, this->capacity());
+		this->get_allocator().deallocate(this->m_data, this->capacity());
 		this->m_data = newBlock;
 		this->m_capacity = newCapacity;
 	}
