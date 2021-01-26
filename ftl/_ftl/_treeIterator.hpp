@@ -14,6 +14,7 @@ template <class T>
 class treeIterator : public ft::iterator<ft::bidirectional_iterator_tag, T>
 {
 
+	template <class, class, class, class, class> friend class treeBase;
 	template <class, class, class, class> friend class mapBase;
 	template <class, class, class, class> friend class map;
 	template <class, class, class, class> friend class multimap;

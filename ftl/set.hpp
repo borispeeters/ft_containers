@@ -36,7 +36,7 @@ public:
 	typedef ft::constTreeIterator<value_type>						const_iterator;
 	typedef typename ft::reverse_iterator<iterator>					reverse_iterator;
 	typedef typename ft::reverse_iterator<const_iterator>			const_reverse_iterator;
-	typedef typename ft::iterator_traits<iterator>::difference_type	difference_type;
+	typedef std::ptrdiff_t											difference_type;
 	typedef typename allocator_type::size_type						size_type;
 
 protected:
@@ -159,7 +159,7 @@ public:
 	typedef ft::constTreeIterator<value_type>						const_iterator;
 	typedef typename ft::reverse_iterator<iterator>					reverse_iterator;
 	typedef typename ft::reverse_iterator<const_iterator>			const_reverse_iterator;
-	typedef typename ft::iterator_traits<iterator>::difference_type	difference_type;
+	typedef std::ptrdiff_t											difference_type;
 	typedef typename allocator_type::size_type						size_type;
 
 private:
@@ -395,7 +395,7 @@ public:
 	typedef ft::constTreeIterator<value_type>						const_iterator;
 	typedef ft::reverse_iterator<iterator>							reverse_iterator;
 	typedef ft::reverse_iterator<const_iterator>					const_reverse_iterator;
-	typedef typename ft::iterator_traits<iterator>::difference_type	difference_type;
+	typedef std::ptrdiff_t											difference_type;
 	typedef typename allocator_type::size_type						size_type;
 
 private:

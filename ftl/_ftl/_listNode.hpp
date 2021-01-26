@@ -14,14 +14,19 @@ struct listNode
 	T			*data;
 	listNode	*prev;
 	listNode	*next;
-	Alloc		alloc
+	Alloc		alloc;
 
-	listNode(Alloc const & a = Alloc()): data(NULL), prev(NULL), next(NULL), alloc(a) {}
+	listNode(Alloc const & a = Alloc()): data(NULL), prev(NULL), next(NULL), alloc(a) {
+		this->data = this->alloc.allocate(1);
+	}
 	listNode(T const & val, Alloc const & a = Alloc()): data(NULL), prev(NULL), next(NULL), alloc(a) {
 		this->data = this->alloc.allocate(1);
 		this->alloc.construct(this->data, val);
 	}
-	listNode(listNode const & other): data(NULL), alloc(other.alloc) { *this = other; }
+	listNode(listNode const & other): data(NULL), alloc(other.alloc) {
+		this->data = this->alloc.allocate(1);
+		*this = other;
+	}
 	~listNode() {
 		this->alloc.destroy(this->data);
 		this->alloc.deallocate(this->data, 1);

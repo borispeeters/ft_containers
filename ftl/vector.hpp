@@ -2,6 +2,7 @@
 # define _FT_VECTOR_HPP
 
 # include <cstddef>
+# include <limits>
 # include <stdexcept>
 # include "algorithm.hpp"
 # include "iterator.hpp"
@@ -22,13 +23,13 @@ public:
 	typedef	typename allocator_type::const_reference					const_reference;
 	typedef	typename allocator_type::pointer							pointer;
 	typedef	typename allocator_type::const_pointer						const_pointer;
-//	typedef ft::vectorIterator<value_type>								iterator;
-//	typedef ft::constVectorIterator<value_type>							const_iterator;
-	typedef pointer														iterator;
-	typedef const_pointer												const_iterator;
+	typedef ft::vectorIterator<value_type>								iterator;
+	typedef ft::constVectorIterator<value_type>							const_iterator;
+//	typedef pointer														iterator;
+//	typedef const_pointer												const_iterator;
 	typedef ft::reverse_iterator<iterator>								reverse_iterator;
 	typedef ft::reverse_iterator<const_iterator>						const_reverse_iterator;
-	typedef typename ft::iterator_traits<iterator>::difference_type		difference_type;
+	typedef std::ptrdiff_t												difference_type;
 	typedef	typename allocator_type::size_type							size_type;
 
 private:
@@ -113,7 +114,10 @@ public:
 	const_reverse_iterator 	rend() const { return const_reverse_iterator(this->begin()); }
 
 	size_type	size() const { return this->m_size; }
-	size_type	max_size() const { return this->get_allocator().max_size(); }
+	size_type	max_size() const {
+		return ft::min<size_type>(this->get_allocator().max_size(),
+									std::numeric_limits<difference_type>::max());
+	}
 
 	void		resize(size_type n, value_type val = value_type())
 	{

@@ -12,12 +12,12 @@ template<class T>
 class allocator
 {
 public:
-	typedef T	value_type;
-	typedef T*	pointer;
-	typedef T&	reference;
-	typedef const T*	const_pointer;
-	typedef const T&	const_reference;
-	typedef std::size_t	size_type;
+	typedef T				value_type;
+	typedef T*				pointer;
+	typedef T&				reference;
+	typedef const T*		const_pointer;
+	typedef const T&		const_reference;
+	typedef std::size_t		size_type;
 	typedef std::ptrdiff_t	difference_type;
 
 	template <class Type>

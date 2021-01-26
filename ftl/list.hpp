@@ -4,6 +4,7 @@
 # include "_ftl/_listIterator.hpp"
 # include "_ftl/_listNode.hpp"
 # include "algorithm.hpp"
+# include "functional.hpp"
 # include "memory.hpp"
 
 namespace ft
@@ -23,12 +24,12 @@ public:
 	typedef ft::constListIterator<value_type>						const_iterator;
 	typedef ft::reverse_iterator<iterator>							reverse_iterator;
 	typedef ft::reverse_iterator<const_iterator>					const_reverse_iterator;
-	typedef typename ft::iterator_traits<iterator>::difference_type	difference_type;
+	typedef std::ptrdiff_t											difference_type;
 	typedef	typename allocator_type::size_type						size_type;
 
 private:
 	typedef listNode<value_type, allocator_type>					node;
-	typedef allocator_type::rebind<node>::other						node_allocator;
+	typedef typename allocator_type::template rebind<node>::other	node_allocator;
 
 	node			*m_head;
 	node			*m_tail;
@@ -113,7 +114,14 @@ public:
 
 	bool 		empty() const { return this->size() == 0; }
 	size_type	size() const { return this->m_size; }
-	size_type	max_size() const { return this->get_allocator().max_size(); }
+//	size_type	max_size() const {
+//		return ft::min<size_type>(this->get_allocator().max_size(),
+//								  std::numeric_limits<difference_type>::max());
+//	}
+	size_type	max_size() const {
+		return ft::min<size_type>(this->m_nodeAlloc.max_size(),
+								  std::numeric_limits<difference_type>::max());
+	}
 
 	reference 		front() { return *(this->head()->next->data); }
 	const_reference	front() const { return *(this->head()->next->data); }
@@ -232,10 +240,7 @@ public:
 	iterator	erase(iterator first, iterator last)
 	{
 		while (first != last)
-		{
-			erase(first);
-			++first;
-		}
+			first = erase(first);
 		return first;
 	}
 
@@ -255,7 +260,7 @@ public:
 			this->push_back(val);
 	}
 
-	void clear() { while (this->size() > 0) this->pop_back(); }
+	void clear() { while (!this->empty()) this->pop_back(); }
 
 	// 1. splice entire list
 	void splice(iterator position, list & x)
@@ -328,22 +333,7 @@ public:
 		}
 	}
 
-	void unique()
-	{
-		if (this->size() <= 1)
-			return ;
-		iterator	it = this->begin();
-		++it;
-		while (it != this->end())
-		{
-			iterator	prev = it;
-			--prev;
-			if (*it == *prev)
-				it = this->erase(it);
-			else
-				++it;
-		}
-	}
+	void unique() { this->unique(ft::equal_to<value_type>()); }
 
 	template <class BinaryPredicate>
 	void unique(BinaryPredicate binary_pred)
@@ -363,18 +353,7 @@ public:
 		}
 	}
 
-	void merge(list & x)
-	{
-		if (this != &x)
-		{
-			iterator	it = this->begin();
-			while (!x.empty())
-			{
-				if (it == this->end() || *(x.begin()) < *it) this->splice(it, x, x.begin());
-				else ++it;
-			}
-		}
-	}
+	void merge(list & x) { this->merge(x, ft::less<value_type>()); }
 
 	template <class Compare>
 	void merge(list & x, Compare comp)
@@ -390,7 +369,7 @@ public:
 		}
 	}
 
-	void sort() { this->mergeSort(*this); }
+	void sort() { this->mergeSort(*this, ft::less<value_type>()); }
 
 	template <class Compare>
 	void sort(Compare comp) { this->mergeSort(*this, comp); }
@@ -414,8 +393,8 @@ private:
 	{
 		this->m_head = this->m_nodeAlloc.allocate(1);
 		this->m_tail = this->m_nodeAlloc.allocate(1);
-		this->m_nodeAlloc.construct(this->m_head);
-		this->m_nodeAlloc.construct(this->m_tail);
+		this->m_nodeAlloc.construct(this->m_head, node());
+		this->m_nodeAlloc.construct(this->m_tail, node());
 		this->head()->next = this->tail();
 		this->tail()->prev = this->head();
 	}
@@ -434,26 +413,12 @@ private:
 		last->next->prev = first->prev;
 	}
 
-	void linkNodes(node* node, node* first, node* last)
+	void linkNodes(node* Node, node* first, node* last)
 	{
-		node->prev->next = first;
-		first->prev = node->prev;
-		node->prev = last;
-		last->next = node;
-	}
-
-	void mergeSort(list & first)
-	{
-		if (first.size() > 1)
-		{
-			list	second;
-			this->split(first, second);
-
-			this->mergeSort(first);
-			this->mergeSort(second);
-
-			first.merge(second);
-		}
+		Node->prev->next = first;
+		first->prev = Node->prev;
+		Node->prev = last;
+		last->next = Node;
 	}
 
 	template <class Compare>
@@ -464,8 +429,8 @@ private:
 			list	second;
 			this->split(first, second);
 
-			this->mergeSort(first);
-			this->mergeSort(second);
+			this->mergeSort(first, comp);
+			this->mergeSort(second, comp);
 
 			first.merge(second, comp);
 		}

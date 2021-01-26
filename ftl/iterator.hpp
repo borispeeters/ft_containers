@@ -59,8 +59,7 @@ template <class Iter, bool>
 struct _iterator_traits {};
 
 template <class Iter>
-struct _iterator_traits<Iter, true>
-{
+struct _iterator_traits<Iter, true> {
 	typedef	typename Iter::value_type			value_type;
 	typedef	typename Iter::difference_type		difference_type;
 	typedef	typename Iter::pointer				pointer;
