@@ -1,15 +1,13 @@
-#ifndef QUEUE_HPP
-# define QUEUE_HPP
+#ifndef _FT_QUEUE_HPP
+# define _FT_QUEUE_HPP
 
 # include <cstddef>
-# include "functional.hpp"
-# include "iterator.hpp"
-# include "list.hpp"
+# include "deque.hpp"
 
 namespace ft
 {
 
-template <class T, class Container = ft::list<T> >
+template <class T, class Container = ft::deque<T> >
 class queue
 {
 public:

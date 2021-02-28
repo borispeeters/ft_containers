@@ -1,13 +1,13 @@
-#ifndef STACK_HPP
-# define STACK_HPP
+#ifndef _FT_STACK_HPP
+# define _FT_STACK_HPP
 
 # include <cstddef>
-# include "vector.hpp"
+# include "deque.hpp"
 
 namespace ft
 {
 
-template <class T, class Container = ft::vector<T> >
+template <class T, class Container = ft::deque<T> >
 class stack {
 public:
 	typedef T			value_type;

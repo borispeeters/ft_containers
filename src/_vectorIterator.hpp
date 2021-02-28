@@ -48,7 +48,7 @@ public:
 
 	vectorIterator  operator++(int)
 	{
-		vectorIterator  tmp(*this);
+		vectorIterator  tmp = *this;
 		++(*this);
 		return tmp;
 	}
@@ -61,7 +61,7 @@ public:
 
 	vectorIterator  operator--(int)
 	{
-		vectorIterator  tmp(*this);
+		vectorIterator  tmp = *this;
 		--(*this);
 		return tmp;
 	}

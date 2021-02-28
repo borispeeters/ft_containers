@@ -1,7 +1,7 @@
 #include <iomanip>
 #include <iostream>
-#include <list>
-#include "list.hpp"
+#include <vector>
+#include "vector.hpp"
 #include <stack>
 #include "stack.hpp"
 
@@ -82,12 +82,40 @@ int 	main() {
 
 	std::cout << "---" << std::endl;
 
-	{ // different underlying container
-		std::list<char>	stdL(3, '~');
-		ft::list<char>	ftL(3, '~');
+	{ // assignment operator
+		std::stack<std::string>	stdCopy;
+		ft::stack<std::string>	ftCopy;
 
-		std::stack<char, std::list<char> >	std(stdL);
-		ft::stack<char, ft::list<char> >	ft(ftL);
+		stdCopy.push("what's");
+		stdCopy.push("in");
+		stdCopy.push("the");
+		stdCopy.push("fucking");
+		stdCopy.push("box");
+
+		ftCopy.push("what's");
+		ftCopy.push("in");
+		ftCopy.push("the");
+		ftCopy.push("fucking");
+		ftCopy.push("box");
+
+		std::stack<std::string>	std;
+		ft::stack<std::string>	ft;
+
+		std = stdCopy;
+		ft = ftCopy;
+
+		PRINT(std);
+		PRINT(ft);
+	}
+
+	std::cout << "---" << std::endl;
+
+	{ // different underlying container
+		std::vector<char>	stdL(3, '~');
+		ft::vector<char>	ftL(3, '~');
+
+		std::stack<char, std::vector<char> >	std(stdL);
+		ft::stack<char, ft::vector<char> >		ft(ftL);
 
 		PRINT(std);
 		PRINT(ft);

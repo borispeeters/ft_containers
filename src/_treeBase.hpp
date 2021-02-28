@@ -6,11 +6,11 @@
 # include <cstddef>
 # include "_tree.hpp"
 # include "_treeIterator.hpp"
-# include "../algorithm.hpp"
-# include "../functional.hpp"
-# include "../iterator.hpp"
-# include "../memory.hpp"
-# include "../type_traits.hpp"
+# include "algorithm.hpp"
+# include "functional.hpp"
+# include "iterator.hpp"
+# include "memory.hpp"
+# include "type_traits.hpp"
 
 namespace ft
 {
@@ -18,11 +18,13 @@ namespace ft
 template <class Key,
         class T,
         class Val,
-        class Compare = ft::less<Key>,
-        class Alloc = ft::allocator<Val>
+        class Compare,
+        class Alloc
         >
 class treeBase
 {
+	typedef typename Alloc::template rebind<treeNode<Val> >::other	node_allocator;
+
 public:
 	typedef Key														key_type;
 	typedef T														mapped_type;
@@ -33,8 +35,8 @@ public:
 	typedef typename allocator_type::const_reference				const_reference;
 	typedef typename allocator_type::pointer						pointer;
 	typedef typename allocator_type::const_pointer					const_pointer;
-	typedef ft::treeIterator<value_type>							iterator;
-	typedef ft::constTreeIterator<value_type>						const_iterator;
+	typedef ft::treeIterator<value_type, node_allocator>			iterator;
+	typedef ft::constTreeIterator<value_type, node_allocator>		const_iterator;
 	typedef ft::reverse_iterator<iterator>							reverse_iterator;
 	typedef ft::reverse_iterator<const_iterator>					const_reverse_iterator;
 	typedef std::ptrdiff_t											difference_type;
@@ -42,17 +44,17 @@ public:
 
 protected:
 	typedef treeNode<value_type>									node;
-	typedef RBTree<value_type>										rbtree;
+	typedef RBTree<value_type, node_allocator>						rbtree;
 
-	rbtree*			m_tree;
+	rbtree			m_tree;
 	size_type		m_size;
 	key_compare		m_comp;
-	allocator_type	m_alloc;
+	node_allocator	m_alloc;
 
 public:
 	// default constructor
 	explicit treeBase(key_compare const & comp = key_compare(), allocator_type const & alloc = allocator_type()):
-	m_tree(new rbtree()),
+	m_tree(rbtree()),
 	m_size(0),
 	m_comp(comp),
 	m_alloc(alloc) {
@@ -61,34 +63,29 @@ public:
 
 	// copy constructor
 	treeBase(treeBase const & other):
-	m_tree(new rbtree(other.m_tree)),
+	m_tree(rbtree()),
 	m_size(0),
-	m_comp(other.key_comp()),
+	m_comp(other.m_comp),
 	m_alloc(other.get_allocator()) {
 		this->treeInit();
 	}
 
 	// destructor
-	virtual ~treeBase() {
-		delete this->m_tree;
-	}
+	virtual ~treeBase() {}
 
 	// assignment operator overload
-	treeBase&	operator=(treeBase const & rhs)
-	{
-		if (&rhs != this)
-		{
-			this->m_alloc = this->get_allocator();
-			this->m_comp = this->key_comp();
+	treeBase&	operator=(treeBase const & rhs) {
+		if (&rhs != this) {
+			this->m_alloc = rhs.m_alloc;
+			this->m_comp = rhs.m_comp;
 		}
 		return *this;
 	}
 
-
-	iterator		begin() { return iterator(this->tree(), this->firstNode()->parent); }
-	const_iterator	begin() const { return const_iterator(this->tree(), this->firstNode()->parent); }
-	iterator		end() { return iterator(this->tree(), this->lastNode()); }
-	const_iterator	end() const { return const_iterator(this->tree(), this->lastNode()); }
+	iterator		begin() { return iterator(this->m_tree, this->firstNode()->parent); }
+	const_iterator	begin() const { return const_iterator(this->m_tree, this->firstNode()->parent); }
+	iterator		end() { return iterator(this->m_tree, this->lastNode()); }
+	const_iterator	end() const { return const_iterator(this->m_tree, this->lastNode()); }
 
 	reverse_iterator 		rbegin() { return reverse_iterator(this->end()); }
 	const_reverse_iterator	rbegin() const { return const_reverse_iterator(this->end()); }
@@ -97,11 +94,14 @@ public:
 
 	bool 		empty() const { return this->size() == 0; }
 	size_type	size() const { return this->m_size; }
-	size_type	max_size() const { return this->get_allocator().max_size(); }
 
-	void	swap(treeBase & x)
-	{
-		ft::swap(this->m_tree, x.m_tree);
+	size_type	max_size() const {
+		return ft::min<size_type>(this->m_alloc.max_size(),
+								  std::numeric_limits<difference_type>::max());
+	}
+
+	void	swap(treeBase & x) {
+		this->m_tree.swap(x.m_tree);
 		ft::swap(this->m_size, x.m_size);
 		ft::swap(this->m_comp, x.m_comp);
 		ft::swap(this->m_alloc, x.m_alloc);
@@ -109,69 +109,65 @@ public:
 
 	virtual size_type	count(key_type const & k) const = 0;
 
-	allocator_type	get_allocator() const {
-		return this->m_alloc;
-	}
+	allocator_type	get_allocator() const { return this->m_alloc; }
 
 protected:
 	void	treeInit() {
-		this->tree()->m_root = this->NIL();
+		this->m_tree.m_root = this->NIL();
 		this->firstNode()->parent = this->lastNode();
+		this->lastNode()->parent = this->firstNode();
 	}
 
-	bool	validNode(treeNode<value_type>* node) const {
-		return (node != NULL && node != this->NIL() && node != this->firstNode() && node != this->lastNode());
+	void 	detach() {
+		this->firstNode()->parent->left = this->NIL();
+		this->lastNode()->parent->right = this->NIL();
 	}
 
-	rbtree*		tree() const { return this->m_tree; }
+	void 	attach() {
+		node*	f = this->root();
+		node*	l = this->root();
 
-	node*	root() const
-	{
-		if (this->tree())
-			return this->tree()->m_root;
-		return NULL;
+		while (f->left != this->NIL() && f->left != this->firstNode()) {
+			f = f->left;
+		}
+
+		f->left = this->firstNode();
+		this->firstNode()->parent = f;
+
+		while (l->right != this->NIL() && l->right != this->lastNode()) {
+			l = l->right;
+		}
+
+		l->right = this->lastNode();
+		this->lastNode()->parent = l;
 	}
 
-	node*	firstNode() const
-	{
-		if (this->tree())
-			return this->tree()->m_first;
-		return NULL;
+	bool	validNode(node* n) const {
+		return (n != NULL && n != this->NIL() && n != this->firstNode() && n != this->lastNode());
 	}
 
-	node*	lastNode() const
-	{
-		if (this->tree())
-			return this->tree()->m_last;
-		return NULL;
-	}
+	node*	root() const { return this->m_tree.m_root; }
+	node*	firstNode() const { return this->m_tree.m_first; }
+	node*	lastNode() const { return this->m_tree.m_last; }
+	node*	NIL() const { return this->m_tree.NIL; }
 
-	node*	NIL() const
-	{
-		if (this->tree())
-			return this->tree()->NIL;
-		return NULL;
-	}
+	void	BSTerase(iterator position) {
+		this->detach();
 
-		void	BSTerase(iterator position)
-	{
 		node*	z = position.node();
 		node*	y = z;
 		node*	x = NULL;
 		enum Colour	origYColour = y->colour;
 
-		if (z->left == this->NIL()) // z has only right child or no children
-		{
+		if (z->left == this->NIL()) { // z has only right child or no children
 			x = z->right;
 			this->transplant(z, z->right);
 		}
-		else if (z->right == this->NIL()) // z has only left child
-		{
+		else if (z->right == this->NIL()) { // z has only left child
 			x = z->left;
 			this->transplant(z, z->left);
 		}
-		else // z has two children
-		{
+		else { // z has two children
 			iterator temp = position;
 			++temp;
 			y = temp.node();
@@ -191,17 +187,20 @@ protected:
 			y->colour = z->colour;
 		}
 
-		delete z;
-		z = NULL;
+		this->m_alloc.destroy(z);
+		this->m_alloc.deallocate(z, 1);
 
-		if (origYColour == BLACK)
+		if (origYColour == BLACK) {
 			this->fixEraseViolation(x);
+		}
+
+		this->attach();
 	}
 
 	void	transplant(node* u, node* v)
 	{
 		if (u == this->root())
-			this->tree()->m_root = v;
+			this->m_tree.m_root = v;
 		else if (u == u->parent->left)
 			u->parent->left = v;
 		else if (u == u->parent->right)
@@ -210,6 +209,8 @@ protected:
 	}
 
 /*
+**		Left rotation on x
+**     --------------------
 **
 **           4              4              4                 4
 **          / \            / \            / \               / \
@@ -229,11 +230,11 @@ protected:
 		node*	y = x->right;
 
 		x->right = y->left;
-		if (y->left)
+		if (y->left != this->NIL())
 			y->left->parent = x;
 		y->parent = x->parent;
 		if (x == this->root())
-			this->tree()->m_root = y;
+			this->m_tree.m_root = y;
 		else if (x == x->parent->left)
 			x->parent->left = y;
 		else if (x == x->parent->right)
@@ -247,11 +248,11 @@ protected:
 		node*	y = x->left;
 
 		x->left = y->right;
-		if (y->right)
+		if (y->right != this->NIL())
 			y->right->parent = x;
 		y->parent = x->parent;
 		if (x == this->root())
-			this->tree()->m_root = y;
+			this->m_tree.m_root = y;
 		else if (x == x->parent->right)
 			x->parent->right = y;
 		else if (x == x->parent->left)

@@ -7,6 +7,8 @@
 #include "list.hpp"
 #include <vector>
 
+#include "memory.hpp"
+
 #define PRINT(x) print(x, #x)
 #define PRINTR(x) printr(x, #x)
 #define COMP(x, y) relational_operator(x, #x, y, #y)
@@ -89,7 +91,6 @@ int		main() {
 
 		std::cout << "max size of std(int) is: " << std.max_size() << std::endl;
 		std::cout << "max size of ft(int)  is: " << ft.max_size() << std::endl;
-		// the difference comes from my list node having an allocator member variable, thus requiring more space
 	}
 
 	std::cout << "---" << std::endl;
@@ -124,6 +125,24 @@ int		main() {
 
 		PRINT(range);
 		PRINT(copy);
+	}
+
+	std::cout << "---" << std::endl;
+
+	{ // assignment operator
+		int intArray[] = { 101, 381, 9, 88, 39 };
+
+		std::list<int>	stdCopy(intArray, intArray + sizeof(intArray) / sizeof(int));
+		ft::list<int>	ftCopy(intArray, intArray + sizeof(intArray) / sizeof(int));
+
+		std::list<int>	std;
+		ft::list<int>	ft;
+
+		std = stdCopy;
+		ft = ftCopy;
+
+		PRINT(std);
+		PRINT(ft);
 	}
 
 	std::cout << "---" << std::endl;
@@ -406,8 +425,8 @@ int		main() {
 	std::cout << "---" << std::endl;
 
 	{ // splicin'
-		std::list<int>	stdFoo, stdBar;
-		ft::list<int>	ftFoo, ftBar;
+		std::list<int> stdFoo, stdBar;
+		ft::list<int> ftFoo, ftBar;
 
 		for (int i = 1; i <= 4; ++i) {
 			stdFoo.push_back(i);
@@ -434,7 +453,9 @@ int		main() {
 			// it is now invalid
 
 			it = stdFoo.begin();
-			++it; ++it; ++it;
+			++it;
+			++it;
+			++it;
 
 			stdFoo.splice(stdFoo.begin(), stdFoo, it, stdFoo.end());
 			// stdFoo: 30 3 4 1 10 20
@@ -453,142 +474,148 @@ int		main() {
 			ftBar.splice(ftBar.begin(), ftFoo, it);
 
 			it = ftFoo.begin();
-			++it; ++it; ++it;
+			++it;
+			++it;
+			++it;
 
 			ftFoo.splice(ftFoo.begin(), ftFoo, it, ftFoo.end());
 
 			PRINT(ftFoo);
 			PRINT(ftBar);
 		}
-
-		std::cout << "---" << std::endl;
-
-		{ // sometimes you just have to remove stuff, like a president from a white house
-			int intArray[] = { 7, 79, 39, 88, 47, 16, 39, 4, 39, 18, 8, 23 };
-
-			std::list<int>	std(intArray, intArray + sizeof(intArray) / sizeof(int));
-			ft::list<int>	ft(intArray, intArray + sizeof(intArray) / sizeof(int));
-
-			std.remove(39);
-			ft.remove(39);
-
-			PRINT(std);
-			PRINT(ft);
-
-			std.remove_if(single_digit);
-			std.remove_if(is_odd());
-
-			ft.remove_if(single_digit);
-			ft.remove_if(is_odd());
-
-			PRINT(std);
-			PRINT(ft);
-		}
-
-		std::cout << "---" << std::endl;
-
-		{ // no duplicates allowed >:(
-			double doubleArray[] = { 2.72, 3.14, 12.15, 12.77, 12.77, 15.3, 72.25, 72.25, 73.0, 73.35 };
-
-			std::list<double>	std(doubleArray, doubleArray + sizeof(doubleArray) / sizeof(double));
-			ft::list<double>	ft(doubleArray, doubleArray + sizeof(doubleArray) / sizeof(double));
-
-			std.unique();
-			ft.unique();
-
-			// 2.72 3.14 12.15 12.77 15.3 72.25 73.0 73.35
-
-			std.unique(same_integral_part);
-			ft.unique(same_integral_part);
-
-			// 2.72 3.14 12.15 15.3 72.25 73.0
-
-			std.unique(is_near());
-			ft.unique(is_near());
-
-			// 2.72 12.15 72.25
-
-			PRINT(std);
-			PRINT(ft);
-		}
-
-		std::cout << "---" << std::endl;
-
-		{ // merge
-			double foo[] = { 2.3, 3.9, 4.2, 4.6, 7.9 };
-			double bar[] = { 1.5, 3.6, 9.1 };
-
-			std::list<double>	stdFoo(foo, foo + sizeof(foo) / sizeof(double));
-			std::list<double>	stdBar(bar, bar + sizeof(bar) / sizeof(double));
-
-			ft::list<double>	ftFoo(foo, foo + sizeof(foo) / sizeof(double));
-			ft::list<double>	ftBar(bar, bar + sizeof(bar) / sizeof(double));
-
-			stdFoo.merge(stdBar);
-			ftFoo.merge(ftBar);
-
-			stdBar.push_front(3.3);
-			ftBar.push_front(3.3);
-
-			stdFoo.merge(stdBar, less_integral);
-			ftFoo.merge(ftBar, less_integral);
-
-			PRINT(stdFoo);
-			PRINT(ftFoo);
-			PRINT(stdBar);
-			PRINT(ftBar);
-		}
-
-		std::cout << "---" << std::endl;
-
-		{ // string sort
-			std::list<std::string>	std(1, "pet");
-			ft::list<std::string>	ft(1, "pet");
-
-			std.push_back("Pim");
-			std.push_front("pam");
-			ft.push_back("Pim");
-			ft.push_front("pam");
-			// pam pet Pim
-
-			std.sort();
-			ft.sort();
-			// Pim pam pet :D
-
-			PRINT(std);
-			PRINT(ft);
-
-			std.sort(nocase_compare);
-			ft.sort(nocase_compare);
-			// pam pet Pim :'(
-
-			PRINT(std);
-			PRINT(ft);
-		}
-
-		std::cout << "---" << std::endl;
-
-		{ // reverse
-			int intArray[] = { 2, 10, 8, 4, 3, 5, 14, 6, 1, 9, 7, 8, 5 };
-
-			std::list<int>	std(intArray, intArray + sizeof(intArray) / sizeof(int));
-			ft::list<int>	ft(intArray, intArray + sizeof(intArray) / sizeof(int));
-
-			std.remove(14);
-			ft.remove(14);
-
-			std.sort();
-			ft.sort();
-
-			std.unique();
-			ft.unique();
-
-			std.reverse();
-			ft.reverse();
-
-			PRINTR(std);
-			PRINTR(ft);
-		}
 	}
+
+	std::cout << "---" << std::endl;
+
+	{ // sometimes you just have to remove stuff, like a president from a white house
+		int intArray[] = { 7, 79, 39, 88, 47, 16, 39, 4, 39, 18, 8, 23 };
+
+		std::list<int>	std(intArray, intArray + sizeof(intArray) / sizeof(int));
+		ft::list<int>	ft(intArray, intArray + sizeof(intArray) / sizeof(int));
+
+		std.remove(39);
+		ft.remove(39);
+
+		PRINT(std);
+		PRINT(ft);
+
+		std.remove_if(single_digit);
+		std.remove_if(is_odd());
+
+		ft.remove_if(single_digit);
+		ft.remove_if(is_odd());
+
+		PRINT(std);
+		PRINT(ft);
+	}
+
+	std::cout << "---" << std::endl;
+
+	{ // no duplicates allowed >:(
+		double doubleArray[] = { 2.72, 3.14, 12.15, 12.77, 12.77, 15.3, 72.25, 72.25, 73.0, 73.35 };
+
+		std::list<double>	std(doubleArray, doubleArray + sizeof(doubleArray) / sizeof(double));
+		ft::list<double>	ft(doubleArray, doubleArray + sizeof(doubleArray) / sizeof(double));
+
+		std.unique();
+		ft.unique();
+
+		// 2.72 3.14 12.15 12.77 15.3 72.25 73.0 73.35
+
+		std.unique(same_integral_part);
+		ft.unique(same_integral_part);
+
+		// 2.72 3.14 12.15 15.3 72.25 73.0
+
+		std.unique(is_near());
+		ft.unique(is_near());
+
+		// 2.72 12.15 72.25
+
+		PRINT(std);
+		PRINT(ft);
+	}
+
+	std::cout << "---" << std::endl;
+
+	{ // merge
+		double foo[] = { 2.3, 3.9, 4.2, 4.6, 7.9 };
+		double bar[] = { 1.5, 3.6, 9.1 };
+
+		std::list<double>	stdFoo(foo, foo + sizeof(foo) / sizeof(double));
+		std::list<double>	stdBar(bar, bar + sizeof(bar) / sizeof(double));
+
+		ft::list<double>	ftFoo(foo, foo + sizeof(foo) / sizeof(double));
+		ft::list<double>	ftBar(bar, bar + sizeof(bar) / sizeof(double));
+
+		stdFoo.merge(stdBar);
+		ftFoo.merge(ftBar);
+
+		stdBar.push_front(3.3);
+		ftBar.push_front(3.3);
+
+		stdFoo.merge(stdBar, less_integral);
+		ftFoo.merge(ftBar, less_integral);
+
+		PRINT(stdFoo);
+		PRINT(ftFoo);
+		PRINT(stdBar);
+		PRINT(ftBar);
+	}
+
+	std::cout << "---" << std::endl;
+
+	{ // string sort
+		std::list<std::string>	std(1, "pet");
+		ft::list<std::string>	ft(1, "pet");
+
+		std.push_back("Pim");
+		std.push_front("pam");
+		ft.push_back("Pim");
+		ft.push_front("pam");
+		// pam pet Pim
+
+		std.sort();
+		ft.sort();
+		// Pim pam pet :D
+
+		PRINT(std);
+		PRINT(ft);
+
+		std.sort(nocase_compare);
+		ft.sort(nocase_compare);
+		// pam pet Pim :'(
+
+		PRINT(std);
+		PRINT(ft);
+	}
+
+	std::cout << "---" << std::endl;
+
+	{ // reverse
+		int intArray[] = { 2, 10, 8, 4, 3, 5, 14, 6, 1, 9, 7, 8, 5 };
+
+		std::list<int>	std(intArray, intArray + sizeof(intArray) / sizeof(int));
+		ft::list<int>	ft(intArray, intArray + sizeof(intArray) / sizeof(int));
+
+		std.remove(14);
+		ft.remove(14);
+
+		std.sort();
+		ft.sort();
+
+		std.unique();
+		ft.unique();
+
+		PRINTR(std);
+		PRINTR(ft);
+
+		std.reverse();
+		ft.reverse();
+
+		PRINTR(std);
+		PRINTR(ft);
+	}
+
 	return 0;
 }

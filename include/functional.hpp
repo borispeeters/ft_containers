@@ -1,5 +1,5 @@
-#ifndef FUNCTIONAL_HPP
-# define FUNCTIONAL_HPP
+#ifndef _FT_FUNCTIONAL_HPP
+# define _FT_FUNCTIONAL_HPP
 
 namespace ft
 {

@@ -9,7 +9,7 @@
 namespace ft
 {
 
-template <class T>
+template <class T, std::size_t Size>
 class dequeIterator : public ft::iterator<ft::random_access_iterator_tag, T>
 {
 
@@ -32,46 +32,40 @@ protected:
 	pointer 	m_first;
 	pointer 	m_last;
 	map_pointer	m_node;
-	size_type	m_chunk_size;
 
 public:
 	dequeIterator() {}
-	dequeIterator(pointer ptr) {}
-	dequeIterator(dequeIterator const & other) {}
+	dequeIterator(dequeIterator const & other) { *this = other; }
 
-	dequeIterator&	operator=(dequeIterator const & rhs)
-	{
-		if (&rhs != this)
-		{
-			//lol
+	dequeIterator&	operator=(dequeIterator const & rhs) {
+		if (&rhs != this) {
+			this->m_cur = rhs.m_cur;
+			this->m_first = rhs.m_first;
+			this->m_last = rhs.m_last;
+			this->m_node = rhs.m_node;
 		}
 		return *this;
 	}
 
 	virtual ~dequeIterator() {}
 
-	dequeIterator&	operator++()
-	{
+	dequeIterator&	operator++() {
 		++this->m_cur;
-		if (this->m_cur == this->m_last)
-		{
+		if (this->m_cur == this->m_last) {
 			this->setNode(this->m_node + 1);
 			this->m_cur = this->m_first;
 		}
 		return *this;
 	}
 
-	dequeIterator	operator++(int)
-	{
+	dequeIterator	operator++(int) {
 		dequeIterator	tmp = *this;
 		++(*this);
 		return tmp;
 	}
 
-	dequeIterator&	operator--()
-	{
-		if (this->m_cur == this->m_first)
-		{
+	dequeIterator&	operator--() {
+		if (this->m_cur == this->m_first) {
 			this->setNode(this->m_node - 1);
 			this->m_cur = this->m_last;
 		}
@@ -79,20 +73,17 @@ public:
 		return *this;
 	}
 
-	dequeIterator	operator--(int)
-	{
+	dequeIterator	operator--(int) {
 		dequeIterator	tmp = *this;
 		--(*this);
 		return tmp;
 	}
 
-	dequeIterator&	operator+=(difference_type rhs)
-	{
-		difference_type	offset(rhs + (this->m_cur - this->m_first));
+	dequeIterator&	operator+=(difference_type rhs) {
+		difference_type	offset = rhs + (this->m_cur - this->m_first);
 		if (offset >= 0 && offset < difference_type(this->chunk_size()))
 			this->m_cur += rhs;
-		else
-		{
+		else {
 			difference_type	node_offset;
 			if (offset > 0) node_offset = offset / difference_type(this->chunk_size());
 			else node_offset = -((-offset - 1) / difference_type(this->chunk_size())) -1;
@@ -103,18 +94,21 @@ public:
 		return *this;
 	}
 
-	dequeIterator	operator+(difference_type rhs)
-	{
+	dequeIterator	operator+(difference_type rhs) {
 		dequeIterator	tmp = *this;
 		return tmp += rhs;
 	}
 
 	dequeIterator&	operator-=(difference_type rhs) { return *this += -rhs; }
 
-	dequeIterator	operator-(difference_type rhs) const
-	{
+	dequeIterator	operator-(difference_type rhs) const {
 		dequeIterator	tmp = *this;
 		return tmp -= rhs;
+	}
+
+	difference_type	operator-(dequeIterator const & rhs) const {
+		return Size * (this->m_node - rhs.m_node - 1) + (this->m_cur - this->m_first)
+		+ (rhs.m_last - rhs.m_cur);
 	}
 
 	reference	operator[](difference_type idx) { return *(*this + idx); }
@@ -131,18 +125,17 @@ public:
 	friend bool	operator>=(dequeIterator const & lhs, dequeIterator const & rhs) { return !(lhs < rhs); }
 
 protected:
-	void	setNode(map_pointer new_node)
-	{
+	void	setNode(map_pointer new_node) {
 		this->m_node = new_node;
 		this->m_first = *new_node;
 		this->m_last = this->m_first + this->chunk_size();
 	}
 
-	size_type	chunk_size() const { return this->m_chunk_size; }
+	size_type	chunk_size() const { return Size; }
 };
 
-template <class T>
-class constDequeIterator : public dequeIterator<T>
+template <class T, std::size_t Size>
+class constDequeIterator : public dequeIterator<T, Size>
 {
 public:
 	typedef	T								value_type;
@@ -153,26 +146,17 @@ public:
 	typedef const value_type&				const_reference;
 	typedef ft::random_access_iterator_tag	iterator_category;
 
-	constDequeIterator(): dequeIterator<value_type>() {}
-	constDequeIterator(pointer ptr): dequeIterator<value_type>(ptr) {}
-	constDequeIterator(dequeIterator<value_type> const & other): dequeIterator<value_type>(other) {}
-	constDequeIterator(constDequeIterator const & other): dequeIterator<value_type>() { *this = other; }
+	constDequeIterator(): dequeIterator<value_type, Size>() {}
+	constDequeIterator(dequeIterator<value_type, Size> const & other): dequeIterator<value_type, Size>(other) {}
+	constDequeIterator(constDequeIterator const & other): dequeIterator<value_type, Size>(other) {}
 
-	constDequeIterator&	operator=(dequeIterator<value_type> const & rhs)
-	{
-		if (&rhs != this)
-		{
-			//lol
-		}
+	constDequeIterator&	operator=(dequeIterator<value_type, Size> const & rhs) {
+		dequeIterator<value_type, Size>::operator=(rhs);
 		return *this;
 	}
 
-	constDequeIterator&	operator=(constDequeIterator const & rhs)
-	{
-		if (&rhs != this)
-		{
-			//lol
-		}
+	constDequeIterator&	operator=(constDequeIterator const & rhs) {
+		dequeIterator<value_type, Size>::operator=(rhs);
 		return *this;
 	}
 

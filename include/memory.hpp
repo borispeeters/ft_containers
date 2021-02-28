@@ -5,10 +5,12 @@
 # include <limits>
 # include <new>
 
+#include <memory>
+
 namespace ft
 {
 
-template<class T>
+template <class T>
 class allocator
 {
 public:
@@ -29,24 +31,16 @@ public:
 	allocator() throw() {}
 
 	// 2. copy constructors
-	allocator(allocator const & alloc) throw() {
-		(void) alloc;
-	}
+	allocator(allocator const &) throw() {}
 
 	template <class U>
-	allocator(allocator<U> const & alloc) throw() {
-		(void) alloc;
-	}
+	allocator(allocator<U> const &) throw() {}
 
 	// destructor
 	~allocator() throw() {}
 
 	// assignment operator overload
-	allocator&	operator=(allocator const & rhs)
-	{
-		(void) rhs;
-		return *this;
-	}
+	allocator&	operator=(allocator const &) { return *this; }
 
 	pointer 		address(reference x) const { return &x; }
 	const_pointer	address(const_reference x) const { return &x; }
@@ -55,8 +49,7 @@ public:
 		return (pointer) ::operator new(sizeof(value_type) * n);
 	}
 
-	void deallocate(pointer p, size_type n) {
-		(void) n;
+	void deallocate(pointer p, size_type) {
 		::operator delete(p);
 	}
 

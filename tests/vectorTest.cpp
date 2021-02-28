@@ -85,11 +85,29 @@ int		main() {
 		PRINTR(std);
 		PRINTR(ft);
 
-		ft::vector<int>		range(ft.begin() + 1, ft.end() - 1);
-		ft::vector<int>		copy(ft);
+		ft::vector<int>	range(ft.begin() + 1, ft.end() - 1);
+		ft::vector<int>	copy(ft);
 
 		PRINT(range);
 		PRINT(copy);
+	}
+
+	std::cout << "---" << std::endl;
+
+	{ // assignment operator overload
+		int intArray[] = { 14, 39, 22, 54, 33, 19 };
+
+		std::vector<int>	stdCopy(intArray, intArray + sizeof(intArray) / sizeof(int));
+		ft::vector<int>		ftCopy(intArray, intArray + sizeof(intArray) / sizeof(int));
+
+		std::vector<int>	std;
+		ft::vector<int>		ft;
+
+		std = stdCopy;
+		ft = ftCopy;
+
+		PRINT(std);
+		PRINT(ft);
 	}
 
 	std::cout << "---" << std::endl;

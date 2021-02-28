@@ -14,7 +14,7 @@
 namespace ft
 {
 
-template <class T, class Alloc = ft::allocator<T> >
+template <class T>
 class listIterator : public ft::iterator<ft::bidirectional_iterator_tag, T>
 {
 
@@ -30,7 +30,7 @@ public:
 	typedef ft::bidirectional_iterator_tag	iterator_category;
 
 protected:
-	typedef listNode<value_type, Alloc>		Node;
+	typedef listNode<value_type>			Node;
 
 	Node*	m_node;
 
@@ -39,42 +39,37 @@ public:
 	listIterator(Node* n): m_node(n) {}
 	listIterator(listIterator const & other): m_node(other.node()) {}
 
-	listIterator&	operator=(listIterator const & rhs)
-	{
+	listIterator&	operator=(listIterator const & rhs) {
 		if (&rhs != this) this->m_node = rhs.node();
 		return *this;
 	}
 
 	virtual ~listIterator() {}
 
-	listIterator& operator++()
-	{
+	listIterator& operator++() {
 		this->m_node = this->node()->next;
 		return *this;
 	}
 
-	listIterator  operator++(int)
-	{
+	listIterator  operator++(int) {
 		listIterator  tmp(*this);
 		++(*this);
 		return tmp;
 	}
 
-	listIterator& operator--()
-	{
+	listIterator& operator--() {
 		this->m_node = this->node()->prev;
 		return *this;
 	}
 
-	listIterator  operator--(int)
-	{
+	listIterator  operator--(int) {
 		listIterator  tmp(*this);
 		--(*this);
 		return tmp;
 	}
 
-	pointer		operator->() const { return this->node()->data; }
-	reference	operator*() const { return *this->node()->data; }
+	pointer		operator->() const { return &this->node()->data; }
+	reference	operator*() const { return this->node()->data; }
 
 	friend bool	operator==(listIterator const & lhs, listIterator const & rhs) { return lhs.node() == rhs.node(); }
 	friend bool	operator!=(listIterator const & lhs, listIterator const & rhs) { return !(lhs == rhs); }
@@ -83,7 +78,7 @@ protected:
 	Node*	node() const { return this->m_node; }
 };
 
-template <class T, class Alloc = ft::allocator<T> >
+template <class T>
 class constListIterator : public listIterator<T>
 {
 public:
@@ -96,30 +91,28 @@ public:
 	typedef ft::bidirectional_iterator_tag	iterator_category;
 
 protected:
-	typedef listNode<value_type, Alloc>		Node;
+	typedef listNode<value_type>			Node;
 
 public:
-	constListIterator(): listIterator<value_type, Alloc>() {}
-	constListIterator(Node* n): listIterator<value_type, Alloc>(n) {}
-	constListIterator(listIterator<value_type, Alloc> const & other): listIterator<value_type, Alloc>(other) {}
-	constListIterator(constListIterator const & other): listIterator<value_type, Alloc>(other.node()) {}
+	constListIterator(): listIterator<value_type>() {}
+	constListIterator(Node* n): listIterator<value_type>(n) {}
+	constListIterator(listIterator<value_type> const & other): listIterator<value_type>(other) {}
+	constListIterator(constListIterator const & other): listIterator<value_type>(other.node()) {}
 
-	constListIterator&	operator=(listIterator<value_type, Alloc> const & rhs)
-	{
-		if (&rhs != this) this->m_node = rhs.node();
+	constListIterator&	operator=(listIterator<value_type> const & rhs) {
+		listIterator<value_type>::operator=(rhs);
 		return *this;
 	}
 
-	constListIterator&	operator=(constListIterator const & rhs)
-	{
-		if (&rhs != this) this->m_node = rhs.node();
+	constListIterator&	operator=(constListIterator const & rhs) {
+		listIterator<value_type>::operator=(rhs);
 		return *this;
 	}
 
 	virtual ~constListIterator() {}
 
-	const_pointer	operator->() const { return this->node()->data; }
-	const_reference	operator*() const { return *this->node()->data; }
+	const_pointer	operator->() const { return &this->node()->data; }
+	const_reference	operator*() const { return this->node()->data; }
 };
 
 } //end of namespace ft

@@ -1,8 +1,8 @@
 #ifndef _FT_LIST_HPP
 # define _FT_LIST_HPP
 
-# include "_ftl/_listIterator.hpp"
-# include "_ftl/_listNode.hpp"
+# include "../src/_listIterator.hpp"
+# include "../src/_listNode.hpp"
 # include "algorithm.hpp"
 # include "functional.hpp"
 # include "memory.hpp"
@@ -28,14 +28,13 @@ public:
 	typedef	typename allocator_type::size_type						size_type;
 
 private:
-	typedef listNode<value_type, allocator_type>					node;
+	typedef listNode<value_type>									node;
 	typedef typename allocator_type::template rebind<node>::other	node_allocator;
 
 	node			*m_head;
 	node			*m_tail;
 	size_type		m_size;
-	allocator_type	m_alloc;
-	node_allocator	m_nodeAlloc;
+	node_allocator	m_alloc;
 
 public:
 	// 1. default constructor
@@ -43,8 +42,7 @@ public:
 		m_head(NULL),
 		m_tail(NULL),
 		m_size(0),
-		m_alloc(alloc),
-		m_nodeAlloc() {
+		m_alloc(alloc) {
 		this->listInit();
 	}
 
@@ -54,8 +52,7 @@ public:
 		m_head(NULL),
 		m_tail(NULL),
 		m_size(0),
-		m_alloc(alloc),
-		m_nodeAlloc() {
+		m_alloc(alloc) {
 		this->listInit();
 		this->assign(n, val);
 	}
@@ -67,8 +64,7 @@ public:
 	 	m_head(NULL),
 	 	m_tail(NULL),
 	 	m_size(0),
-	 	m_alloc(alloc),
-		m_nodeAlloc() {
+	 	m_alloc(alloc) {
 		this->listInit();
 		this->assign(first, last);
 	}
@@ -78,8 +74,7 @@ public:
 		m_head(NULL),
 		m_tail(NULL),
 		m_size(0),
-		m_alloc(other.get_allocator()),
-		m_nodeAlloc(other.m_nodeAlloc) {
+		m_alloc(other.get_allocator()) {
 		this->listInit();
 		this->assign(other.begin(), other.end());
 	}
@@ -91,12 +86,9 @@ public:
 	}
 
 	// assignment operator overload
-	list&	operator=(list const & rhs)
-	{
-		if (&rhs != this)
-		{
+	list&	operator=(list const & rhs) {
+		if (&rhs != this) {
 			this->m_alloc = rhs.get_allocator();
-			this->m_nodeAlloc = rhs.m_nodeAlloc;
 			this->assign(rhs.begin(), rhs.end());
 		}
 		return *this;
@@ -114,45 +106,38 @@ public:
 
 	bool 		empty() const { return this->size() == 0; }
 	size_type	size() const { return this->m_size; }
-//	size_type	max_size() const {
-//		return ft::min<size_type>(this->get_allocator().max_size(),
-//								  std::numeric_limits<difference_type>::max());
-//	}
+
 	size_type	max_size() const {
-		return ft::min<size_type>(this->m_nodeAlloc.max_size(),
+		return ft::min<size_type>(this->m_alloc.max_size(),
 								  std::numeric_limits<difference_type>::max());
 	}
 
-	reference 		front() { return *(this->head()->next->data); }
-	const_reference	front() const { return *(this->head()->next->data); }
-	reference 		back() { return *(this->tail()->prev->data); }
-	const_reference	back() const { return *(this->tail()->prev->data); }
+	reference 		front() { return this->head()->next->data; }
+	const_reference	front() const { return this->head()->next->data; }
+	reference 		back() { return this->tail()->prev->data; }
+	const_reference	back() const { return this->tail()->prev->data; }
 
 	// 1. range assign
 	template <class Iterator>
 	void assign(Iterator first, Iterator last,
-				typename ft::_void_t<typename ft::iterator_traits<Iterator>::iterator_category>::type * = 0)
-	{
+				typename ft::_void_t<typename ft::iterator_traits<Iterator>::iterator_category>::type * = 0) {
 		this->clear();
-		while (first != last)
-		{
+		while (first != last) {
 			this->push_back(*first);
 			++first;
 		}
 	}
 
 	// 2. fill assign
-	void assign(size_type n, value_type const & val)
-	{
+	void assign(size_type n, value_type const & val) {
 		this->clear();
 		for (size_type i = 0; i < n; ++i)
 			this->push_back(val);
 	}
 
-	void push_front(value_type const & val)
-	{
-		node*	newNode = this->m_nodeAlloc.allocate(1);
-		this->m_nodeAlloc.construct(newNode, val);
+	void push_front(value_type const & val) {
+		node*	newNode = this->m_alloc.allocate(1);
+		this->m_alloc.construct(newNode, val);
 		newNode->next = this->head()->next;
 		newNode->next->prev = newNode;
 		newNode->prev = this->head();
@@ -160,20 +145,18 @@ public:
 		++this->m_size;
 	}
 
-	void pop_front()
-	{
+	void pop_front() {
 		node*	delNode = this->head()->next;
 		this->head()->next = delNode->next;
 		this->head()->next->prev = this->head();
-		this->m_nodeAlloc.destroy(delNode);
-		this->m_nodeAlloc.deallocate(delNode, 1);
+		this->m_alloc.destroy(delNode);
+		this->m_alloc.deallocate(delNode, 1);
 		--this->m_size;
 	}
 
-	void push_back(value_type const & val)
-	{
-		node*	newNode = this->m_nodeAlloc.allocate(1);
-		this->m_nodeAlloc.construct(newNode, val);
+	void push_back(value_type const & val) {
+		node*	newNode = this->m_alloc.allocate(1);
+		this->m_alloc.construct(newNode, val);
 		newNode->prev = this->tail()->prev;
 		newNode->prev->next = newNode;
 		newNode->next = this->tail();
@@ -181,21 +164,19 @@ public:
 		++this->m_size;
 	}
 
-	void pop_back()
-	{
+	void pop_back() {
 		node*	delNode = this->tail()->prev;
 		this->tail()->prev = delNode->prev;
 		this->tail()->prev->next = this->tail();
-		this->m_nodeAlloc.destroy(delNode);
-		this->m_nodeAlloc.deallocate(delNode, 1);
+		this->m_alloc.destroy(delNode);
+		this->m_alloc.deallocate(delNode, 1);
 		--this->m_size;
 	}
 
 	// 1. single element insertion
-	iterator	insert(iterator position, value_type const & val)
-	{
-		node*	newNode = this->m_nodeAlloc.allocate(1);
-		this->m_nodeAlloc.construct(newNode, val);
+	iterator	insert(iterator position, value_type const & val) {
+		node*	newNode = this->m_alloc.allocate(1);
+		this->m_alloc.construct(newNode, val);
 		newNode->next = position.node();
 		newNode->prev = position.node()->prev;
 		newNode->prev->next = newNode;
@@ -205,8 +186,7 @@ public:
 	}
 
 	// 2. fill insertion
-	void 		insert(iterator position, size_type n, value_type const & val)
-	{
+	void 		insert(iterator position, size_type n, value_type const & val) {
 		for (size_type i = 0; i < n; ++i)
 			this->insert(position, val);
 	}
@@ -214,46 +194,40 @@ public:
 	// 3. range insertion
 	template <class Iterator>
 	void 		insert(iterator position, Iterator first, Iterator last,
-					   typename ft::_void_t<typename ft::iterator_traits<Iterator>::iterator_category>::type * = 0)
-	{
-		while (first != last)
-		{
+					   typename ft::_void_t<typename ft::iterator_traits<Iterator>::iterator_category>::type * = 0) {
+		while (first != last) {
 			this->insert(position, *first);
 			++first;
 		}
 	}
 
 	// 1. erase single element
-	iterator	erase(iterator position)
-	{
+	iterator	erase(iterator position) {
 		node*	delNode = position.node();
 		position.node()->prev->next = position.node()->next;
 		position.node()->next->prev = position.node()->prev;
 		++position;
-		this->m_nodeAlloc.destroy(delNode);
-		this->m_nodeAlloc.deallocate(delNode, 1);
+		this->m_alloc.destroy(delNode);
+		this->m_alloc.deallocate(delNode, 1);
 		--this->m_size;
 		return position;
 	}
 
 	// 2. erase range of elements
-	iterator	erase(iterator first, iterator last)
-	{
+	iterator	erase(iterator first, iterator last) {
 		while (first != last)
 			first = erase(first);
 		return first;
 	}
 
-	void 	swap(list & x)
-	{
+	void 	swap(list & x) {
 		ft::swap(this->m_head, x.m_head);
 		ft::swap(this->m_tail, x.m_tail);
 		ft::swap(this->m_size, x.m_size);
 		ft::swap(this->m_alloc, x.m_alloc);
 	}
 
-	void resize(size_type n, value_type val = value_type())
-	{
+	void resize(size_type n, value_type val = value_type()) {
 		while (this->size() > n)
 			this->pop_back();
 		while (this->size() < n)
@@ -263,10 +237,8 @@ public:
 	void clear() { while (!this->empty()) this->pop_back(); }
 
 	// 1. splice entire list
-	void splice(iterator position, list & x)
-	{
-		if (this != &x && !x.empty())
-		{
+	void splice(iterator position, list & x) {
+		if (this != &x && !x.empty()) {
 			node*	first = x.head()->next;
 			node*	last = x.tail()->prev;
 			this->unlinkNodes(first, last);
@@ -277,10 +249,8 @@ public:
 	}
 
 	// 2. splice single element
-	void splice(iterator position, list & x, iterator i)
-	{
-		if (position.node() != i.node() && position.node() != i.node()->next)
-		{
+	void splice(iterator position, list & x, iterator i) {
+		if (position.node() != i.node() && position.node() != i.node()->next) {
 			node*	first = i.node();
 			this->unlinkNodes(first, first);
 			this->linkNodes(position.node(), first, first);
@@ -290,15 +260,12 @@ public:
 	}
 
 	// 3. splice range of elements
-	void splice(iterator position, list & x, iterator first, iterator last)
-	{
-		if (first != last)
-		{
+	void splice(iterator position, list & x, iterator first, iterator last) {
+		if (first != last) {
 			node*	firstNode = first.node();
 			--last;
 			node*	lastNode = last.node();
-			if (this != &x)
-			{
+			if (this != &x) {
 				size_type	s = ft::distance(first, last) + 1;
 				x.m_size -= s;
 				this->m_size += s;
@@ -308,11 +275,9 @@ public:
 		}
 	}
 
-	void remove(value_type const & val)
-	{
+	void remove(value_type const & val) {
 		iterator	it = this->begin();
-		while (it != this->end())
-		{
+		while (it != this->end()) {
 			if (*it == val)
 				it = this->erase(it);
 			else
@@ -321,11 +286,9 @@ public:
 	}
 
 	template <class Predicate>
-	void remove_if(Predicate pred)
-	{
+	void remove_if(Predicate pred) {
 		iterator	it = this->begin();
-		while (it != this->end())
-		{
+		while (it != this->end()) {
 			if (pred(*it))
 				it = this->erase(it);
 			else
@@ -336,14 +299,12 @@ public:
 	void unique() { this->unique(ft::equal_to<value_type>()); }
 
 	template <class BinaryPredicate>
-	void unique(BinaryPredicate binary_pred)
-	{
+	void unique(BinaryPredicate binary_pred) {
 		if (this->size() <= 1)
 			return ;
 		iterator	it = this->begin();
 		++it;
-		while (it != this->end())
-		{
+		while (it != this->end()) {
 			iterator	prev = it;
 			--prev;
 			if (binary_pred(*it, *prev))
@@ -356,13 +317,10 @@ public:
 	void merge(list & x) { this->merge(x, ft::less<value_type>()); }
 
 	template <class Compare>
-	void merge(list & x, Compare comp)
-	{
-		if (this != &x)
-		{
+	void merge(list & x, Compare comp) {
+		if (this != &x) {
 			iterator	it = this->begin();
-			while (!x.empty())
-			{
+			while (!x.empty()) {
 				if (it == this->end() || comp(*(x.begin()), *it)) this->splice(it, x, x.begin());
 				else ++it;
 			}
@@ -374,10 +332,8 @@ public:
 	template <class Compare>
 	void sort(Compare comp) { this->mergeSort(*this, comp); }
 
-	void reverse()
-	{
-		if (this->size() > 1)
-		{
+	void reverse() {
+		if (this->size() > 1) {
 			for (iterator it = this->begin(); it != this->end(); --it)
 				ft::swap(it.node()->prev, it.node()->next);
 			ft::swap(this->m_head, this->m_tail);
@@ -389,32 +345,28 @@ public:
 	allocator_type	get_allocator() const { return this->m_alloc; }
 
 private:
-	void listInit()
-	{
-		this->m_head = this->m_nodeAlloc.allocate(1);
-		this->m_tail = this->m_nodeAlloc.allocate(1);
-		this->m_nodeAlloc.construct(this->m_head, node());
-		this->m_nodeAlloc.construct(this->m_tail, node());
+	void listInit() {
+		this->m_head = this->m_alloc.allocate(1);
+		this->m_tail = this->m_alloc.allocate(1);
+		this->m_alloc.construct(this->m_head, node());
+		this->m_alloc.construct(this->m_tail, node());
 		this->head()->next = this->tail();
 		this->tail()->prev = this->head();
 	}
 
-	void listTerminate()
-	{
-		this->m_nodeAlloc.destroy(this->m_head);
-		this->m_nodeAlloc.destroy(this->m_tail);
-		this->m_nodeAlloc.deallocate(this->m_head, 1);
-		this->m_nodeAlloc.deallocate(this->m_tail, 1);
+	void listTerminate() {
+		this->m_alloc.destroy(this->m_head);
+		this->m_alloc.destroy(this->m_tail);
+		this->m_alloc.deallocate(this->m_head, 1);
+		this->m_alloc.deallocate(this->m_tail, 1);
 	}
 
-	void unlinkNodes(node* first, node* last)
-	{
+	void unlinkNodes(node* first, node* last) {
 		first->prev->next = last->next;
 		last->next->prev = first->prev;
 	}
 
-	void linkNodes(node* Node, node* first, node* last)
-	{
+	void linkNodes(node* Node, node* first, node* last) {
 		Node->prev->next = first;
 		first->prev = Node->prev;
 		Node->prev = last;
@@ -422,10 +374,8 @@ private:
 	}
 
 	template <class Compare>
-	void mergeSort(list & first, Compare comp)
-	{
-		if (first.size() > 1)
-		{
+	void mergeSort(list & first, Compare comp) {
+		if (first.size() > 1) {
 			list	second;
 			this->split(first, second);
 
@@ -436,8 +386,7 @@ private:
 		}
 	}
 
-	void split(list & first, list & second)
-	{
+	void split(list & first, list & second) {
 		iterator	it(first.begin());
 		for (size_type i = 0; i < first.size() / 2; ++i)
 			++it;
@@ -480,6 +429,7 @@ bool operator>=(list<T, Alloc> const & lhs, list<T, Alloc> const & rhs) {
 
 template <class T, class Alloc>
 void swap(list<T, Alloc> & x, list<T, Alloc> & y) {
+	std::cout << "list swap" << std::endl;
 	x.swap(y);
 }
 

@@ -87,6 +87,35 @@ int 	main() {
 
 	std::cout << "---" << std::endl;
 
+	{ // assignment operator
+		std::queue<int>	stdCopy;
+		ft::queue<int>	ftCopy;
+
+		stdCopy.push(14);
+		stdCopy.push(8);
+		stdCopy.push(16);
+		stdCopy.push(10);
+		stdCopy.push(20);
+
+		ftCopy.push(14);
+		ftCopy.push(8);
+		ftCopy.push(16);
+		ftCopy.push(10);
+		ftCopy.push(20);
+
+
+		std::queue<int>	std;
+		ft::queue<int>	ft;
+
+		std = stdCopy;
+		ft = ftCopy;
+
+		PRINT(std);
+		PRINT(ft);
+	}
+
+	std::cout << "---" << std::endl;
+
 	{ // different underlying container
 		std::list<int>	stdL(4, 40);
 		ft::list<int>	ftL(4, 40);

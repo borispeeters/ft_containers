@@ -1,12 +1,18 @@
-NAME = ft_containers
-INC = ftl
-CXX = clang++
-CXXFLAGS = -Wall -Werror -Wextra -pedantic -std=c++98 -g
+CONTAINERS := vector list deque map multimap set multiset stack queue
+CXX := clang++
+CXXFLAGS := -Wall -Werror -Wextra -pedantic -std=c++98
 
-vector list map multimap set multiset stack queue: fclean
-	$(CXX) $(CXXFLAGS) tests/$@Test.cpp -o $(NAME) -I$(INC)
+all: $(CONTAINERS)
+
+$(CONTAINERS): % : tests/%Test.cpp
+	$(CXX) $(CXXFLAGS) tests/$@Test.cpp -o $@ -Iinclude
 
 clean:
 
 fclean: clean
-	@rm -rf $(NAME) $(NAME).dSYM
+	@for container in $(CONTAINERS) ; do \
+		echo "$(RM) $$container" ; \
+		$(RM) $$container ; \
+	done
+
+re: fclean all

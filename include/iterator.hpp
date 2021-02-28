@@ -1,5 +1,5 @@
-#ifndef ITERATOR_HPP
-# define ITERATOR_HPP
+#ifndef _FT_ITERATOR_HPP
+# define _FT_ITERATOR_HPP
 
 # include <cstddef>
 # include "type_traits.hpp"

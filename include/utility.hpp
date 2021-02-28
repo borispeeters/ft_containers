@@ -1,5 +1,5 @@
-#ifndef UTILITY_HPP
-# define UTILITY_HPP
+#ifndef _FT_UTILITY_HPP
+# define _FT_UTILITY_HPP
 
 namespace ft
 {
@@ -18,17 +18,15 @@ struct pair
 
 	// 2. copy constructor
 	template <class U, class V>
-	pair(pair<U, V> const & pr): first(pr.first), second(pr.second) {}
+	pair(ft::pair<U, V> const & pr): first(pr.first), second(pr.second) {}
 
 	// 3. initialization constructor
 	pair(first_type const & a, second_type const & b): first(a), second(b) {}
 
 	~pair() {}
 
-	pair&	operator=(pair const & rhs)
-	{
-		if (&rhs != this)
-		{
+	pair&	operator=(pair const & rhs) {
+		if (&rhs != this) {
 			this->first = rhs.first;
 			this->second = rhs.second;
 		}

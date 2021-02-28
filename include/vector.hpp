@@ -8,7 +8,7 @@
 # include "iterator.hpp"
 # include "memory.hpp"
 # include "type_traits.hpp"
-# include "_ftl/_vectorIterator.hpp"
+# include "../src/_vectorIterator.hpp"
 
 namespace ft
 {
@@ -23,10 +23,10 @@ public:
 	typedef	typename allocator_type::const_reference					const_reference;
 	typedef	typename allocator_type::pointer							pointer;
 	typedef	typename allocator_type::const_pointer						const_pointer;
-	typedef ft::vectorIterator<value_type>								iterator;
-	typedef ft::constVectorIterator<value_type>							const_iterator;
-//	typedef pointer														iterator;
-//	typedef const_pointer												const_iterator;
+//	typedef ft::vectorIterator<value_type>								iterator;
+//	typedef ft::constVectorIterator<value_type>							const_iterator;
+	typedef pointer														iterator;
+	typedef const_pointer												const_iterator;
 	typedef ft::reverse_iterator<iterator>								reverse_iterator;
 	typedef ft::reverse_iterator<const_iterator>						const_reverse_iterator;
 	typedef std::ptrdiff_t												difference_type;
@@ -67,8 +67,7 @@ public:
 		m_capacity(ft::distance(first, last)),
 		m_alloc(alloc) {
 		this->m_data = this->get_allocator().allocate(this->capacity());
-		for (size_type i = 0; i < this->size(); ++i)
-		{
+		for (size_type i = 0; i < this->size(); ++i) {
 			this->get_allocator().construct(this->m_data + i, *first);
 			++first;
 		}
@@ -92,10 +91,8 @@ public:
 	}
 
 	// assignment operator overload
-	vector&	operator=(vector const & rhs)
-	{
-		if (&rhs != this)
-		{
+	vector&	operator=(vector const & rhs) {
+		if (&rhs != this) {
 			this->clear();
 			this->m_alloc = rhs.get_allocator();
 			this->assign(rhs.begin(), rhs.end());
@@ -115,32 +112,27 @@ public:
 
 	size_type	size() const { return this->m_size; }
 	size_type	max_size() const {
-		return ft::min<size_type>(this->get_allocator().max_size(),
+		return ft::min<size_type>(this->m_alloc.max_size(),
 									std::numeric_limits<difference_type>::max());
 	}
 
-	void		resize(size_type n, value_type val = value_type())
-	{
-		while (n < this->size())
-			this->pop_back();
-		while (n > this->size())
-			this->push_back(val);
+	void		resize(size_type n, value_type val = value_type()) {
+		while (n < this->size()) this->pop_back();
+		while (n > this->size()) this->push_back(val);
 	}
 
 	size_type		capacity() const { return this->m_capacity; }
-	bool			empty() const { return (this->size() == 0); }
+	bool			empty() const { return this->size() == 0; }
 	void			reserve(size_type n) { if (n > this->capacity()) this->realloc(n); }
 	reference		operator[](size_type n) { return *(this->m_data + n); }
 	const_reference	operator[](size_type n) const { return *(this->m_data + n); }
 
-	reference		at (size_type n)
-	{
+	reference		at (size_type n) {
 		if (n >= this->size()) throw std::out_of_range("vector");
 		return *(this->m_data + n);
 	}
 
-	const_reference	at (size_type n) const
-	{
+	const_reference	at (size_type n) const {
 		if (n >= this->size()) throw std::out_of_range("vector");
 		return *(this->m_data + n);
 	}
@@ -153,20 +145,17 @@ public:
 	// 1. range assign
 	template <class Iterator>
 	void	assign(Iterator first, Iterator last,
-				   typename ft::_void_t<typename ft::iterator_traits<Iterator>::iterator_category>::type * = 0)
-	{
+				   typename ft::_void_t<typename ft::iterator_traits<Iterator>::iterator_category>::type * = 0) {
 		this->clear();
 		this->reserve(ft::distance(first, last));
-		while (first != last)
-		{
+		while (first != last) {
 			this->push_back(*first);
 			++first;
 		}
 	}
 
 	// 2. fill assign
-	void	assign(size_type n, value_type const & val)
-	{
+	void	assign(size_type n, value_type const & val) {
 		this->clear();
 		this->reserve(n);
 		this->m_size = n;
@@ -174,31 +163,27 @@ public:
 			this->get_allocator().construct(this->m_data + i, val);
 	}
 
-	void		push_back(value_type const & val)
-	{
+	void		push_back(value_type const & val) {
 		if (this->size() >= this->capacity())
 			this->realloc(this->capacity() * 2);
 		this->get_allocator().construct(this->m_data + this->size(), val);
 		++this->m_size;
 	}
 
-	void		pop_back()
-	{
+	void		pop_back() {
 		--this->m_size;
 		this->get_allocator().destroy(this->m_data + this->size());
 	}
 
 	// 1. single element insertion
-	iterator    insert(iterator position, value_type const & val)
-	{
+	iterator    insert(iterator position, value_type const & val) {
 		difference_type	pos = ft::distance(this->begin(), position);
 		this->insert(position, 1, val);
 		return iterator(this->m_data + pos);
 	}
 
 	// 2. fill insertion
-	void        insert(iterator position, size_type n, value_type const & val)
-	{
+	void        insert(iterator position, size_type n, value_type const & val) {
 		vector	tmp(position, this->end());
 		while (position != this->end())
 			this->pop_back();
@@ -211,13 +196,11 @@ public:
 	// 3. range insertion
 	template <class Iterator>
 	void        insert(iterator position, Iterator first, Iterator last,
-					   typename ft::_void_t<typename ft::iterator_traits<Iterator>::iterator_category>::type * = 0)
-	{
+					   typename ft::_void_t<typename ft::iterator_traits<Iterator>::iterator_category>::type * = 0) {
 		vector	tmp(position, this->end());
 		while (position != this->end())
 			this->pop_back();
-		while (first != last)
-		{
+		while (first != last) {
 			this->push_back(*first);
 			++first;
 		}
@@ -226,19 +209,13 @@ public:
 	}
 
 	// 1. erase single element
-	iterator    erase(iterator position)
-	{
-		vector	tmp(position + 1, this->end());
-		while (position != this->end())
-			this->pop_back();
-		for (iterator it = tmp.begin(); it != tmp.end(); ++it)
-			this->push_back(*it);
+	iterator    erase(iterator position) {
+		this->erase(position, position + 1);
 		return position;
 	}
 
 	// 2. erase range of elements
-	iterator    erase(iterator first, iterator last)
-	{
+	iterator    erase(iterator first, iterator last) {
 		vector	tmp(last, this->end());
 		while (first != this->end())
 			this->pop_back();
@@ -247,18 +224,15 @@ public:
 		return first;
 	}
 
-	void        swap(vector & x)
-	{
+	void        swap(vector & x) {
 		ft::swap(this->m_data, x.m_data);
 		ft::swap(this->m_size, x.m_size);
 		ft::swap(this->m_capacity, x.m_capacity);
 		ft::swap(this->m_alloc, x.m_alloc);
 	}
 
-	void        clear()
-	{
-		iterator it = this->begin();
-		while (it != this->end())
+	void        clear() {
+		while (this->begin() != this->end())
 			this->pop_back();
 	}
 
@@ -267,8 +241,7 @@ public:
 	}
 
 private:
-	void		realloc(size_type newCapacity)
-	{
+	void	realloc(size_type newCapacity) {
 		if (newCapacity == 0)
 			newCapacity = 1;
 		pointer	newBlock = this->get_allocator().allocate(newCapacity);

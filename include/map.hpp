@@ -4,9 +4,9 @@
 # define _FT_TREE
 
 # include <cstddef>
-# include "_ftl/_tree.hpp"
-# include "_ftl/_treeBase.hpp"
-# include "_ftl/_treeIterator.hpp"
+# include "../src/_tree.hpp"
+# include "../src/_treeBase.hpp"
+# include "../src/_treeIterator.hpp"
 # include "algorithm.hpp"
 # include "functional.hpp"
 # include "iterator.hpp"
@@ -17,13 +17,15 @@
 namespace ft
 {
 
-template <class Key,											// mapBase::key_type
-		class T,												// mapBase::mapped_type
-		class Compare = ft::less<Key>,							// mapBase::key_compare
-		class Alloc = ft::allocator<ft::pair<const Key, T> >	// mapBase::allocator_type
+template <class Key,	// mapBase::key_type
+		class T,		// mapBase::mapped_type
+		class Compare,	// mapBase::key_compare
+		class Alloc		// mapBase::allocator_type
 		>
 class mapBase : public ft::treeBase<Key, T, ft::pair<const Key, T>, Compare, Alloc>
 {
+	typedef typename Alloc::template rebind<treeNode<ft::pair<const Key, T> > >::other	node_allocator;
+
 public:
 	typedef Key														key_type;
 	typedef T														mapped_type;
@@ -34,8 +36,8 @@ public:
 	typedef typename allocator_type::const_reference				const_reference;
 	typedef typename allocator_type::pointer						pointer;
 	typedef typename allocator_type::const_pointer					const_pointer;
-	typedef ft::treeIterator<value_type>							iterator;
-	typedef ft::constTreeIterator<value_type>						const_iterator;
+	typedef ft::treeIterator<value_type, node_allocator>			iterator;
+	typedef ft::constTreeIterator<value_type, node_allocator>		const_iterator;
 	typedef ft::reverse_iterator<iterator>							reverse_iterator;
 	typedef ft::reverse_iterator<const_iterator>					const_reverse_iterator;
 	typedef std::ptrdiff_t											difference_type;
@@ -82,24 +84,24 @@ public:
 
 	iterator		find(key_type const & k)
 	{
-		node*	node(this->root());
+		node*	node = this->root();
 		while (this->validNode(node))
 		{
-			if (this->equal(node->value->first, k)) return iterator(this->tree(), node);
-			else if (this->key_comp()(node->value->first, k)) node = node->right;
-			else if (this->key_comp()(k, node->value->first)) node = node->left;
+			if (this->equal(node->value.first, k)) return iterator(this->m_tree, node);
+			else if (this->key_comp()(node->value.first, k)) node = node->right;
+			else if (this->key_comp()(k, node->value.first)) node = node->left;
 		}
 		return this->end();
 	}
 
 	const_iterator	find(key_type const & k) const
 	{
-		node*	node(this->root());
+		node*	node = this->root();
 		while (this->validNode(node))
 		{
-			if (this->equal(node->value->first, k)) return const_iterator(this->tree(), node);
-			else if (this->key_comp()(node->value->first, k)) node = node->right;
-			else if (this->key_comp()(k, node->value->first)) node = node->left;
+			if (this->equal(node->value.first, k)) return const_iterator(this->m_tree, node);
+			else if (this->key_comp()(node->value.first, k)) node = node->right;
+			else if (this->key_comp()(k, node->value.first)) node = node->left;
 		}
 		return this->end();
 	}
@@ -158,41 +160,6 @@ protected:
 	}
 };
 
-template <class Key, class T, class Compare, class Alloc>
-bool operator==(mapBase<Key, T, Compare, Alloc> const & lhs, mapBase<Key, T, Compare, Alloc> const & rhs) {
-	return lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin());
-}
-
-template <class Key, class T, class Compare, class Alloc>
-bool operator!=(mapBase<Key, T, Compare, Alloc> const & lhs, mapBase<Key, T, Compare, Alloc> const & rhs) {
-	return !(lhs == rhs);
-}
-
-template <class Key, class T, class Compare, class Alloc>
-bool operator<(mapBase<Key, T, Compare, Alloc> const & lhs, mapBase<Key, T, Compare, Alloc> const & rhs) {
-	return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
-}
-
-template <class Key, class T, class Compare, class Alloc>
-bool operator<=(mapBase<Key, T, Compare, Alloc> const & lhs, mapBase<Key, T, Compare, Alloc> const & rhs) {
-	return !(rhs < lhs);
-}
-
-template <class Key, class T, class Compare, class Alloc>
-bool operator>(mapBase<Key, T, Compare, Alloc> const & lhs, mapBase<Key, T, Compare, Alloc> const & rhs) {
-	return rhs < lhs;
-}
-
-template <class Key, class T, class Compare, class Alloc>
-bool operator>=(mapBase<Key, T, Compare, Alloc> const & lhs, mapBase<Key, T, Compare, Alloc> const & rhs) {
-	return !(lhs < rhs);
-}
-
-template <class Key, class T, class Compare, class Alloc>
-void swap(mapBase<Key, T, Compare, Alloc> const & x, mapBase<Key, T, Compare, Alloc> const & y) {
-	x.swap(y);
-}
-
 template <class Key,											// map::key_type
 		class T,												// map::mapped_type
 		class Compare = ft::less<Key>,							// map::key_compare
@@ -200,6 +167,8 @@ template <class Key,											// map::key_type
 		>
 class map : public ft::mapBase<Key, T, Compare, Alloc>
 {
+	typedef typename Alloc::template rebind<treeNode<ft::pair<const Key, T> > >::other	node_allocator;
+
 public:
 	typedef Key														key_type;
 	typedef T														mapped_type;
@@ -210,8 +179,8 @@ public:
 	typedef typename allocator_type::const_reference				const_reference;
 	typedef typename allocator_type::pointer						pointer;
 	typedef typename allocator_type::const_pointer					const_pointer;
-	typedef ft::treeIterator<value_type>							iterator;
-	typedef ft::constTreeIterator<value_type>						const_iterator;
+	typedef ft::treeIterator<value_type, node_allocator>			iterator;
+	typedef ft::constTreeIterator<value_type, node_allocator>		const_iterator;
 	typedef ft::reverse_iterator<iterator>							reverse_iterator;
 	typedef ft::reverse_iterator<const_iterator>					const_reverse_iterator;
 	typedef std::ptrdiff_t											difference_type;
@@ -272,7 +241,7 @@ public:
 			this->fixInsertViolation(ret.first);
 			++this->m_size;
 		}
-		return ft::make_pair(iterator(this->tree(), ret.first), ret.second);
+		return ft::make_pair(iterator(this->m_tree, ret.first), ret.second);
 	}
 
 	// 2. insertion with hint
@@ -287,25 +256,25 @@ public:
 		else if (position == this->end())
 		{
 			--position;
-			if (position->first < val.first)
+			if (this->value_comp()(*position, val))
 				ret = this->BSTinsert(position.node(), val);
 			else
 				ret = this->BSTinsert(this->root(), val);
 		}
-		else if (position->first < val.first)
+		else if (this->value_comp()(*position, val))
 		{
 			iterator	tmp(position);
 			++tmp;
-			if (tmp == this->end() || tmp->first > val.first)
+			if (tmp == this->end() || this->value_comp()(val, *tmp))
 				ret = this->BSTinsert(position.node(), val);
 			else
 				ret = this->BSTinsert(this->root(), val);
 		}
-		else if (position->first > val.first)
+		else
 		{
 			iterator	tmp(position);
 			--tmp;
-			if (position == this->begin() || tmp->first < val.first)
+			if (position == this->begin() || this->value_comp()(*tmp, val))
 				ret = this->BSTinsert(position.node(), val);
 			else
 				ret = this->BSTinsert(this->root(), val);
@@ -315,7 +284,7 @@ public:
 			this->fixInsertViolation(ret.first);
 			++this->m_size;
 		}
-		return iterator(this->tree(), ret.first);
+		return iterator(this->m_tree, ret.first);
 	}
 
 	// 3. range insertion
@@ -336,8 +305,9 @@ public:
 		this->BSTerase(position);
 
 		--this->m_size;
-		if (this->empty())
+		if (this->empty()) {
 			this->treeInit();
+		}
 	}
 
 	// 2. erase by key
@@ -370,72 +340,78 @@ public:
 	}
 
 private:
-	ft::pair<node*, bool>	BSTinsert(node* curr, value_type const & val)
-	{
-		node*	newNode = new node(val);
+	ft::pair<node*, bool>	BSTinsert(node* curr, value_type const & val) {
+		this->detach();
 
-		if (this->root() == this->NIL())
-		{
-			this->tree()->m_root = newNode;
-			this->firstNode()->parent = this->lastNode()->parent = this->root();
-			this->root()->left = this->firstNode();
-			this->root()->right = this->lastNode();
-			return ft::make_pair(this->root(), true);
-		}
+		node*	p = this->NIL();
 
-		while (curr != this->NIL())
-		{
-			if (this->validNode(curr) && this->equal(*newNode->value, *curr->value))
-			{
-				delete newNode;
-				break ;
+		while (curr != this->NIL()) {
+			p = curr;
+			if (this->equal(val, curr->value)) {
+				this->attach();
+				return ft::make_pair(curr, false);
 			}
-			else if (this->value_comp()(*newNode->value, *curr->value))
-			{
-				if (curr->left == this->firstNode())
-				{
-					newNode->parent = curr;
-					newNode->left = this->firstNode();
-					newNode->right = this->NIL();
-					curr->left = newNode;
-					this->firstNode()->parent = newNode;
-					return ft::make_pair(newNode, true);
-				}
-				else if (curr->left == this->NIL())
-				{
-					curr->left = newNode;
-					newNode->parent = curr;
-					newNode->left = this->NIL();
-					newNode->right = this->NIL();
-					return ft::make_pair(newNode, true);
-				}
+			else if (this->value_comp()(val, curr->value))
 				curr = curr->left;
-			}
-			else if (this->value_comp()(*curr->value, *newNode->value))
-			{
-				if (curr->right == this->lastNode())
-				{
-					newNode->parent = curr;
-					newNode->right = this->lastNode();
-					newNode->left = this->NIL();
-					curr->right = newNode;
-					this->lastNode()->parent = newNode;
-					return ft::make_pair(newNode, true);
-				}
-				else if (curr->right == this->NIL())
-				{
-					curr->right = newNode;
-					newNode->parent = curr;
-					newNode->left = this->NIL();
-					newNode->right = this->NIL();
-					return ft::make_pair(newNode, true);
-				}
+			else
 				curr = curr->right;
-			}
 		}
-		return ft::make_pair(curr, false);
+
+		node*	newNode = this->m_alloc.allocate(1);
+		this->m_alloc.construct(newNode, val);
+
+		newNode->parent = p;
+
+		if (p == this->NIL())
+			this->m_tree.m_root = newNode;
+		else if (this->value_comp()(newNode->value, p->value))
+			p->left = newNode;
+		else
+			p->right = newNode;
+
+		newNode->left = this->NIL();
+		newNode->right = this->NIL();
+
+		this->attach();
+
+		return ft::make_pair(newNode, true);
 	}
 };
+
+template <class Key, class T, class Compare, class Alloc>
+bool operator==(map<Key, T, Compare, Alloc> const & lhs, map<Key, T, Compare, Alloc> const & rhs) {
+	return lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin());
+}
+
+template <class Key, class T, class Compare, class Alloc>
+bool operator!=(map<Key, T, Compare, Alloc> const & lhs, map<Key, T, Compare, Alloc> const & rhs) {
+	return !(lhs == rhs);
+}
+
+template <class Key, class T, class Compare, class Alloc>
+bool operator<(map<Key, T, Compare, Alloc> const & lhs, map<Key, T, Compare, Alloc> const & rhs) {
+	return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+}
+
+template <class Key, class T, class Compare, class Alloc>
+bool operator<=(map<Key, T, Compare, Alloc> const & lhs, map<Key, T, Compare, Alloc> const & rhs) {
+	return !(rhs < lhs);
+}
+
+template <class Key, class T, class Compare, class Alloc>
+bool operator>(map<Key, T, Compare, Alloc> const & lhs, map<Key, T, Compare, Alloc> const & rhs) {
+	return rhs < lhs;
+}
+
+template <class Key, class T, class Compare, class Alloc>
+bool operator>=(map<Key, T, Compare, Alloc> const & lhs, map<Key, T, Compare, Alloc> const & rhs) {
+	return !(lhs < rhs);
+}
+
+template <class Key, class T, class Compare, class Alloc>
+void swap(map<Key, T, Compare, Alloc> & x, map<Key, T, Compare, Alloc> & y) {
+	x.swap(y);
+}
 
 template <class Key,											// multimap::key_type
 		class T,												// multimap::mapped_type
@@ -444,6 +420,8 @@ template <class Key,											// multimap::key_type
 		>
 class multimap : public ft::mapBase<Key, T, Compare, Alloc>
 {
+	typedef typename Alloc::template rebind<treeNode<ft::pair<const Key, T> > >::other	node_allocator;
+
 public:
 	typedef Key														key_type;
 	typedef T														mapped_type;
@@ -454,8 +432,8 @@ public:
 	typedef	typename allocator_type::const_reference				const_reference;
 	typedef	typename allocator_type::pointer						pointer;
 	typedef	typename allocator_type::const_pointer					const_pointer;
-	typedef ft::treeIterator<value_type>							iterator;
-	typedef ft::constTreeIterator<value_type>						const_iterator;
+	typedef ft::treeIterator<value_type, node_allocator>			iterator;
+	typedef ft::constTreeIterator<value_type, node_allocator>		const_iterator;
 	typedef ft::reverse_iterator<iterator>							reverse_iterator;
 	typedef ft::reverse_iterator<const_iterator>					const_reverse_iterator;
 	typedef std::ptrdiff_t											difference_type;
@@ -506,7 +484,7 @@ public:
 
 		this->fixInsertViolation(ret);
 		++this->m_size;
-		return iterator(this->tree(), ret);
+		return iterator(this->m_tree, ret);
 	}
 
 	// 2. insertion with hint
@@ -519,32 +497,32 @@ public:
 		else if (position == this->end())
 		{
 			--position;
-			if (position->first < val.first)
+			if (this->value_comp()(*position, val))
 				ret = this->BSTinsert(position.node(), val);
 			else
 				ret = this->BSTinsert(this->root(), val);
 		}
-		else if (position->first < val.first)
+		else if (this->value_comp()(*position, val))
 		{
 			iterator	tmp(position);
 			++tmp;
-			if (tmp == this->end() || tmp->first > val.first)
+			if (tmp == this->end() || this->value_comp()(val, *tmp))
 				ret = this->BSTinsert(position.node(), val);
 			else
 				ret = this->BSTinsert(this->root(), val);
 		}
-		else if (position->first > val.first)
+		else
 		{
 			iterator	tmp(position);
 			--tmp;
-			if (position == this->begin() || tmp->first < val.first)
+			if (position == this->begin() || this->value_comp()(*tmp, val))
 				ret = this->BSTinsert(position.node(), val);
 			else
 				ret = this->BSTinsert(this->root(), val);
 		}
-		fixInsertViolation(ret);
+		this->fixInsertViolation(ret);
 		++this->m_size;
-		return iterator(this->tree(), ret);
+		return iterator(this->m_tree, ret);
 	}
 
 	// 3. range insertion
@@ -565,8 +543,9 @@ public:
 		this->BSTerase(position);
 
 		--this->m_size;
-		if (this->empty())
+		if (this->empty()) {
 			this->treeInit();
+		}
 	}
 
 	// 2. erase by key
@@ -600,67 +579,74 @@ public:
 	}
 
 private:
-	node*	BSTinsert(node* curr, value_type const & val)
-	{
-		node*	newNode = new node(val);
+	node*	BSTinsert(node* curr, value_type const & val) {
+		this->detach();
 
-		if (this->root() == this->NIL())
-		{
-			this->tree()->m_root = newNode;
-			this->firstNode()->parent = this->lastNode()->parent = this->root();
-			this->root()->left = this->firstNode();
-			this->root()->right = this->lastNode();
-			return this->root();
-		}
+		node*	p = this->NIL();
 
-		while (curr != this->NIL())
-		{
-			if (this->value_comp()(*newNode->value, *curr->value))
-			{
-				if (curr->left == this->firstNode())
-				{
-					newNode->parent = curr;
-					newNode->left = this->firstNode();
-					newNode->right = this->NIL();
-					curr->left = newNode;
-					this->firstNode()->parent = newNode;
-					return newNode;
-				}
-				else if (curr->left == this->NIL())
-				{
-					curr->left = newNode;
-					newNode->parent = curr;
-					newNode->left = this->NIL();
-					newNode->right = this->NIL();
-					return newNode;
-				}
+		while (curr != this->NIL()) {
+			p = curr;
+			if (this->value_comp()(val, curr->value))
 				curr = curr->left;
-			}
-			else if (!this->value_comp()(*newNode->value, *curr->value))
-			{
-				if (curr->right == this->lastNode())
-				{
-					newNode->parent = curr;
-					newNode->right = this->lastNode();
-					newNode->left = this->NIL();
-					curr->right = newNode;
-					this->lastNode()->parent = newNode;
-					return newNode;
-				}
-				else if (curr->right == this->NIL())
-				{
-					curr->right = newNode;
-					newNode->parent = curr;
-					newNode->left = this->NIL();
-					newNode->right = this->NIL();
-					return newNode;
-				}
+			else
 				curr = curr->right;
-			}
 		}
-		return curr;
+
+		node*	newNode = this->m_alloc.allocate(1);
+		this->m_alloc.construct(newNode, val);
+
+		newNode->parent = p;
+
+		if (p == this->NIL())
+			this->m_tree.m_root = newNode;
+		else if (this->value_comp()(newNode->value, p->value))
+			p->left = newNode;
+		else
+			p->right = newNode;
+
+		newNode->left = this->NIL();
+		newNode->right = this->NIL();
+
+		this->attach();
+
+		return newNode;
 	}
 };
+
+template <class Key, class T, class Compare, class Alloc>
+bool operator==(multimap<Key, T, Compare, Alloc> const & lhs, multimap<Key, T, Compare, Alloc> const & rhs) {
+	return lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin());
+}
+
+template <class Key, class T, class Compare, class Alloc>
+bool operator!=(multimap<Key, T, Compare, Alloc> const & lhs, multimap<Key, T, Compare, Alloc> const & rhs) {
+	return !(lhs == rhs);
+}
+
+template <class Key, class T, class Compare, class Alloc>
+bool operator<(multimap<Key, T, Compare, Alloc> const & lhs, multimap<Key, T, Compare, Alloc> const & rhs) {
+	return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+}
+
+template <class Key, class T, class Compare, class Alloc>
+bool operator<=(multimap<Key, T, Compare, Alloc> const & lhs, multimap<Key, T, Compare, Alloc> const & rhs) {
+	return !(rhs < lhs);
+}
+
+template <class Key, class T, class Compare, class Alloc>
+bool operator>(multimap<Key, T, Compare, Alloc> const & lhs, multimap<Key, T, Compare, Alloc> const & rhs) {
+	return rhs < lhs;
+}
+
+template <class Key, class T, class Compare, class Alloc>
+bool operator>=(multimap<Key, T, Compare, Alloc> const & lhs, multimap<Key, T, Compare, Alloc> const & rhs) {
+	return !(lhs < rhs);
+}
+
+template <class Key, class T, class Compare, class Alloc>
+void swap(multimap<Key, T, Compare, Alloc> & x, multimap<Key, T, Compare, Alloc> & y) {
+	x.swap(y);
+}
 
 } //end of namespace ft
 
